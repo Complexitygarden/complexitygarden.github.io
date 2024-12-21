@@ -1,0 +1,31 @@
+{
+    "class_list":{
+        "1": {
+            "name": "ALL",
+            "contains": ["4", "5"],
+            "within": [],
+            "top": true
+        },
+        "2":{
+            "name":"NONE",
+            "contains":[],
+            "within":["2"],
+            "bottom":true
+        },
+        "3":{
+            "name": "P",
+            "contains": ["2"],
+            "within":["4", "5"]
+        },
+        "4":{
+            "name":"BQP",
+            "contains":["3"],
+            "within":["1"]
+        },
+        "5":{
+            "name":"NP",
+            "contains":["3"],
+            "within":["1"]
+        }
+    }
+}
