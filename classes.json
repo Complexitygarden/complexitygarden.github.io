@@ -1,31 +1,31 @@
 {
     "class_list":{
-        "1": {
+        "ALL": {
             "name": "ALL",
-            "contains": ["4", "5"],
+            "contains": ["BQP", "NP"],
             "within": [],
             "top": true
         },
-        "2":{
+        "NONE":{
             "name":"NONE",
             "contains":[],
-            "within":["2"],
+            "within":["P"],
             "bottom":true
         },
-        "3":{
+        "P":{
             "name": "P",
-            "contains": ["2"],
-            "within":["4", "5"]
+            "contains": ["NONE"],
+            "within":["BQP", "NP"]
         },
-        "4":{
+        "BQP":{
             "name":"BQP",
-            "contains":["3"],
-            "within":["1"]
+            "contains":["P"],
+            "within":["ALL"]
         },
-        "5":{
+        "NP":{
             "name":"NP",
-            "contains":["3"],
-            "within":["1"]
+            "contains":["P"],
+            "within":["ALL"]
         }
     }
 }

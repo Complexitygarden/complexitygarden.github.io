@@ -1,24 +1,29 @@
-from flask import Flask, render_template, request, jsonify, session
+"""
+Main script which runs the website
+"""
 
-max_search_output = 10
+# Imports
+from flask import Flask, render_template, request, jsonify, session
+from script.load_classes import list_all_classes, create_class_network
+
+"""
+Key variables
+"""
+MAX_SEARCH_OUTPUT = 10
+CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 
 app = Flask(__name__)
 
-app.secret_key = b'_5#y2L"F4Q7z\n\xec]/'
-
-data = ["BQP", "P", "QMA", "PP", "ALL", "NONE", "QCMA", "PSPACE", "EXP", "NEXP", "NP"]
-data = sorted(data)
-
-data_test = [{'name':d, 'value':True} for d in data]
+app.secret_key = b'_5#y2l"FP7z\n\xec]/'
 
 @app.before_request
 def before_req():
    if 'all_classes' not in session:
-      session['all_classes'] = data
+      session['all_classes'] = CLASS_LIST
    if 'checked_classes' not in session:
       session['checked_classes'] = []
    if 'check_classes_dict' not in session:
-      checked_classes_dict = {c:{'name': c, 'value':False} for c in data }
+      checked_classes_dict = {c:{'name': c, 'value':False} for c in CLASS_LIST }
       checked_classes = session['checked_classes']
       for cc in checked_classes:
          checked_classes_dict[cc]['value'] = True
@@ -28,8 +33,7 @@ def before_req():
 
 @app.route('/', methods=["GET"])
 def index():
-   cc_list = list(session['check_classes_dict'].values())
-   return render_template('index.html', complexity_classes=cc_list)
+   return render_template('index.html')
 
 @app.route('/searchresults', methods=['GET', "POST"])
 def test():
@@ -61,10 +65,21 @@ def test():
 def search():
    query = request.args.get('query')
    cc_dict = session['check_classes_dict']
-   results = [cc_dict[d] for d in data if query.lower() in d.lower()]
-   if len(results) > max_search_output:
-      results = results[:max_search_output]
+   all_class_list = session['all_classes']
+   results = [cc_dict[d] for d in all_class_list if query.lower() in d.lower()]
+   if len(results) > MAX_SEARCH_OUTPUT:
+      results = results[:MAX_SEARCH_OUTPUT]
    return jsonify(results)
+
+@app.route('/get_complexity_network')
+def get_complexity_network():
+   print('here')
+   check_class_list = session['checked_classes']
+   print(check_class_list)
+   network = create_class_network(check_class_list, class_dict)
+   print(network)
+   return jsonify(network)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

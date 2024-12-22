@@ -1,7 +1,7 @@
 $(document).ready(function(){
    $('#complexity_class_search_bar').on('input', function(){
       var query = $(this).val();
-      search_vals(query)
+      search_vals(query);
    });
    // Initializing the listed classes
    search_vals("")
@@ -22,7 +22,7 @@ function search_vals(query){
 
 function ajaxRequest(inp) {
     console.log(inp);
-    var checked = document.getElementById(inp.value).checked;
+    var checked = document.getElementById(inp.id).checked;
     console.log("Sending data to the server that the checkbox is", checked);
     if (checked) {
        checked = 1;
@@ -38,5 +38,13 @@ function ajaxRequest(inp) {
     }
     xhttp.open("POST", "/searchresults", true);
     xhttp.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    xhttp.send("name=" + inp.value + "&checked=" +checked);
+    xhttp.onreadystatechange=function()
+    {
+      if(xhttp.readyState==4 && xhttp.status == 200)
+      {
+         // We changed the graph -> redrawing it
+         draw_graph();
+      }
+    }
+    xhttp.send("name=" + inp.id + "&checked=" +checked);
   }
