@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Complexity Garden</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+
+  <body>
+
+    <div class="center">
+      
+      <h1>Complexity Class Relationship Finder</h1>
+      <form id="relationship-form" autocomplete="off">
+
+        
+        <label for="classA" class="labelText"> First Complexity Class:</label>
+        <div class="autocomplete">
+        <input type="text" id="classA" name="classA" placeholder="Enter first class" required>
+        </div>
+        
+
+        
+        <label for="classB" class="labelText"> Second Complexity Class:</label>
+        <div class="autocomplete">
+        <input type="text" id="classB" name="classB" placeholder="Enter second class" required>
+        </div>
+        
+
+        <div>
+        <button type="submit" id="submitButton">Find Relationship</button>
+        </div>
+
+      </form>
+
+      <div id="result" class="result"></div>
+
+    </div>
+
+    <script src="script.js"></script>
+
+  </body>
+
+
+
+
+</html>
