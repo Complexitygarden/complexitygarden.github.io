@@ -2,7 +2,7 @@
 Main javascript file
 */
 // import { arrow1 } from "./utils/arrow";
-var arrow_scale = 1; // Need to fix the scaling - anything above 1 acts weird
+var arrow_scale = 2.5; // Increased from 1 to 2.5
 var drawn = 0;
 
 // Distribution of divs
@@ -113,13 +113,18 @@ function draw_graph(){
         // Returning the label
         function nodeLabel(d){return d.label}
         
-        const arrow = d3.arrow1()
-            .scale(arrow_scale)
-            .id("my-arrow")
-            .attr("fill", "red")
-            .attr("stroke", "red");
-         
-        svg.call(arrow);
+        // Create a custom arrow marker definition
+        svg.append("defs").append("marker")
+            .attr("id", "my-arrow")
+            .attr("viewBox", "0 0 10 10")
+            .attr("refX", 10)
+            .attr("refY", 5)
+            .attr("markerWidth", 10*arrow_scale)
+            .attr("markerHeight", 10*arrow_scale)
+            .attr("orient", "auto-start-reverse")
+            .append("path")
+            .attr("d", "M 0 0 L 10 5 L 0 10 z")  // Triangle shape
+            .attr("fill", "red");
         
         // Layers - Created in their order from behind to the front
         var layer1 = svg.append("g");
@@ -140,8 +145,8 @@ function draw_graph(){
     
         function draw_everything(){
             link
-            .attr("stroke-width", 2)
-            .style("stroke",edgeColor)
+                .attr("stroke-width", 2)
+                .style("stroke",edgeColor)
             .attr("marker-mid", "url(#my-arrow)")
             .attr("points",get_points);
     
