@@ -2,7 +2,7 @@
     "class_list":{
         "ALL": {
             "name": "ALL",
-            "contains": ["BQP", "NP"],
+            "contains": ["EXP"],
             "within": [],
             "top": true
         },
@@ -12,19 +12,59 @@
             "within":["P"],
             "bottom":true
         },
+        "PP":{
+            "name":"PP",
+            "contains":["PDQP", "QMA"],
+            "within":["PSPACE"]
+        },
+        "QMA":{
+            "name":"QMA",
+            "contains":["QCMA"],
+            "within":["PP"]
+        },
+        "QCMA":{
+            "name":"QCMA",
+            "contains":["NP", "BQP"],
+            "within":["QMA"]
+        },
+        "PDQP":{
+            "name":"PDQP",
+            "contains":["SZK", "BQP"],
+            "within":["PP"]
+        },
         "P":{
             "name": "P",
             "contains": ["NONE"],
-            "within":["BQP", "NP"]
+            "within":["BPP", "NP"]
         },
         "BQP":{
             "name":"BQP",
-            "contains":["P"],
-            "within":["ALL"]
+            "contains":["BPP"],
+            "within":["PDQP", "QCMA"]
         },
         "NP":{
             "name":"NP",
             "contains":["P"],
+            "within":["QCMA"]
+        },
+        "SZK":{
+            "name":"SZK",
+            "contains":["BPP"],
+            "within":["PDQP"]
+        },
+        "BPP":{
+            "name":"BPP",
+            "contains":["P"],
+            "within":["BQP", "SZK"]
+        },
+        "PSPACE":{
+            "name":"PSPACE",
+            "contains":["PP"],
+            "within":["EXP"]
+        },
+        "EXP":{
+            "name":"EXP",
+            "contains":["PSPACE"],
             "within":["ALL"]
         }
     }

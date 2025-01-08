@@ -14,7 +14,7 @@ CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 
 app = Flask(__name__)
 
-app.secret_key = b'_5#y2l"FP7z\n\xec]/'
+app.secret_key = b'_5#y3l"FP7z\n\xec]/'
 
 @app.before_request
 def before_req():
