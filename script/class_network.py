@@ -23,7 +23,7 @@ def create_trimmed_class_network(cl: list, cd: dict):
 
 def trim_network(cl: list, cd: dict):
     """
-    Dropping the unnecessary classes
+    Dropping the unnecessary classes and their connections
     """
     # If no classes are selected, we don't get anything
     if len(cl) == 0:
@@ -37,6 +37,7 @@ def trim_network(cl: list, cd: dict):
     
     node_queue, vertex_tag, cdc, processed_vertex = preprocessing_for_trim(cl, cd)
 
+    # Dropping the classes -> turning them into edges
     while len(node_queue)!=0:
         cur_ver = node_queue.pop(0)
         processed_vertex[cur_ver] = True
@@ -49,6 +50,13 @@ def trim_network(cl: list, cd: dict):
                 node_queue.append(neighbor)
         if not vertex_tag[cur_ver]:
             cdc = turn_vertex_into_edge(cur_ver, cdc)
+    # print("CDC:")
+    # print(cdc)
+
+    # Dropping extra edges
+    # top_classes = [k for k in cdc.keys() if len(cdc[k]['within']) == 0]
+    # for top_class in top_classes:
+    #     cur_class = top_class
     return cdc
 
 def preprocessing_for_trim(cl: list, cd: dict):
