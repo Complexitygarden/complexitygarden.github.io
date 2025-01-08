@@ -50,13 +50,19 @@ def trim_network(cl: list, cd: dict):
                 node_queue.append(neighbor)
         if not vertex_tag[cur_ver]:
             cdc = turn_vertex_into_edge(cur_ver, cdc)
-    # print("CDC:")
-    # print(cdc)
 
-    # Dropping extra edges
-    # top_classes = [k for k in cdc.keys() if len(cdc[k]['within']) == 0]
-    # for top_class in top_classes:
-    #     cur_class = top_class
+    """
+    Dropping direct edges
+    - Essentially, if there are two paths (or more) between two nodes, and one of them is direct (i.e. straight from one to the other),
+    while others are indirect (it passes through other nodes), we drop the direct edge.
+    """
+    for source in cdc.keys():
+        for target in cdc[source]['contains'].copy():
+            # Check if there's an indirect path from source to target
+            if has_indirect_path(source, target, cdc):
+                # Remove direct edge
+                cdc[source]['contains'].remove(target)
+                cdc[target]['within'].remove(source)
     return cdc
 
 def preprocessing_for_trim(cl: list, cd: dict):
@@ -108,6 +114,22 @@ def network_dict(d: dict):
                 "type": "A"
             })
     return output_dict
+
+def has_indirect_path(source: str, target: str, cd: dict, visited: set = None) -> bool:
+    """
+    Check if there exists a path from source to target through other nodes
+    """
+    if visited is None:
+        visited = {source}
+    # Check immediate connections excluding direct path to target
+    for intermediate in cd[source]['contains']:
+        if intermediate == target:
+            continue
+        if intermediate not in visited:
+            visited.add(intermediate)
+            if target in cd[intermediate]['contains'] or has_indirect_path(intermediate, target, cd, visited):
+                return True
+    return False
 
 if __name__=='__main__':
     try:
