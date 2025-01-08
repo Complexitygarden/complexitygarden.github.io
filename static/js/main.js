@@ -65,48 +65,48 @@ var svg = d3.select("#graph_viz")
 }))
 .append("g");
 
+//set up the simulation 
+var simulation = d3.forceSimulation()
+
+var node,
+    link;
+
 
 // Adding the graph
 
 function draw_graph(){
-    // Deleting old graph if drawn
-    if(drawn == 1){
-        console.log('Deleting old');
-        svg.remove();
-        console.log(svg)
+    // If graph was previously drawn, remove all existing elements
+    if (drawn === 1) {
+        svg.selectAll('.nodes').remove();
+        svg.selectAll('.links').remove();
     }
 
-    d3.json(complexity_network_url, function(data){
+    d3.json(complexity_network_url, function(data) {
+        // Initialize random positions for nodes
+        data.nodes.forEach(node => {
+            // Add random positions within the graph boundaries
+            node.x = Math.random() * graph_width;
+            node.y = Math.random() * graph_height;
+        });
 
-        //set up the simulation 
-        var simulation = d3.forceSimulation()
-        //add nodes
-        .nodes(data.nodes);
-        
+        // Reset simulation with new data
+        simulation.nodes(data.nodes);
         
         //add forces
-        //we're going to add a charge to each node 
-        //also going to add a centering force
-        //and a link force
-        var link_force =  d3.forceLink(data.links)
-          .id(function(d) { return d.name; });
+        var link_force = d3.forceLink(data.links)
+            .id(function(d) { return d.name; });
+            
         simulation
-        .force("charge_force", d3.forceManyBody().strength(strength))
-        .force("center_force", d3.forceCenter(graph_width / 2, graph_height / 2))
-        .force("links",link_force);
-        
+            .force("charge_force", d3.forceManyBody().strength(strength))
+            .force("center_force", d3.forceCenter(graph_width / 2, graph_height / 2))
+            .force("links", link_force)
+            .alpha(1)    // Reset the simulation's internal timer
+            .restart();  // Restart the simulation
         
         //add tick instructions: 
         simulation.on("tick", tickActions );
         
         function edgeColor(d){
-        // if(d.type == "A"){
-        // return "blue";
-        // }
-        // if(d.type == "B"){
-        // return "red";
-        // }
-        // return "green";
         return "red"
         }
         
@@ -125,19 +125,18 @@ function draw_graph(){
         var layer1 = svg.append("g");
         var layer2 = svg.append("g");
         
+        // Create new nodes and links
+        node = layer2.attr("class", "nodes")
+            .selectAll("circle")
+            .data(data.nodes)
+            .enter()
+            .append("g");
         
-        // //draw circles for the links
-        var node = layer2.attr("class", "nodes")
-        .selectAll("circle")
-        .data(data.nodes)
-        .enter()
-        .append("g");
-        
-        var link = layer1.attr("class", "links")
-        .selectAll(".links")
-        .data(data.links)
-        .enter()
-        .append("polyline");
+        link = layer1.attr("class", "links")
+            .selectAll(".links")
+            .data(data.links)
+            .enter()
+            .append("polyline");
     
         function draw_everything(){
             link
@@ -226,3 +225,4 @@ function draw_graph(){
         drawn = 1;
 }
 
+draw_graph();
