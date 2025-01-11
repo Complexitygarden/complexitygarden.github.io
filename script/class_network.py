@@ -31,7 +31,7 @@ def trim_network(cl: list, cd: dict):
     elif len(cl) == 1:
         # One node -> return the single node
         val = cl[0]
-        out_dict = {val: cd[val]}
+        out_dict = {val: copy.deepcopy(cd)[val]}
         out_dict[val]['contains'], out_dict[val]['within'] = [], []
         return out_dict
     
