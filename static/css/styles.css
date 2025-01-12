@@ -16,7 +16,7 @@ body {
     width: 100%;
     max-width: 100%;
     box-shadow: none;
-    background-color: #FC466B;
+    background-color: #1a365d;
     position: fixed;
     height: 60px!important;
     overflow: hidden;
@@ -69,7 +69,7 @@ body {
     transform: translateX(-250px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
-    background: #FC466B;
+    background: #1a365d;
 }
 .leftSidebarMenuInner{
     margin:0;
@@ -189,7 +189,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
     transform: translateX(350px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
-    background: #FC466B;
+    background: #1a365d;
 }
 .rightSidebarMenuInner{
     margin:0;
@@ -260,11 +260,11 @@ input[type=text] {
     appearance: none;
     border: none;
     outline: none;
-    border-bottom: .2em solid #E91E63;
-    background: rgba(#E91E63, .2);
+    border-bottom: .2em solid #2c5282;
+    background: rgba(#2c5282, .2);
     border-radius: 1em 1em 1em 1em;
     padding: .4em;
-    color: #E91E63;
+    color: #2c5282;
   }
 
 /* Checked box style */

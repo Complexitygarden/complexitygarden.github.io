@@ -107,7 +107,7 @@ function draw_graph(){
         simulation.on("tick", tickActions );
         
         function edgeColor(d){
-        return "red"
+        return "#2c5282"
         }
         
         // Returning the label
@@ -124,7 +124,7 @@ function draw_graph(){
             .attr("orient", "auto-start-reverse")
             .append("path")
             .attr("d", "M 0 0 L 10 5 L 0 10 z")  // Triangle shape
-            .attr("fill", "red");
+            .attr("fill", "#2c5282");
         
         // Layers - Created in their order from behind to the front
         var layer1 = svg.append("g");
@@ -146,20 +146,20 @@ function draw_graph(){
         function draw_everything(){
             link
                 .attr("stroke-width", 2)
-                .style("stroke",edgeColor)
+                .style("stroke", "#2c5282")
             .attr("marker-mid", "url(#my-arrow)")
             .attr("points",get_points);
     
             // Adding the circle
             node.append("circle")
             .attr("r", radius)
-            .attr("fill", "#0B192C");
+            .attr("fill", "#2c5282");
     
             // Adding a label on the circle
             node.append('text')
             .text(nodeLabel)
             .attr("text-anchor", "middle")
-            .style("fill", "#FF6500")
+            .style("fill", "#fff")
             .style("font-size", fontSize)
             .attr("dy", (fontSize)/2);
         }
