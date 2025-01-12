@@ -71,9 +71,14 @@ def search():
       results = results[:MAX_SEARCH_OUTPUT]
    return jsonify(results)
 
+@app.route('/get_class_description', methods=['GET'])
+def get_class_description():
+   class_name = request.args.get('class_name')
+   description = class_dict[class_name]['description']
+   return jsonify({'description': description})
+
 @app.route('/get_complexity_network')
 def get_complexity_network():
-   print('here')
    check_class_list = session['checked_classes']
    print(check_class_list)
    network = create_class_network(check_class_list, class_dict)

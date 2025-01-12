@@ -4,68 +4,81 @@
             "name": "ALL",
             "contains": ["EXP"],
             "within": [],
-            "top": true
+            "top": true,
+            "description": "The class of all languages."
         },
         "NONE":{
             "name":"NONE",
             "contains":[],
             "within":["P"],
-            "bottom":true
+            "bottom":true,
+            "description": "The class which does not contain any languages. It is the opposite of ALL."
         },
         "PP":{
             "name":"PP",
             "contains":["PDQP", "QMA"],
-            "within":["PSPACE"]
+            "within":["PSPACE"],
+            "description": "Probabilistic Polynomial Time"
         },
         "QMA":{
             "name":"QMA",
             "contains":["QCMA"],
-            "within":["PP"]
+            "within":["PP"],
+            "description":"Quantum Merlin-Arthur"
         },
         "QCMA":{
             "name":"QCMA",
             "contains":["NP", "BQP"],
-            "within":["QMA"]
+            "within":["QMA"],
+            "description":"Quantum Merlin-Arthur"
         },
         "PDQP":{
             "name":"PDQP",
             "contains":["SZK", "BQP"],
-            "within":["PP"]
+            "within":["PP"],
+            "description":"Polynomial Dynamical Quantum Polynomial Time"
         },
         "P":{
             "name": "P",
             "contains": ["NONE"],
-            "within":["BPP", "NP"]
+            "within":["BPP", "NP"],
+            "description":"Polynomial Time"
         },
         "BQP":{
             "name":"BQP",
             "contains":["BPP"],
-            "within":["PDQP", "QCMA"]
+            "within":["PDQP", "QCMA"],
+            "description":"Bounded-Error Quantum Polynomial Time"
         },
         "NP":{
             "name":"NP",
             "contains":["P"],
-            "within":["QCMA"]
+            "within":["QCMA"],
+            "description":"Non-deterministic Polynomial Time"
         },
         "SZK":{
             "name":"SZK",
             "contains":["BPP"],
-            "within":["PDQP"]
+            "within":["PDQP"],
+            "description":"Statistical Zero-Knowledge"
         },
         "BPP":{
             "name":"BPP",
             "contains":["P"],
-            "within":["BQP", "SZK"]
+            "within":["BQP", "SZK"],
+            "description":"Bounded-Error Probabilistic Polynomial Time"
         },
         "PSPACE":{
             "name":"PSPACE",
             "contains":["PP"],
-            "within":["EXP"]
+            "within":["EXP"],
+            "description":"Polynomial Space"
         },
         "EXP":{
             "name":"EXP",
             "contains":["PSPACE"],
-            "within":["ALL"]
+            "within":["ALL"],
+            "description":"Exponential Time"
         }
     }
 }

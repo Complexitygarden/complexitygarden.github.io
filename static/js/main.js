@@ -216,14 +216,34 @@ function draw_graph(){
         
         
         // Clicking events
-        node.on("dblclick", open_side_window);
+        node.on("dblclick", function(d){
+            // Disallowing zooming in on the graph
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
+            // Opening the side window and showing a class description
+            open_side_window(d);
+        });
         
         // Javascript file which creates a sidewindow
-        function open_side_window(d){
-            console.log(d)
-            graph_width_ratio = 0.9,
-            right_width_ratio = 0.1;
-            redraw_divs();
+        function open_side_window(d) {
+            // Fetch the description from the server
+            fetch(`/get_class_description?class_name=${d.name}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("class-description").textContent = data.description || "No description available";
+                    
+                    // Open the right sidebar
+                    document.getElementById("openRightSidebarMenu").checked = true;
+                    
+                    // Adjust the graph width
+                    graph_width_ratio = 0.9;
+                    right_width_ratio = 0.1;
+                    redraw_divs();
+                })
+                .catch(error => {
+                    console.error('Error fetching class description:', error);
+                    document.getElementById("class-description").textContent = "Error loading description";
+                });
         }
         
         });
