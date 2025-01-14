@@ -72,7 +72,8 @@ var svg = d3.select("#graph_viz")
 var simulation = d3.forceSimulation()
 
 var node,
-    link;
+    link,
+    set_node = null;
 
 
 // Adding the graph
@@ -167,13 +168,27 @@ function draw_graph(){
             .attr("marker-mid", "url(#my-arrow)")
             .attr("points",get_points);
     
+            var nodeGroups = node.append("g")
+            .on("mouseover", function() {
+                d3.select(this).select("circle")
+                    .attr("fill", "#4299e1")
+                    .attr("stroke", "#2c5282");
+            })
+            .on("mouseout", function() {
+                d3.select(this).select("circle")
+                    .attr("fill", "#2c5282")
+                    .attr("stroke", "none");
+            });
+
             // Adding the circle
-            node.append("circle")
+            nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", "#2c5282");
+            .attr("fill", "#2c5282")
+            .attr("stroke", "none")
+            .attr("stroke-width", 3);
     
             // Adding a label on the circle
-            node.append('text')
+            nodeGroups.append('text')
             .text(nodeLabel)
             .attr("text-anchor", "middle")
             .style("fill", "#fff")
@@ -184,8 +199,6 @@ function draw_graph(){
         draw_everything();
         
         function get_points(d) { 
-          // console.log(d);
-          // console.log(d.source.x);
           return [
                d.source.x, d.source.y,
                d.source.x/2+d.target.x/2, d.source.y/2+d.target.y/2,
@@ -232,17 +245,28 @@ function draw_graph(){
         }
         
         
-        // Clicking events
-        node.on("dblclick", function(d){
+        // Events which show complexity class descriptions
+        node.on("click", function(d){
             // Disallowing zooming in on the graph
             d3.event.preventDefault();
             d3.event.stopPropagation();
             // Opening the side window and showing a class description
             open_side_window(d);
+            set_node = d;
+        });
+
+        node.on("mouseover", function(d){
+            open_side_window(d, false);
+        });
+
+        node.on("mouseout", function(d){
+            if (set_node !== d && set_node !== null){
+                open_side_window(set_node, false)
+            }
         });
         
         // Javascript file which creates a sidewindow
-        function open_side_window(d) {
+        function open_side_window(d, force_open = true) {
             // Fetch the description from the server
             fetch(`/get_class_description?class_name=${d.name}`)
                 .then(response => response.json())
@@ -250,7 +274,9 @@ function draw_graph(){
                     document.getElementById("class-description").textContent = data.description || "No description available";
                     document.getElementById("class-title").textContent = data.title || "No title available";
                     // Open the right sidebar
-                    document.getElementById("openRightSidebarMenu").checked = true;
+                    if (force_open){
+                        document.getElementById("openRightSidebarMenu").checked = true;
+                    }
                     
                     // Adjust the graph width
                     graph_width_ratio = 0.9;
