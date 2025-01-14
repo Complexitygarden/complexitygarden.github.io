@@ -75,7 +75,13 @@ def search():
 def get_class_description():
    class_name = request.args.get('class_name')
    description = class_dict[class_name]['description']
-   return jsonify({'description': description})
+   try:
+      # title = class_dict[class_name]['title']
+      # Going to add a proper title later - we should decide how to format this page
+      title = class_name
+   except:
+      title = "No title available"
+   return jsonify({'description': description, 'title': title})
 
 @app.route('/get_complexity_network')
 def get_complexity_network():

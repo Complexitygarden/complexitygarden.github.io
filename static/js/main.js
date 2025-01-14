@@ -55,15 +55,18 @@ function redraw_divs(){
 redraw_divs();
 window.addEventListener('resize', redraw_divs);
 
+// Store zoom behavior
+var zoom = d3.zoom().on("zoom", function() {
+    svg.attr("transform", d3.event.transform);
+});
+
 // Drawing svgs
 var svg = d3.select("#graph_viz")
-.append("svg")
-.attr("viewBox", "0 0 " + graph_width + " " + graph_height)
-.classed("svg-content-responsive", true)
-.call(d3.zoom().on("zoom", function () {
-  svg.attr("transform", d3.event.transform)
-}))
-.append("g");
+    .append("svg")
+    .attr("viewBox", "0 0 " + graph_width + " " + graph_height)
+    .classed("svg-content-responsive", true)
+    .call(zoom)
+    .append("g");
 
 //set up the simulation 
 var simulation = d3.forceSimulation()
@@ -82,12 +85,30 @@ function draw_graph(){
     }
 
     d3.json(complexity_network_url, function(data) {
-        // Initialize random positions for nodes
+        // Find the root node (node with only incoming edges)
+        let outgoingEdges = new Set(data.links.map(link => link.source));
+        let rootNode = data.nodes.find(node => !outgoingEdges.has(node.name));
+
+        // Initialize positions for nodes
         data.nodes.forEach(node => {
-            // Add random positions within the graph boundaries
-            node.x = Math.random() * graph_width;
-            node.y = Math.random() * graph_height;
+            if (node === rootNode) {
+                // Position root node at the top center
+                node.x = graph_width / 2;
+                node.y = -5000; // Placing it extremely to the top - the force will return it
+                node.fx = node.x;
+                node.fy = node.y;
+            } else {
+                // Random positions for other nodes
+                node.x = Math.random() * graph_width;
+                node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
+            }
         });
+
+         // Unfixing the root node - so that it drags around, but it is still at the top of the screen
+        setTimeout(function() {
+            rootNode.fx = null;
+            rootNode.fy = null;
+        }, 500);
 
         // Reset simulation with new data
         simulation.nodes(data.nodes);
@@ -105,10 +126,6 @@ function draw_graph(){
         
         //add tick instructions: 
         simulation.on("tick", tickActions );
-        
-        function edgeColor(d){
-        return "#2c5282"
-        }
         
         // Returning the label
         function nodeLabel(d){return d.label}
@@ -231,7 +248,7 @@ function draw_graph(){
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("class-description").textContent = data.description || "No description available";
-                    
+                    document.getElementById("class-title").textContent = data.title || "No title available";
                     // Open the right sidebar
                     document.getElementById("openRightSidebarMenu").checked = true;
                     
@@ -245,9 +262,32 @@ function draw_graph(){
                     document.getElementById("class-description").textContent = "Error loading description";
                 });
         }
-        
-        });
-        drawn = 1;
+
+        // After drawing everything and letting the simulation run a bit
+        // Need to fix this - the zooming and moving is not working as I'd want it to
+
+        // setTimeout(function() {
+        //     var svgElement = d3.select("#graph_viz svg");
+        //     var bounds = svg.node().getBBox();
+            
+        //     // Calculate scale to fit exactly
+        //     var scale = (graph_height / bounds.height )* 2; // Just 5% margin
+
+        //     // Calculate translation to center the graph
+        //     var transform = d3.zoomIdentity
+        //         .translate(
+        //             (graph_width - bounds.width * scale) / 2 - bounds.x * scale,
+        //             (graph_height - bounds.height * scale) / 2 - bounds.y * (scale* 0.75)
+        //         )
+        //         .scale(scale);
+            
+        //     // Apply the transform
+        //     svgElement.transition()
+        //         .duration(750)
+        //         .call(zoom.transform, transform);
+        // }, 1000);
+    });
+    drawn = 1;
 }
 
 draw_graph();

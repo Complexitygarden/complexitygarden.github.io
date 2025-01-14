@@ -42,6 +42,7 @@
         <!-- The actual sidebar text -->
         <div id="rightSidebarMenu">
             <ul class="rightSidebarMenuInner">
+                <li id="class-title" class="title">Complexity Class Title</li>
                 <li id="class-description">Select a class to view its description</li>
             </ul>
         </div>
@@ -49,13 +50,11 @@
         <!-- Graph of the classes -->
         <div id='center' class="main center">
             <div class="mainInner">
-                <div id="graph_viz" class="svg-container"></div>
+                <div id="graph_viz"></div>
                 <script>
                     const complexity_network_url = "{{ url_for('get_complexity_network')}}"
                 </script>
                 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-                <!-- <script src="{{ url_for('static', filename='js/network.js') }}"></script> -->
-            </div>
             </div>
         </div>
     </body>

@@ -30,14 +30,6 @@ body {
     line-height: 60px;
 }
 
-
-/* D3 SVG Definitions*/
-.svg-container {
-    float: left;
-    width: 5px;
-    height: 5px;
-}
-
 .main {
     margin: 0 auto;
     display: block;
@@ -184,19 +176,23 @@ The code below is similar to that one above, but I am keeping both copies as we 
     height: 100%;
     position: fixed;
     right: 0;
-    width: 350px;
+    width: 500px;
     margin-top: 60px;
-    transform: translateX(350px);
+    transform: translateX(500px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
     background: #1a365d;
 }
 .rightSidebarMenuInner{
     margin:0;
-    padding:0;
+    /* padding:0; */
     border-top: 1px solid rgba(255, 255, 255, 0.10);
+    padding: 40px; /* Increased padding for LaTeX-style margins */
+    font-family: "Computer Modern", "Latin Modern", "CMU Serif", Georgia, Times, serif;
+    color: #fff;
+    line-height: 1.5;
 }
-.rightSidebarMenuInner li{
+/* .rightSidebarMenuInner li{
     list-style: none;
     color: #fff;
     text-transform: uppercase;
@@ -204,7 +200,27 @@ The code below is similar to that one above, but I am keeping both copies as we 
     padding: 20px;
     cursor: pointer;
     border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+} */
+
+.rightSidebarMenuInner li {
+    list-style: none;
+    color: inherit;
+    text-transform: none;
+    font-weight: normal;
+    padding: 0 0 20px 0;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 16px;
+    text-align: left;
 }
+
+.rightSidebarMenuInner li.title {
+    font-size: 24px;
+    font-weight: normal;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
 .rightSidebarMenuInner li span{
     display: block;
     font-size: 14px;
