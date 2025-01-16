@@ -36,6 +36,6 @@ def get_class_info(class_name: str):
 
 
 
-
-for element in get_class_info("P"):
-    print(element)
+if __name__=='__main__':
+    for element in get_class_info("P"):
+        print(element)
