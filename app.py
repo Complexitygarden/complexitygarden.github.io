@@ -9,7 +9,7 @@ from script.load_classes import list_all_classes, create_class_network
 """
 Key variables
 """
-MAX_SEARCH_OUTPUT = 10
+MAX_SEARCH_OUTPUT = 100
 CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 
 app = Flask(__name__)

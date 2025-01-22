@@ -5,6 +5,9 @@ Main javascript file
 var arrow_scale = 2.5; // Increased from 1 to 2.5
 var drawn = 0;
 
+const body = $('body');
+const searchBar = $('#complexity_class_search_bar');
+
 // Distribution of divs
 var graph_width_ratio = 1,
     right_width_ratio = 0,
@@ -264,30 +267,6 @@ function draw_graph(){
                 open_side_window(set_node, false)
             }
         });
-        
-        // Javascript file which creates a sidewindow
-        function open_side_window(d, force_open = true) {
-            // Fetch the description from the server
-            fetch(`/get_class_description?class_name=${d.name}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("class-description").textContent = data.description || "No description available";
-                    document.getElementById("class-title").textContent = data.title || "No title available";
-                    // Open the right sidebar
-                    if (force_open){
-                        document.getElementById("openRightSidebarMenu").checked = true;
-                    }
-                    
-                    // Adjust the graph width
-                    graph_width_ratio = 0.9;
-                    right_width_ratio = 0.1;
-                    redraw_divs();
-                })
-                .catch(error => {
-                    console.error('Error fetching class description:', error);
-                    document.getElementById("class-description").textContent = "Error loading description";
-                });
-        }
 
         // After drawing everything and letting the simulation run a bit
         // Need to fix this - the zooming and moving is not working as I'd want it to
@@ -314,6 +293,35 @@ function draw_graph(){
         // }, 1000);
     });
     drawn = 1;
+}
+
+// Javascript file which creates a sidewindow
+function open_side_window(d, force_open = true) {
+    // Fetch the description from the server
+    fetch(`/get_class_description?class_name=${d.name}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("class-description").textContent = data.description || "No description available";
+            document.getElementById("class-title").textContent = data.title || "No title available";
+            // Open the right sidebar
+            if (force_open){
+                document.getElementById("openRightSidebarMenu").checked = true;
+            }
+            
+            // Adjust the graph width
+            graph_width_ratio = 0.9;
+            right_width_ratio = 0.1;
+            redraw_divs();
+        })
+        .catch(error => {
+            console.error('Error fetching class description:', error);
+            document.getElementById("class-description").textContent = "Error loading description";
+        });
+
+    if(body.hasClass('search-active')){
+            body.removeClass('search-active');
+            searchBar.blur();
+    }
 }
 
 draw_graph();

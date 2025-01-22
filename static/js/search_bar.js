@@ -51,11 +51,12 @@ function search_vals(query){
       $.get('/search_complexity_classes', {query: query}, function(data){
          $('#complexity_class_search_results').empty();
          data.forEach(function(d){
-           if (d.value){
-              $('#complexity_class_search_results').append('<li><label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
-           } else {
-              $('#complexity_class_search_results').append('<li><label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
-           }
+            const infoIcon = '<button class="info-icon" data-class="' + d.name + '" onclick="open_side_window({name: \'' + d.name + '\'})">i</button>';
+            if (d.value){
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
+            } else {
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
+            }
          });
       });
 }
