@@ -33,12 +33,15 @@ body {
     z-index: 5;
     position: relative;
 }
-.mainInner{
+
+.mainInner {
     display: table;
     height: 100%;
     width: 100%;
     text-align: center;
+    margin-top: -8px;
 }
+
 .mainInner div{
     display:table-cell;
     vertical-align: middle;
