@@ -18,7 +18,7 @@ var graph_width = 100,
     right_height = 100;
 
 // Graph variables
-var radius = graph_width/15;
+var radius = graph_width/10;
 var strength = (-500)*radius;
 var fontSize = radius/2;
 
@@ -46,9 +46,9 @@ function redraw_divs(){
     .style("height", right_height + 'px');
 
     // Changing the font and radius
-    radius = graph_width/15,
-    strength = (-500)*radius,
-    fontSize = radius/2;
+    radius = graph_width/10,
+    strength = (-250)*radius,
+    fontSize = radius/(2.5);
 }
 
 // Setting up resizing

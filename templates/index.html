@@ -9,6 +9,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="https://unpkg.com/d3-arrow@0.0.25/dist/d3-arrow.min.js"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </head>
     <body>
         <!-- The sidebar below was copied from:
@@ -17,8 +18,16 @@
          Just a test -->
         <!-- Top header -->
         <div class="header">
-            <span>Complexity Garden</span>
+            <!-- <span>Complexity Garden</span> -->
+            <div class="search-container">
+                <input type="text" id="complexity_class_search_bar" placeholder="Search complexity classes">
+                <div class="search-dropdown">
+                    <ul id="complexity_class_search_results"></ul>
+                </div>
+            </div>
+            <script src="{{ url_for('static', filename='js/search_bar.js') }}"></script>
         </div>
+        <!-- <div class="overlay"></div> -->
         <!-- Sidebar manu check-box -->
         <input type="checkbox" class="openLeftSidebarMenu" id="openLeftSidebarMenu">
         <label for="openLeftSidebarMenu" class="leftSidebarIconToggle">
@@ -29,9 +38,8 @@
         <!-- The actual sidebar menu -->
         <div id="leftSidebarMenu">
             <ul class="leftSidebarMenuInner">
-            <li class="leftSidebarMenuInner_li"><input type="text" id="complexity_class_search_bar" placeholder="Search classes"></li>
-            <ul id="complexity_class_search_results"></ul>
-            <script src="{{ url_for('static', filename='js/search_bar.js') }}"></script>
+            <!-- <li class="leftSidebarMenuInner_li"><input type="text" id="complexity_class_search_bar" placeholder="Search classes"></li> -->
+            <!-- <ul id="complexity_class_search_results"></ul> -->
             </ul>
         </div>
         <!-- Class description sidebar -->
