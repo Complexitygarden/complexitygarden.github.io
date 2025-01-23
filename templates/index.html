@@ -9,16 +9,33 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="https://unpkg.com/d3-arrow@0.0.25/dist/d3-arrow.min.js"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <!-- Icons sheet -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body>
-        <!-- The sidebar below was copied from:
-         https://www.sliderrevolution.com/resources/slide-menu/
-         Sidebar toggle menu
-         Just a test -->
         <!-- Top header -->
         <div class="header">
-            <span>Complexity Garden</span>
+            <!-- <span>Complexity Garden</span> -->
+            <div class="search-container">
+                <span class="search-icon"><i class="fa fa-search"></i></span>
+                <input type="text" id="complexity_class_search_bar" placeholder="Search complexity classes">
+                <div class="filter-container">
+                    <button class="filter-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/></svg>
+                    </button>
+                    <div class="filter-dropdown">
+                        <button class="filter-option" onclick="select_all()">Select All</button>
+                        <button class="filter-option" onclick="deselect_all()">Deselect All</button>
+                    </div>
+                </div>
+                <div class="search-dropdown">
+                    <ul id="complexity_class_search_results"></ul>
+                </div>
+            </div>
+            <script src="{{ url_for('static', filename='js/search_bar.js') }}"></script>
         </div>
+        <div class="overlay"></div>
         <!-- Sidebar manu check-box -->
         <input type="checkbox" class="openLeftSidebarMenu" id="openLeftSidebarMenu">
         <label for="openLeftSidebarMenu" class="leftSidebarIconToggle">
@@ -29,15 +46,14 @@
         <!-- The actual sidebar menu -->
         <div id="leftSidebarMenu">
             <ul class="leftSidebarMenuInner">
-            <li class="leftSidebarMenuInner_li"><input type="text" id="complexity_class_search_bar" placeholder="Search classes"></li>
-            <ul id="complexity_class_search_results"></ul>
-            <script src="{{ url_for('static', filename='js/search_bar.js') }}"></script>
+            <!-- <li class="leftSidebarMenuInner_li"><input type="text" id="complexity_class_search_bar" placeholder="Search classes"></li> -->
+            <!-- <ul id="complexity_class_search_results"></ul> -->
             </ul>
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">
         <label for="openRightSidebarMenu" class="rightSidebarIconToggle">
-            <span class="i-circle">i</span>
+            <div class="i-circle"></div>
         </label>
         <!-- The actual sidebar text -->
         <div id="rightSidebarMenu">

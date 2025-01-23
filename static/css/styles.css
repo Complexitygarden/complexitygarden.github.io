@@ -11,37 +11,37 @@ body {
 }
 
 .header {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin: 0 auto;
     width: 100%;
     max-width: 100%;
     box-shadow: none;
     background-color: #1a365d;
     position: fixed;
-    height: 60px!important;
-    overflow: hidden;
-    z-index: 10;
-    text-align: center;
-}
-
-.header span{
-    font-weight: bold;
-    color: #fff;
-    line-height: 60px;
+    height: 100px!important;
+    overflow: visible;
+    z-index: 16;
 }
 
 .main {
     margin: 0 auto;
     display: block;
     height: 100%;
-    margin-top: 60px;
+    margin-top: 100px;
+    z-index: 5;
+    position: relative;
 }
-.mainInner{
+
+.mainInner {
     display: table;
     height: 100%;
     width: 100%;
     text-align: center;
+    margin-top: -8px;
 }
+
 .mainInner div{
     display:table-cell;
     vertical-align: middle;
@@ -57,7 +57,7 @@ body {
     position: fixed;
     left: 0;
     width: 250px;
-    margin-top: 60px;
+    margin-top: 100px;
     transform: translateX(-250px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
@@ -117,7 +117,7 @@ input[class="openLeftSidebarMenu"] {
     z-index: 99;
     height: 100%;
     width: 100%;
-    top: 22px;
+    top: 42px;
     left: 15px;
     height: 22px;
     width: 22px;
@@ -177,11 +177,12 @@ The code below is similar to that one above, but I am keeping both copies as we 
     position: fixed;
     right: 0;
     width: 500px;
-    margin-top: 60px;
+    margin-top: 100px;
     transform: translateX(500px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
     background: #1a365d;
+    z-index: 15;
 }
 .rightSidebarMenuInner{
     margin:0;
@@ -248,40 +249,167 @@ input[class="openRightSidebarMenu"] {
     cursor: pointer;
     position: absolute;
     z-index: 99;
-    height: 100%;
-    width: 100%;
-    top: 15px;
+    height: 22px;
+    width: 22px;
+    top: 42px;
     right: 15px;
-    height: 30px;
-    width: 30px;
 }
 .i-circle {
     display: inline-block;
-    color: #fff;
-    border-radius: 50%;
-    font-size: 17px;
-    line-height: 22px; /* set to same size as width, height */
-    width: 22px;
-    height: 22px;
-    text-align: center;
-    border-width: 3px;
-    border-color:#fff;
-    border-style: solid;
-    font-weight: bold;
+    position: relative;
+    width: 4px;
+    height: 14px;
+    background-color: #fff;
+    border-radius: 2px;
+    margin-top: 4px;
+    margin-left: 9px;  /* center the i */
+    transition: all 0.3s;
 }
 
-/* Search input style */
+.i-circle::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: -7px;
+    left: 0;
+    transition: all 0.3s;
+}
 
-input[type=text] {
-    appearance: none;
+/* X state transformations */
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle .i-circle {
+    transform: rotate(135deg);
+    width: 22px;
+    height: 3px;
+    margin-left: 0;
+    margin-top: 8px;
+    border-radius: 0;
+}
+
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle .i-circle::before {
+    width: 22px;
+    height: 3px;
+    transform: rotate(-90deg);
+    top: 0;
+    left: 0;
+    border-radius: 0;
+}
+
+.spinner-right {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    position: absolute;
+    height: 3px;
+    width: 100%;
+    background-color: #fff;
+}
+
+.horizontal-right {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    margin-top: 3px;
+}
+
+.diagonal-right.part-1 {
+    position: relative;
+    transition: all 0.3s;
+    box-sizing: border-box;
+    float: left;
+}
+
+.diagonal-right.part-2 {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    margin-top: 3px;
+}
+
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .horizontal-right {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    opacity: 0;
+}
+
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagonal-right.part-1 {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    transform: rotate(135deg);
+    margin-top: 8px;
+}
+
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagonal-right.part-2 {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    transform: rotate(-135deg);
+    margin-top: -9px;
+}
+
+/* Search container and dropdown */
+.search-container {
+    position: relative;
+    width: 50%;
+    display: flex;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #718096;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.filter-button {
+    height: 70px;
+    width: 70px;
+    background: #2c5282;
     border: none;
-    outline: none;
-    border-bottom: .2em solid #2c5282;
-    background: rgba(#2c5282, .2);
-    border-radius: 1em 1em 1em 1em;
-    padding: .4em;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2c5282;
+    border-left: none;
+}
+
+.filter-button:hover {
+    background: #1a365d;
+    border-color: #1a365d;
+}
+
+.filter-button svg {
+    fill: white;  /* Makes the SVG icon white */
+    width: 24px;  /* Optional: control size of the icon */
+    height: 24px;
+}
+
+
+.header input[type=text] {
+    flex: 1;
+    width: auto;
+    height: 70px;
+    font-size: 30px;
+    padding: 0 15px 0 60px;
+    border-radius: 0px;
+    background: white;
+    border: 2px solid #2c5282;
     color: #2c5282;
-  }
+    outline: none;
+}
+
+.header input[type=text]::placeholder {
+    color: #718096;
+}
 
 /* Checked box style */
 /* Customize the label (the container) */
@@ -289,7 +417,8 @@ input[type=text] {
     display: block;
     position: relative;
     padding-left: 35px;
-    /* margin-bottom: 12px; */
+    margin-top: 12px;
+    margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
     -webkit-user-select: none;
@@ -351,3 +480,199 @@ input[type=text] {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
   }
+
+/* Overlay styles */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 15;
+}
+
+/* Dropdown styles */
+.search-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #2c5282;
+    border-radius: 0px;
+    z-index: 20;
+    max-height: 600px;
+    overflow-y: auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+.search-dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+/* Add scrollbar styling for better visibility */
+.search-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.search-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 0px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb {
+    background: #2c5282;
+    border-radius: 0px;
+}
+
+.search-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #1a365d;
+}
+
+/* Adjust list items to center content vertically */
+.search-dropdown li {
+    padding: 10px 25px 10px 15px;
+    border-bottom: 1px solid #edf2f7;
+    color: #2c5282;
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;    /* Add flex display */
+    align-items: center;  /* Center items vertically */
+}
+
+.search-dropdown li:hover {
+    background-color: #edf2f7;
+}
+
+/* Adjust container to maintain alignment */
+.search-dropdown .container {
+    padding-left: 7px;
+    padding-right: 35px;
+    margin: 0;
+    font-size: 30px;
+    display: flex;    /* Add flex display */
+    align-items: center;  /* Center items vertically */
+    width: calc(100% - 35px);
+    position: relative;
+}
+
+/* Position the checkbox on the right */
+.search-dropdown .checkmark {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 3px;
+}
+
+/* Adjust checkmark position for dropdown */
+.search-dropdown .container .checkmark:after {
+    left: 9px;
+    top: 5px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+/* Show dropdown and overlay when search is active */
+.search-active .overlay,
+.search-active .search-dropdown {
+    display: block;
+}
+
+#graph_viz {
+    position: relative;
+    z-index: 5;
+}
+
+/* Info icon styles */
+.info-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #2c5282;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 26px;  /* Slightly less than height to vertically center the 'i' */
+    margin-right: 10px;
+    font-style: normal;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-weight: 500;
+    color: #2c5282;
+    cursor: pointer;
+    font-size: 16px;    /* Increased font size */
+    background-color: transparent;
+    padding: 0;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(44, 82, 130, 0.1);
+    position: relative;
+    display: inline-flex;    /* Changed to flex for better centering */
+    align-items: center;     /* Vertical centering */
+    justify-content: center; /* Horizontal centering */
+}
+
+.info-icon:hover {
+    background-color: #2c5282;
+    color: white;
+    box-shadow: 0 3px 6px rgba(44, 82, 130, 0.3);
+    transform: translateY(-1px);
+}
+
+.info-icon:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(44, 82, 130, 0.2);
+}
+
+.filter-container {
+    position: relative;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 2px solid #2c5282;
+    border-top: none;
+    z-index: 1000;
+    width: 150px;
+}
+
+.filter-container:hover .filter-dropdown {
+    display: block;
+}
+
+.filter-option {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background: white;
+    color: #2c5282;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.filter-option:hover {
+    background: #edf2f7;
+}
+
+.filter-option:not(:last-child) {
+    border-bottom: 1px solid #e2e8f0;
+}

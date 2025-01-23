@@ -9,7 +9,7 @@ from script.load_classes import list_all_classes, create_class_network
 """
 Key variables
 """
-MAX_SEARCH_OUTPUT = 10
+MAX_SEARCH_OUTPUT = 100
 CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 
 app = Flask(__name__)
@@ -92,6 +92,21 @@ def get_complexity_network():
    print(network)
    return jsonify(network)
 
+@app.route('/all_class_request', methods=['GET'])
+def all_class_request():
+    select = request.args.get('select') == 'true'
+    if select:
+        session['checked_classes'] = CLASS_LIST.copy()
+    else:
+        session['checked_classes'] = []
+    
+    # Update the check_classes_dict
+    cc_dict = session['check_classes_dict']
+    for class_name in CLASS_LIST:
+        cc_dict[class_name]['value'] = select
+    session['check_classes_dict'] = cc_dict
+    
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True)

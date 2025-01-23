@@ -5,6 +5,9 @@ Main javascript file
 var arrow_scale = 2.5; // Increased from 1 to 2.5
 var drawn = 0;
 
+const body = $('body');
+const searchBar = $('#complexity_class_search_bar');
+
 // Distribution of divs
 var graph_width_ratio = 1,
     right_width_ratio = 0,
@@ -18,7 +21,7 @@ var graph_width = 100,
     right_height = 100;
 
 // Graph variables
-var radius = graph_width/15;
+var radius = graph_width/10;
 var strength = (-500)*radius;
 var fontSize = radius/2;
 
@@ -46,9 +49,9 @@ function redraw_divs(){
     .style("height", right_height + 'px');
 
     // Changing the font and radius
-    radius = graph_width/15,
-    strength = (-500)*radius,
-    fontSize = radius/2;
+    radius = graph_width/10,
+    strength = (-250)*radius,
+    fontSize = radius/(2.5);
 }
 
 // Setting up resizing
@@ -107,8 +110,10 @@ function draw_graph(){
 
          // Unfixing the root node - so that it drags around, but it is still at the top of the screen
         setTimeout(function() {
-            rootNode.fx = null;
-            rootNode.fy = null;
+            if (rootNode !== null && rootNode !== undefined) {
+                rootNode.fx = null;
+                rootNode.fy = null;
+            }
         }, 500);
 
         // Reset simulation with new data
@@ -315,6 +320,35 @@ function draw_graph(){
         // }, 1000);
     });
     drawn = 1;
+}
+
+// Javascript file which creates a sidewindow
+function open_side_window(d, force_open = true) {
+    // Fetch the description from the server
+    fetch(`/get_class_description?class_name=${d.name}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("class-description").textContent = data.description || "No description available";
+            document.getElementById("class-title").textContent = data.title || "No title available";
+            // Open the right sidebar
+            if (force_open){
+                document.getElementById("openRightSidebarMenu").checked = true;
+            }
+            
+            // Adjust the graph width
+            graph_width_ratio = 0.9;
+            right_width_ratio = 0.1;
+            redraw_divs();
+        })
+        .catch(error => {
+            console.error('Error fetching class description:', error);
+            document.getElementById("class-description").textContent = "Error loading description";
+        });
+
+    if(body.hasClass('search-active')){
+            body.removeClass('search-active');
+            searchBar.blur();
+    }
 }
 
 draw_graph();
