@@ -5,80 +5,143 @@
             "contains": ["EXP"],
             "within": [],
             "top": true,
-            "description": "The class of all languages."
+            "description": "The class of all languages.",
+            "information": "ALL is the complexity class of all languages. "
         },
-        "NONE":{
-            "name":"NONE",
-            "contains":[],
-            "within":["P"],
-            "bottom":true,
-            "description": "The class which does not contain any languages. It is the opposite of ALL."
+        "NONE": {
+            "name": "NONE",
+            "contains": [],
+            "within": ["P"],
+            "bottom": true,
+            "description": "The class which does not contain any languages. It is the opposite of ALL.",
+            "information": "test NONE"
         },
-        "PP":{
-            "name":"PP",
-            "contains":["PDQP", "QMA"],
-            "within":["PSPACE"],
-            "description": "Probabilistic Polynomial Time"
+        "PP": {
+            "name": "PP",
+            "contains": [
+                "PDQP",
+                "QMA"
+            ],
+            "within": [
+                "PSPACE"
+            ],
+            "description": "Probabilistic Polynomial Time",
+            "information": "test PP"
         },
-        "QMA":{
-            "name":"QMA",
-            "contains":["QCMA"],
-            "within":["PP"],
-            "description":"Quantum Merlin-Arthur"
+        "QMA": {
+            "name": "QMA",
+            "contains": [
+                "QCMA"
+            ],
+            "within": [
+                "PP"
+            ],
+            "description": "Quantum Merlin-Arthur",
+            "information": "test QMA"
         },
-        "QCMA":{
-            "name":"QCMA",
-            "contains":["NP", "BQP"],
-            "within":["QMA"],
-            "description":"Quantum Merlin-Arthur"
+        "QCMA": {
+            "name": "QCMA",
+            "contains": [
+                "NP",
+                "BQP"
+            ],
+            "within": [
+                "QMA"
+            ],
+            "description": "Quantum Merlin-Arthur",
+            "information": "test QCMA"
         },
-        "PDQP":{
-            "name":"PDQP",
-            "contains":["SZK", "BQP"],
-            "within":["PP"],
-            "description":"Polynomial Dynamical Quantum Polynomial Time"
+        "PDQP": {
+            "name": "PDQP",
+            "contains": [
+                "SZK",
+                "BQP"
+            ],
+            "within": [
+                "PP"
+            ],
+            "description": "Polynomial Dynamical Quantum Polynomial Time",
+            "information": "test PDQP"
         },
-        "P":{
+        "P": {
             "name": "P",
-            "contains": ["NONE"],
-            "within":["BPP", "NP"],
-            "description":"Polynomial Time"
+            "contains": [
+                "NONE"
+            ],
+            "within": [
+                "BPP",
+                "NP"
+            ],
+            "description": "Polynomial Time",
+            "information": "P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine. P often represents problems that we have feasible solutions for. Examples include Sorting, Shortest Paths, Primality Testing, Linear Programming, and Finding a maximum matching in a general graph. A decision problem is P-complete if it is in P, and every problem in P can be reduced to it in Logarithmic Space (L). Circuit evaluation is a P complete problem: given a Boolean circuit and an input, decide what the circuit outputs when given the input. P is contained in NP, but whether or not they are equal is an open problem. "
         },
-        "BQP":{
-            "name":"BQP",
-            "contains":["BPP"],
-            "within":["PDQP", "QCMA"],
-            "description":"Bounded-Error Quantum Polynomial Time"
+        "BQP": {
+            "name": "BQP",
+            "contains": [
+                "BPP"
+            ],
+            "within": [
+                "PDQP",
+                "QCMA"
+            ],
+            "description": "Bounded-Error Quantum Polynomial Time",
+            "information": "test BQP"
         },
-        "NP":{
-            "name":"NP",
-            "contains":["P"],
-            "within":["QCMA"],
-            "description":"Non-deterministic Polynomial Time"
+        "NP": {
+            "name": "NP",
+            "contains": [
+                "P"
+            ],
+            "within": [
+                "QCMA"
+            ],
+            "description": "Non-deterministic Polynomial Time",
+            "information": "test NP"
         },
-        "SZK":{
-            "name":"SZK",
-            "contains":["BPP"],
-            "within":["PDQP"],
-            "description":"Statistical Zero-Knowledge"
+        "SZK": {
+            "name": "SZK",
+            "contains": [
+                "BPP"
+            ],
+            "within": [
+                "PDQP"
+            ],
+            "description": "Statistical Zero-Knowledge",
+            "information": "test SZK"
         },
-        "BPP":{
-            "name":"BPP",
-            "contains":["P"],
-            "within":["BQP", "SZK"],
-            "description":"Bounded-Error Probabilistic Polynomial Time"
+        "BPP": {
+            "name": "BPP",
+            "contains": [
+                "P"
+            ],
+            "within": [
+                "BQP",
+                "SZK"
+            ],
+            "description": "Bounded-Error Probabilistic Polynomial Time",
+            "information": "test BPP"
         },
-        "PSPACE":{
-            "name":"PSPACE",
-            "contains":["PP"],
-            "within":["EXP"],
-            "description":"Polynomial Space"
+        "PSPACE": {
+            "name": "PSPACE",
+            "contains": [
+                "PP"
+            ],
+            "within": [
+                "EXP"
+            ],
+            "description": "Polynomial Space",
+            "information": "test PSPACE"
         },
-        "EXP":{
-            "name":"EXP",
-            "contains":["PSPACE"],
-            "within":["ALL"],
-            "description":"Exponential Time"
+        "EXP": {
+            "name": "EXP",
+            "contains": [
+                "PSPACE"
+            ],
+            "within": [
+                "ALL"
+            ],
+            "description": "Exponential Time",
+            "information": "test EXP"
         }
     }
 }
