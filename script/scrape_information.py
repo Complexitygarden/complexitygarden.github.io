@@ -24,18 +24,23 @@ def get_class_info(class_name: str):
     output_list = []
 
     #Get all paragraph elements until you read an h5, which is the next class
+
+    #for element in information_span.find_all_next():
+    #    if element.name == "p":
+    #        output_list.append(element.text)
+    #    elif element.name == "h5":
+    #        break
+    #    else:
+    #        #Todo: parse hyperlink a element
+    #        pass
+
+
     for element in information_span.find_all_next():
-        if element.name == "p":
-            output_list.append(element.text)
-        elif element.name == "h5":
+        if element.name == "h5":
             break
         else:
-            #Todo: parse hyperlink a element
-            pass
+            print(element.name)
+
     return output_list
 
-
-
-
-for element in get_class_info("P"):
-    print(element)
+get_class_info("P")

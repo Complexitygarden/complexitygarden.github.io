@@ -273,6 +273,7 @@ function draw_graph(){
                 .then(data => {
                     document.getElementById("class-description").textContent = data.description || "No description available";
                     document.getElementById("class-title").textContent = data.title || "No title available";
+                    document.getElementById("class-information").textContent = data.information || "No information available";
                     // Open the right sidebar
                     if (force_open){
                         document.getElementById("openRightSidebarMenu").checked = true;
