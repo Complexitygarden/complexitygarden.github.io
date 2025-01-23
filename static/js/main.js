@@ -110,8 +110,10 @@ function draw_graph(){
 
          // Unfixing the root node - so that it drags around, but it is still at the top of the screen
         setTimeout(function() {
-            rootNode.fx = null;
-            rootNode.fy = null;
+            if (rootNode !== null && rootNode !== undefined) {
+                rootNode.fx = null;
+                rootNode.fy = null;
+            }
         }, 500);
 
         // Reset simulation with new data

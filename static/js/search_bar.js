@@ -61,6 +61,32 @@ function search_vals(query){
       });
 }
 
+function select_all() {
+    $('#complexity_class_search_results input[type="checkbox"]').each(function() {
+        if (!this.checked) {
+            this.checked = true;
+        }
+    });
+    all_class_request(true);
+}
+
+function deselect_all() {
+    $('#complexity_class_search_results input[type="checkbox"]').each(function() {
+        if (this.checked) {
+            this.checked = false;
+        }
+    });
+    all_class_request(false);
+}
+
+function all_class_request(select) {
+    $.get('/all_class_request', {select: select}, function(data) {
+        if (data.success) {
+            draw_graph();
+        }
+    });
+}
+
 function ajaxRequest(inp) {
     console.log(inp);
     var checked = document.getElementById(inp.id).checked;

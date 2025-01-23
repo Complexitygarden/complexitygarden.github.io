@@ -353,17 +353,58 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 .search-container {
     position: relative;
     width: 50%;
+    display: flex;
 }
 
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 24px;
+    color: #718096;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.filter-button {
+    height: 70px;
+    width: 70px;
+    background: #2c5282;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #2c5282;
+    border-left: none;
+}
+
+.filter-button:hover {
+    background: #1a365d;
+    border-color: #1a365d;
+}
+
+.filter-button svg {
+    fill: white;  /* Makes the SVG icon white */
+    width: 24px;  /* Optional: control size of the icon */
+    height: 24px;
+}
+
+
 .header input[type=text] {
-    width: 100%;
+    flex: 1;
+    width: auto;
     height: 70px;
     font-size: 30px;
-    padding: 0 15px;
-    border-radius: 20px;
+    padding: 0 15px 0 60px;
+    border-radius: 0px;
     background: white;
     border: 2px solid #2c5282;
     color: #2c5282;
+    outline: none;
 }
 
 .header input[type=text]::placeholder {
@@ -376,7 +417,8 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     display: block;
     position: relative;
     padding-left: 35px;
-    /* margin-bottom: 12px; */
+    margin-top: 12px;
+    margin-bottom: 12px;
     cursor: pointer;
     font-size: 22px;
     -webkit-user-select: none;
@@ -460,7 +502,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     right: 0;
     background: white;
     border: 2px solid #2c5282;
-    border-radius: 10px;
+    border-radius: 0px;
     z-index: 20;
     max-height: 600px;
     overflow-y: auto;
@@ -482,12 +524,12 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .search-dropdown::-webkit-scrollbar-track {
     background: #f1f1f1;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb {
     background: #2c5282;
-    border-radius: 4px;
+    border-radius: 0px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb:hover {
@@ -512,7 +554,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 /* Adjust container to maintain alignment */
 .search-dropdown .container {
-    padding-left: 35px;
+    padding-left: 7px;
     padding-right: 35px;
     margin: 0;
     font-size: 30px;
@@ -594,4 +636,43 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 .info-icon:active {
     transform: translateY(0);
     box-shadow: 0 1px 2px rgba(44, 82, 130, 0.2);
+}
+
+.filter-container {
+    position: relative;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border: 2px solid #2c5282;
+    border-top: none;
+    z-index: 1000;
+    width: 150px;
+}
+
+.filter-container:hover .filter-dropdown {
+    display: block;
+}
+
+.filter-option {
+    width: 100%;
+    padding: 12px 15px;
+    border: none;
+    background: white;
+    color: #2c5282;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.filter-option:hover {
+    background: #edf2f7;
+}
+
+.filter-option:not(:last-child) {
+    border-bottom: 1px solid #e2e8f0;
 }
