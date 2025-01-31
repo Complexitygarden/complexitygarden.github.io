@@ -14,12 +14,12 @@ CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 
 app = Flask(__name__)
 
-app.secret_key = b'_5#y3l"FP7z\n\xec]/'
+app.secret_key = b'_5#y3l"Fp7z\n\xec]/'
 
 @app.before_request
 def before_req():
    if 'all_classes' not in session:
-      session['all_classes'] = CLASS_LIST
+      session['all_classes'] = CLASS_LIST.copy()
    if 'checked_classes' not in session:
       session['checked_classes'] = []
    if 'check_classes_dict' not in session:
@@ -92,6 +92,10 @@ def get_complexity_network():
    print(network)
    return jsonify(network)
 
+"""
+Selecting all/no classes in the visualization
+ - If 'select', then we show all classes, otherwise we unselect all
+"""
 @app.route('/all_class_request', methods=['GET'])
 def all_class_request():
     select = request.args.get('select') == 'true'

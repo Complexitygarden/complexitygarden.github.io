@@ -34,7 +34,7 @@ def list_of_all_classes(js: dict) -> list:
     """
     Obtaining a list of all classes so that we can search effectively
     """
-    return [v['name'] for v in js['class_list'].values()]
+    return sorted([v['name'] for v in js['class_list'].values()])
 
 def check_correctness_of_class_json(class_json: dict):
     """
