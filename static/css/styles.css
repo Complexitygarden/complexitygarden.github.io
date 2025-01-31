@@ -222,6 +222,14 @@ The code below is similar to that one above, but I am keeping both copies as we 
     text-align: center;
 }
 
+.rightSidebarMenuInner li.description {
+    margin-bottom: 20px;
+}
+
+.rightSidebarMenuInner li.information {
+    padding-bottom: 20px;
+}
+
 .rightSidebarMenuInner li span{
     display: block;
     font-size: 14px;

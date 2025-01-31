@@ -77,7 +77,7 @@
                 "NP"
             ],
             "description": "Polynomial Time",
-            "information": "P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine. P often represents problems that we have feasible solutions for. Examples include Sorting, Shortest Paths, Primality Testing, Linear Programming, and Finding a maximum matching in a general graph. A decision problem is P-complete if it is in P, and every problem in P can be reduced to it in Logarithmic Space (L). Circuit evaluation is a P complete problem: given a Boolean circuit and an input, decide what the circuit outputs when given the input. P is contained in NP, but whether or not they are equal is an open problem. "
+            "information": "<ul><li><p>P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine.</p> </li> <li><p>Defined in [Edm65], [Cob64], [Rab60], and other seminal early papers.</p> </li></ul>"
         },
         "BQP": {
             "name": "BQP",

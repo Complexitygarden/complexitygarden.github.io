@@ -265,7 +265,7 @@ function draw_graph(){
         });
 
         node.on("mouseout", function(d){
-            if (set_node !== d && set_node !== null){
+            if (set_node !== d && set_node !== null){ 
                 open_side_window(set_node, false)
             }
         });
@@ -278,7 +278,8 @@ function draw_graph(){
                 .then(data => {
                     document.getElementById("class-description").textContent = data.description || "No description available";
                     document.getElementById("class-title").textContent = data.title || "No title available";
-                    document.getElementById("class-information").textContent = data.information || "No information available";
+                    //                                      Inner html allows linking to reference page 
+                    document.getElementById("class-information").innerHTML = data.information || "No information available";
                     // Open the right sidebar
                     if (force_open){
                         document.getElementById("openRightSidebarMenu").checked = true;
@@ -321,6 +322,10 @@ function draw_graph(){
     });
     drawn = 1;
 }
+
+
+
+
 
 // Javascript file which creates a sidewindow
 function open_side_window(d, force_open = true) {

@@ -1,46 +1,80 @@
 import requests
 from bs4 import BeautifulSoup
 
-def get_class_info(class_name: str):
 
-    #Example url for NP: https://complexityzoo.net/Complexity_Zoo:N
-
-    #Get the webpage for all classes beginning with this letter
-    first_letter = class_name[0].upper()
-    url = f"https://complexityzoo.net/Complexity_Zoo:{first_letter}"
+def get_reference_link(id: str):
+    url = "https://complexityzoo.net/Complexity_Zoo_References"
+    id = id.replace("[", "").replace("]","").lower()
 
     response = requests.get(url)
 
     if (response.status_code != 200):
         return ["Failed to fetch information, Status:" + str(response.status_code)]
-
-    soup = BeautifulSoup(response.text, 'html.parser')
     
 
-    #Find the span element with the id of the name
-    #All the next paragraph elements will be information about this class. The next class' information is delimited by an h5 element
-    information_span = soup.find('span', {'id': f"{class_name.lower()}"})
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-    output_list = []
+    reference_information = soup.find('span', {'id': id})
 
-    #Get all paragraph elements until you read an h5, which is the next class
-
-    #for element in information_span.find_all_next():
-    #    if element.name == "p":
-    #        output_list.append(element.text)
-    #    elif element.name == "h5":
-    #        break
-    #    else:
-    #        #Todo: parse hyperlink a element
-    #        pass
+    print(reference_information.findParent())
 
 
-    for element in information_span.find_all_next():
-        if element.name == "h5":
-            break
-        else:
-            print(element.name)
+#get_reference_link("[Aar02]")
 
-    return output_list
+#def get_class_info(class_name: str):
+#
+#    #Example url for NP: https://complexityzoo.net/Complexity_Zoo:N
+#
+#    #Get the webpage for all classes beginning with this letter
+#    first_letter = class_name[0].upper()
+#    url = f"https://complexityzoo.net/Complexity_Zoo:{first_letter}"
+#
+#    response = requests.get(url)
+#
+#    if (response.status_code != 200):
+#        return ["Failed to fetch information, Status:" + str(response.status_code)]
+#
+#    soup = BeautifulSoup(response.text, 'html.parser')
+#    
+#
+#    #Find the span element with the id of the name
+#    #All the next paragraph elements will be information about this class. The next class' information is delimited by an h5 element
+#    information_span = soup.find('span', {'id': f"{class_name.lower()}"})
+#
+#    output_list = []
+#
+#    #Get all paragraph elements until you read an h5, which is the next class
+#
+#    #for element in information_span.find_all_next():
+#    #    if element.name == "p":
+#    #        output_list.append(element.text)
+#    #    elif element.name == "h5":
+#    #        break
+#    #    else:
+#    #        #Todo: parse hyperlink a element
+#    #        pass
+#
+#
+#    for element in information_span.find_all_next():
+#        if element.name == "h5":
+#            break
+#        else:
+#            print(element.name)
+#
+#    return output_list
 
-get_class_info("P")
+
+
+#def get_all_references():
+#    url = "https://complexityzoo.net/Complexity_Zoo_References"
+#    response = requests.get(url)
+#
+#    if (response.status_code != 200):
+#        return ["Failed to fetch information, Status:" + str(response.status_code)]
+#    
+#
+#    soup = BeautifulSoup(response.text, 'html.parser')
+#
+#    reference_information = soup.find('div', {'id': "mw-parser-output"})
+
+    
