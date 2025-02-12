@@ -5,6 +5,7 @@ Main script which runs the website
 # Imports
 from flask import Flask, render_template, request, jsonify, session
 from script.load_classes import list_all_classes, create_class_network
+from script.search import search_classes
 
 """
 Key variables
@@ -66,7 +67,7 @@ def search():
    query = request.args.get('query')
    cc_dict = session['check_classes_dict']
    all_class_list = session['all_classes']
-   results = [cc_dict[d] for d in all_class_list if query.lower() in d.lower()]
+   results = search_classes(query, cc_dict, all_class_list)
    if len(results) > MAX_SEARCH_OUTPUT:
       results = results[:MAX_SEARCH_OUTPUT]
    return jsonify(results)

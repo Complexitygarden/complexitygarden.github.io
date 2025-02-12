@@ -233,9 +233,16 @@ function draw_graph(){
         
         
         function drag_end(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+            if (!d3.event.active) simulation.alphaTarget(0);
+            if (!window.gravityEnabled) {
+                // If gravity is off, keep the node fixed at its new position
+                d.fx = d.x;
+                d.fy = d.y;
+            } else {
+                // If gravity is on, let it float freely
+                d.fx = null;
+                d.fy = null;
+            }
         }
         
         function tickActions() {

@@ -46,9 +46,23 @@
         <!-- The actual sidebar menu -->
         <div id="leftSidebarMenu">
             <ul class="leftSidebarMenuInner">
-            <!-- <li class="leftSidebarMenuInner_li"><input type="text" id="complexity_class_search_bar" placeholder="Search classes"></li> -->
-            <!-- <ul id="complexity_class_search_results"></ul> -->
+                <li class="leftSidebarMenuInner_li" id="settings_menu_item">
+                    <div class="settings-header">
+                        <span>Settings</span>
+                        <span class="toggle-indicator"></span>
+                    </div>
+                    <ul style="display: none;">
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <span>Gravity</span>
+                                <input type="checkbox" class="settings-checkbox" onclick="toggleGravity(this)" checked>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- You can add more rows here if needed -->
             </ul>
+            <script src="{{ url_for('static', filename='js/side_bar.js') }}"></script>
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">

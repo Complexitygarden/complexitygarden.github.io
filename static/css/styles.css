@@ -56,12 +56,13 @@ body {
     height: 100%;
     position: fixed;
     left: 0;
-    width: 250px;
+    width: 400px;
     margin-top: 100px;
-    transform: translateX(-250px);
+    transform: translateX(-400px);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
     background: #1a365d;
+    z-index: 15;
 }
 .leftSidebarMenuInner{
     margin:0;
@@ -683,4 +684,55 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .filter-option:not(:last-child) {
     border-bottom: 1px solid #e2e8f0;
+}
+
+/* Toggle indicator */
+.toggle-indicator {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+.toggle-indicator::before {
+    content: "";
+    display: inline-block;
+    border-top: 6px solid transparent;
+    border-bottom: 6px solid transparent;
+    border-left: 6px solid #fff;
+}
+
+/* Rotate the triangle when the menu is open */
+#settings_menu_item.open .toggle-indicator::before {
+    transform: rotate(90deg);
+}
+
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Override for the settings header so that the first span (the Settings text) is white */
+.settings-header > span:first-child {
+    color: #fff !important;
+    font-size: 16px;
+}
+
+/* A little margin between the top item and header */
+#settings_menu_item > ul {
+    margin-top: 10px;
+}
+
+/* Settings checkbox styling */
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: #fff;
+}
+
+.settings-checkbox {
+    margin-left: 10px;  /* Add some space between text and checkbox */
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }

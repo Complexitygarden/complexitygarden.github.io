@@ -21,8 +21,14 @@ $(document).ready(function(){
     $(document).on('keydown', function(event) {
         if (event.key === 'Escape') {
             if(body.hasClass('search-active')){
-               body.removeClass('search-active');
-               searchBar.blur();
+                var query = searchBar.val();
+                if (query.length > 0){
+                    searchBar.val('');
+                    search_vals('');
+                } else{
+                    body.removeClass('search-active');
+                    searchBar.blur();
+                }
             }
             
             // Close left sidebar if open
@@ -30,6 +36,13 @@ $(document).ready(function(){
             
             // Close right sidebar if open
             $('#openRightSidebarMenu').prop('checked', false);
+        }
+
+        // Clicking enter when searching will select the top search result
+        if (event.key === 'Enter'){
+            if(body.hasClass('search-active')){
+                select_top_search_result();
+            }
         }
     });
     
@@ -59,6 +72,17 @@ function search_vals(query){
             }
          });
       });
+}
+
+function select_top_search_result(){
+    // Selecting/Deselecting the top search result
+    var top_result = $('#complexity_class_search_results li:first-child');
+    if (top_result.length) {
+        var checkbox = top_result.find('input[type="checkbox"]');
+        // Switching the checkbox
+        checkbox.prop('checked', !checkbox.prop('checked'));
+        ajaxRequest(checkbox[0]);
+    }
 }
 
 function select_all() {
