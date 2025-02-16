@@ -90,6 +90,7 @@ function draw_graph(){
 
     d3.json(complexity_network_url, function(data) {
         // Find the root node (node with only incoming edges)
+        console.log(data);
         let outgoingEdges = new Set(data.links.map(link => link.source));
         let rootNode = data.nodes.find(node => !outgoingEdges.has(node.name));
 

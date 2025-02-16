@@ -1,0 +1,81 @@
+{
+    "theorems":[
+        {
+            "type": "containment",
+            "small": "NONE",
+            "large": "P"
+        },
+        {
+            "type": "containment",
+            "small": "EXP",
+            "large": "ALL"
+        },
+        {
+            "type": "containment",
+            "small": "PSPACE",
+            "large": "EXP"
+        },
+        {
+            "type": "containment",
+            "small": "PP",
+            "large": "PSPACE"
+        },
+        {
+            "type": "containment",
+            "small": "QMA",
+            "large": "PP"
+        },
+        {
+            "type": "containment",
+            "small": "QCMA",
+            "large": "QMA"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "QCMA"
+        },
+        {
+            "type": "containment",
+            "small": "NP",
+            "large": "QCMA"
+        },
+        {
+            "type": "containment",
+            "small": "SZK",
+            "large": "PDQP"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "PDQP"
+        },
+        {
+            "type": "containment",
+            "small": "P",
+            "large": "NP"
+        },
+        {
+            "type": "containment",
+            "small": "P",
+            "large": "BPP"
+        },
+        {
+            "type": "containment",
+            "small": "PDQP",
+            "large": "PSPACE"
+        },
+        {
+            "type": "containment",
+            "small": "BPP",
+            "large": "BQP"
+        },
+        {
+            "type": "containment",
+            "small": "BPP",
+            "large": "SZK"
+        }
+        
+        
+    ]
+}
