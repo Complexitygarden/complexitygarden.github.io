@@ -89,7 +89,6 @@ class complexity_network():
         elif len(class_list) == 1:
             self.classes_dict[class_list[0]].visible = True
         elif len(class_list) == len(self.classes):
-            print('All classes are selected')
             for c in self.classes:
                 c.visible = True
                 c.trim_contains = c.contains.copy()
@@ -202,6 +201,9 @@ class complexity_network():
     
     def get_checked_classes_dict(self):
         return {k:{'name':v.get_name(), 'value':v.visible} for k,v in self.classes_dict.items()}
+    
+    def get_trimmed_network(self):
+        return self.trimmed_network.copy()
     
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]

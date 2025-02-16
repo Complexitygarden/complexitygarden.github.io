@@ -28,6 +28,10 @@ def before_req():
    #    session['network'] = create_class_network(class_json_loc, theorem_json_loc)
    if 'all_classes' not in session:
       session['all_classes'] = NETWORK.get_all_class_identifiers()
+      NETWORK.new_trimmed_network(session['all_classes'])
+   # Keeping track of classes from last session
+   if 'selected_classes' not in session:
+      session['selected_classes'] = NETWORK.get_trimmed_network()
    # if 'checked_classes' not in session:
    #    session['checked_classes'] = []
    # if 'check_classes_dict' not in session:
@@ -44,7 +48,7 @@ def index():
    return render_template('index.html')
 
 @app.route('/searchresults', methods=['GET', "POST"])
-def searcj  ():
+def add_remove_class():
    if request.method == 'POST':
       var_name = request.form["name"]
       checked = bool(int(request.form["checked"]))
@@ -62,6 +66,7 @@ def searcj  ():
       # if var_name in cc_dict:
       #    cc_dict[var_name]['value'] = checked
       # session['check_classes_dict'] = cc_dict
+      session['selected_classes'] = network.get_trimmed_network()
       network.print_trimmed_network()
       return var_name
 
