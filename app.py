@@ -8,6 +8,7 @@ from script.load_classes import list_all_classes, create_class_network
 from script.search import search_classes
 from script.load_classes import create_class_network
 from script.complexity_network import complexity_network
+import git
 
 """
 Key variables
