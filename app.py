@@ -123,7 +123,7 @@ def all_class_request():
 @app.route('/update_server', methods=['POST'])
 def webhook():
    try:
-      repo = git.Repo('/home/complexitytest/website')
+      repo = git.Repo('/home/chrispsimadas/website')
       origin = repo.remotes.origin
       origin.pull()
       return 'Updated PythonAnywhere successfully', 200
