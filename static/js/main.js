@@ -1,8 +1,7 @@
 /*
 Main javascript file
 */
-// import { arrow1 } from "./utils/arrow";
-var arrow_scale = 2.5; // Increased from 1 to 2.5
+var arrow_scale = 3.5;
 var drawn = 0;
 
 const body = $('body');
@@ -11,7 +10,7 @@ const searchBar = $('#complexity_class_search_bar');
 // Distribution of divs
 var graph_width_ratio = 1,
     right_width_ratio = 0,
-    margin = 20,
+    margin = 100, // Change based on the top bar size
     min_width = 10;
 
 // Initialization of dimensions of divs
@@ -24,6 +23,66 @@ var graph_width = 100,
 var radius = graph_width/10;
 var strength = (-500)*radius;
 var fontSize = radius/2;
+var node_distance = radius * 4;
+
+// Gravity variables
+window.gravityEnabled = true;
+
+// Information about user interaction
+var user_interaction = {
+    selected_class: null
+}
+
+// This should be done in python - gonna put it there soon (hopefully)
+function calculateNodeLevels(nodes, links) {
+    const outgoing = {};
+    nodes.forEach(node => {
+        outgoing[node.name] = [];
+    });
+    links.forEach(link => {
+        outgoing[link.source.name || link.source].push(link.target.name || link.target);
+    });
+
+    // Find nodes with no incoming edges (root nodes)
+    const incoming = {};
+    nodes.forEach(node => {
+        incoming[node.name] = [];
+    });
+    links.forEach(link => {
+        incoming[link.target.name || link.target].push(link.source.name || link.source);
+    });
+    
+    const rootNodes = nodes.filter(node => incoming[node.name].length === 0);
+    
+    // Assign levels through BFS
+    const levels = {};
+    rootNodes.forEach(root => {
+        levels[root.name] = 0;
+    });
+    
+    let queue = [...rootNodes];
+    while (queue.length > 0) {
+        const current = queue.shift();
+        const currentLevel = levels[current.name];
+        
+        outgoing[current.name].forEach(targetName => {
+            if (!(targetName in levels) || levels[targetName] < currentLevel + 1) {
+                levels[targetName] = currentLevel + 1;
+                queue.push(nodes.find(n => n.name === targetName));
+            }
+        });
+    }
+    
+    const maxLevel = Math.max(...Object.values(levels));
+    nodes.forEach(node => {
+        node.level = levels[node.name] || 0;
+        node.maxLevel = maxLevel;
+    });
+}
+
+// Color scale
+var colorScale = d3.scaleLinear()
+    .range(["#63B3ED", "#2C5282"]);
 
 // Redrawing the divs
 // Essentially an attempt at resizing the graph when the window is adjusted
@@ -89,10 +148,12 @@ function draw_graph(){
     }
 
     d3.json(complexity_network_url, function(data) {
-        // Find the root node (node with only incoming edges)
+        // Find the root node (node with only incoming edges) and top node (node with only outgoing edges)
         console.log(data);
         let outgoingEdges = new Set(data.links.map(link => link.source));
+        let incomingEdges = new Set(data.links.map(link => link.target));
         let rootNode = data.nodes.find(node => !outgoingEdges.has(node.name));
+        let topNode = data.nodes.find(node => !incomingEdges.has(node.name));
 
         // Initialize positions for nodes
         data.nodes.forEach(node => {
@@ -102,7 +163,14 @@ function draw_graph(){
                 node.y = -5000; // Placing it extremely to the top - the force will return it
                 node.fx = node.x;
                 node.fy = node.y;
-            } else {
+            } else if (node === topNode) {
+                // Position top node at the bottom center
+                node.x = graph_width / 2;
+                node.y = 5000; // Placing it extremely to the bottom - the force will return it
+                node.fx = node.x;
+                node.fy = node.y;
+            }
+            else {
                 // Random positions for other nodes
                 node.x = Math.random() * graph_width;
                 node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
@@ -115,21 +183,50 @@ function draw_graph(){
                 rootNode.fx = null;
                 rootNode.fy = null;
             }
+            if (topNode !== null && topNode !== undefined) {
+                topNode.fx = null;
+                topNode.fy = null;
+            }
         }, 500);
 
         // Reset simulation with new data
         simulation.nodes(data.nodes);
         
+        // Adjust strength based on number of nodes
+        let nodeCount = data.nodes.length;
+        let adjustedStrength = nodeCount <= 5 ? 5*strength : strength;  // Use weaker force for small graphs
+
         //add forces
         var link_force = d3.forceLink(data.links)
-            .id(function(d) { return d.name; });
+            .id(function(d) { return d.name; })
+            .distance(node_distance)
+            .strength(1);  // Add a strong link force (1 is maximum)
             
         simulation
-            .force("charge_force", d3.forceManyBody().strength(strength))
+            .force("charge_force", d3.forceManyBody().strength(adjustedStrength))
             .force("center_force", d3.forceCenter(graph_width / 2, graph_height / 2))
             .force("links", link_force)
+            .force("collision", d3.forceCollide().radius(radius * 2))  // Add collision detection
             .alpha(1)    // Reset the simulation's internal timer
             .restart();  // Restart the simulation
+        
+        // If gravity is disabled, let the simulation run briefly then fix nodes
+        if (window.gravityEnabled === false) {
+            setTimeout(function() {
+                // Remove forces
+                simulation
+                    .force("charge_force", null)
+                    .force("center_force", null);
+                
+                // Fix all nodes in their current positions
+                data.nodes.forEach(node => {
+                    node.fx = node.x;
+                    node.fy = node.y;
+                });
+                
+                simulation.alpha(1).restart();
+            }, 1000); // Let gravity work for 1 second
+        }
         
         //add tick instructions: 
         simulation.on("tick", tickActions );
@@ -165,31 +262,105 @@ function draw_graph(){
             .selectAll(".links")
             .data(data.links)
             .enter()
-            .append("polyline");
+            .append("g")  // Create a group for each link
+            .each(function(d) {
+                // Invisible line for better hover detection
+                d3.select(this)
+                    .append("polyline")
+                    .attr("class", "link-hover-area")
+                    .attr("stroke-width", 50)  // Much wider than visible line
+                    .style("stroke", "transparent")  // Invisible
+                    .style("fill", "none")
+                    .attr("points", get_points);
+                
+                // Visible line
+                d3.select(this)
+                    .append("polyline")
+                    .attr("class", "link-visible")
+                    .attr("stroke-width", 2)
+                    .style("stroke", "#2c5282")
+                    .style("fill", "none")
+                    .attr("points", get_points);
+            })
+            .on("mouseover", function(d) {
+                d3.select(this).select(".link-visible")
+                    .style("stroke", "#4299e1")
+                    .attr("stroke-width", 12);
+                // Arrow highlight
+                arrowLayer.selectAll(".arrow")
+                    .filter(a => a.source === d.source && a.target === d.target)
+                    .style("stroke", "#4299e1")
+                    .style("fill", "#4299e1");
+            })
+            .on("mouseout", function(d) {
+                d3.select(this).select(".link-visible")
+                    .style("stroke", "#2c5282")
+                    .attr("stroke-width", 2);
+                // Arrow reset
+                arrowLayer.selectAll(".arrow")
+                    .filter(a => a.source === d.source && a.target === d.target)
+                    .style("stroke", "#2c5282")
+                    .style("fill", "#2c5282");
+            });
     
+        // Arrow layer
+        var arrowLayer = layer1.append("g").attr("class", "arrow-layer");
+        
+        // Arrows
+        arrowLayer.selectAll(".arrow")
+            .data(data.links)
+            .enter()
+            .append("path")
+            .attr("class", "arrow")
+            .attr("stroke-width", 2)
+            .style("stroke", "#2c5282")
+            .style("fill", "#2c5282")
+            .attr("d", function(d) {
+                var midX = (d.source.x + d.target.x) / 2;
+                var midY = (d.source.y + d.target.y) / 2;
+                var size = 10 * arrow_scale;
+                return `M ${midX-size} ${midY-size} L ${midX+size} ${midY} L ${midX-size} ${midY+size} Z`;
+            })
+            .on("mouseover", function(d) {
+                // Arrow highlight
+                d3.select(this)
+                    .style("stroke", "#4299e1")
+                    .style("fill", "#4299e1");
+                // Arrow highlight
+                link.filter(l => l.source === d.source && l.target === d.target)
+                    .select(".link-visible")
+                    .style("stroke", "#4299e1")
+                    .attr("stroke-width", 12);
+            })
+            .on("mouseout", function(d) {
+                // Arrow reset
+                d3.select(this)
+                    .style("stroke", "#2c5282")
+                    .style("fill", "#2c5282");
+                // Arrow reset
+                link.filter(l => l.source === d.source && l.target === d.target)
+                    .select(".link-visible")
+                    .style("stroke", "#2c5282")
+                    .attr("stroke-width", 2);
+            });
+
         function draw_everything(){
-            link
-                .attr("stroke-width", 2)
-                .style("stroke", "#2c5282")
-            .attr("marker-mid", "url(#my-arrow)")
-            .attr("points",get_points);
-    
             var nodeGroups = node.append("g")
-            .on("mouseover", function() {
+            .on("mouseover", function(d) {
                 d3.select(this).select("circle")
-                    .attr("fill", "#4299e1")
+                    .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
                     .attr("stroke", "#2c5282");
             })
-            .on("mouseout", function() {
+            .on("mouseout", function(d) {
                 d3.select(this).select("circle")
-                    .attr("fill", "#2c5282")
+                    .attr("fill", d => colorScale(d.level))
                     .attr("stroke", "none");
             });
 
             // Adding the circle
             nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", "#2c5282")
+            .attr("fill", d => colorScale(d.level))
             .attr("stroke", "none")
             .attr("stroke-width", 3);
     
@@ -202,6 +373,9 @@ function draw_graph(){
             .attr("dy", (fontSize)/2);
         }
     
+        // Calculating levels and color scale
+        calculateNodeLevels(data.nodes, data.links);
+        colorScale.domain([0, d3.max(data.nodes, d => d.maxLevel)]);
         draw_everything();
         
         function get_points(d) { 
@@ -247,14 +421,43 @@ function draw_graph(){
         }
         
         function tickActions() {
-          node.attr('transform', d => `translate(${d.x},${d.y})`);
-          link.attr("points", function(d) {
-            // Ensure the positions are updated during each tick
-            return [
-                d.source.x, d.source.y,
-                (d.source.x + d.target.x) / 2, (d.source.y + d.target.y) / 2,  // mid-point for the curve
-                d.target.x, d.target.y
-            ].join(',')});
+            node.attr('transform', d => `translate(${d.x},${d.y})`);
+            // Update both the hover area and visible line
+            link.selectAll("polyline").attr("points", function(d) {
+                return [
+                    d.source.x, d.source.y,
+                    (d.source.x + d.target.x) / 2, (d.source.y + d.target.y) / 2,
+                    d.target.x, d.target.y
+                ].join(',')
+            });
+            
+            // Update arrow positions
+            arrowLayer.selectAll(".arrow").attr("d", function(d) {
+                var midX = (d.source.x + d.target.x) / 2;
+                var midY = (d.source.y + d.target.y) / 2;
+                
+                // Calculate angle for arrow rotation
+                var angle = Math.atan2(d.target.y - d.source.y, d.target.x - d.source.x);
+                
+                // Create arrow points using arrow_scale
+                var baseSize = 10 * arrow_scale;
+                var points = [
+                    [0, -baseSize],         // Left point
+                    [baseSize * 2, 0],      // Tip
+                    [0, baseSize]           // Right point
+                ];
+                
+                // Rotate and translate points
+                var transformedPoints = points.map(p => {
+                    var x = p[0] * Math.cos(angle) - p[1] * Math.sin(angle);
+                    var y = p[0] * Math.sin(angle) + p[1] * Math.cos(angle);
+                    return [(x + midX), (y + midY)];
+                });
+                
+                return `M ${transformedPoints[0][0]} ${transformedPoints[0][1]} 
+                        L ${transformedPoints[1][0]} ${transformedPoints[1][1]} 
+                        L ${transformedPoints[2][0]} ${transformedPoints[2][1]} Z`;
+            });
         }
         
         
@@ -277,56 +480,32 @@ function draw_graph(){
                 open_side_window(set_node, false)
             }
         });
-        
-        // Javascript file which creates a sidewindow
-        function open_side_window(d, force_open = true) {
-            // Fetch the description from the server
-            fetch(`/get_class_description?class_name=${d.name}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("class-description").textContent = data.description || "No description available";
-                    document.getElementById("class-title").textContent = data.title || "No title available";
-                    //                                      Inner html allows linking to reference page 
-                    document.getElementById("class-information").innerHTML = data.information || "No information available";
-                    // Open the right sidebar
-                    if (force_open){
-                        document.getElementById("openRightSidebarMenu").checked = true;
-                    }
-                    
-                    // Adjust the graph width
-                    graph_width_ratio = 0.9;
-                    right_width_ratio = 0.1;
-                    redraw_divs();
-                })
-                .catch(error => {
-                    console.error('Error fetching class description:', error);
-                    document.getElementById("class-description").textContent = "Error loading description";
-                });
-        }
 
         // After drawing everything and letting the simulation run a bit
-        // Need to fix this - the zooming and moving is not working as I'd want it to
-
-        // setTimeout(function() {
-        //     var svgElement = d3.select("#graph_viz svg");
-        //     var bounds = svg.node().getBBox();
+        setTimeout(function() {
+            var svgElement = d3.select("#graph_viz svg");
+            var bounds = svg.node().getBBox();
             
-        //     // Calculate scale to fit exactly
-        //     var scale = (graph_height / bounds.height )* 2; // Just 5% margin
+            // Calculate scale to fit with some padding
+            var padding = 100; // Padding around the graph
+            var scale = Math.min(
+                (graph_width - padding) / bounds.width,
+                (graph_height - padding) / bounds.height
+            );
 
-        //     // Calculate translation to center the graph
-        //     var transform = d3.zoomIdentity
-        //         .translate(
-        //             (graph_width - bounds.width * scale) / 2 - bounds.x * scale,
-        //             (graph_height - bounds.height * scale) / 2 - bounds.y * (scale* 0.75)
-        //         )
-        //         .scale(scale);
+            // Calculate translation to center the graph
+            var transform = d3.zoomIdentity
+                .translate(
+                    (graph_width - bounds.width * scale) / 2 - bounds.x * scale,
+                    (graph_height - bounds.height * scale) / 2 - bounds.y * scale
+                )
+                .scale(scale);
             
-        //     // Apply the transform
-        //     svgElement.transition()
-        //         .duration(750)
-        //         .call(zoom.transform, transform);
-        // }, 1000);
+            // Apply the transform smoothly
+            svgElement.transition()
+                .duration(750)
+                .call(zoom.transform, transform);
+        }, 2000);
     });
     drawn = 1;
 }
@@ -337,6 +516,11 @@ function draw_graph(){
 
 // Javascript file which creates a sidewindow
 function open_side_window(d, force_open = true) {
+    if (user_interaction.selected_class == d.name && !force_open){
+        return;
+    }
+    user_interaction.selected_class = d.name;
+
     // Fetch the description from the server
     fetch(`/get_class_description?class_name=${d.name}`)
         .then(response => response.json())

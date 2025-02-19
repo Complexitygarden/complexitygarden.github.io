@@ -17,6 +17,7 @@ $(document).ready(function() {
 });
 
 function toggleGravity(checkbox) {
+    window.gravityEnabled = checkbox.checked;
     if (checkbox.checked) {
         // Enable forces and free nodes
         simulation.force("charge_force", d3.forceManyBody().strength(strength));

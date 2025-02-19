@@ -24,7 +24,7 @@
         },
         "QCMA": {
             "name": "QCMA",
-            "description": "Quantum Merlin-Arthur",
+            "description": "Quantum Classical Merlin-Arthur",
             "information": "test QCMA"
         },
         "PDQP": {

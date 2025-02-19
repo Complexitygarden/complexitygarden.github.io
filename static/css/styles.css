@@ -1,6 +1,10 @@
 html, body {
     overflow-x: hidden;
+    overflow-y: hidden;
     height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
 }
 
 body {
@@ -28,10 +32,11 @@ body {
 .main {
     margin: 0 auto;
     display: block;
-    height: 100%;
+    height: calc(100% - 100px);
     margin-top: 100px;
     z-index: 5;
     position: relative;
+    overflow: hidden;
 }
 
 .mainInner {
