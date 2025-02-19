@@ -66,6 +66,31 @@
             "name": "EXP",
             "description": "Exponential Time",
             "information": "test EXP"
+        },
+        "DQP":{
+            "name": "DQP",
+            "description": "Dynamical Quantum Polynomial-Time",
+            "information": "text DQP"
+        },
+        "L": {
+            "name": "L",
+            "description": "Logarithmic Space",
+            "information":"Class of decision problems solvable by a Turing machine restricted to a memory of logarithmic size in terms of the input size n. Note that the input is not part of the memory."
+        },
+        "NL":{
+            "name": "NL",
+            "description": "Non-deterministic Logarithmic Space",
+            "information": "The Non-deterministic version of L."
+        },
+        "MA":{
+            "name": "MA",
+            "description": "Merlin-Arthur",
+            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP."
+        },
+        "AM": {
+            "name": "AM",
+            "description": "Arthur-Merlin",
+            "information": "test AM"
         }
     }
 }

@@ -88,6 +88,7 @@ class complexity_class():
             visited = {self.get_identifier()}
         # Checking immediate connections excluding direct path to target
         for intermediate in self.get_trim_contains():
+            # Skipping over checking itself
             intermediate_id = intermediate.get_identifier()
             if intermediate_id == target.get_identifier():
                 continue
@@ -95,6 +96,7 @@ class complexity_class():
                 visited.add(intermediate_id)
                 if target in intermediate.get_trim_contains() or intermediate.has_indirect_path(target, classes_dict, visited):
                     return True
+        
         return False
     
     def get_description(self):

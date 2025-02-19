@@ -2,11 +2,6 @@
     "theorems":[
         {
             "type": "containment",
-            "small": "NONE",
-            "large": "P"
-        },
-        {
-            "type": "containment",
             "small": "EXP",
             "large": "ALL"
         },
@@ -33,11 +28,6 @@
         {
             "type": "containment",
             "small": "BQP",
-            "large": "QCMA"
-        },
-        {
-            "type": "containment",
-            "small": "NP",
             "large": "QCMA"
         },
         {
@@ -74,8 +64,66 @@
             "type": "containment",
             "small": "BPP",
             "large": "SZK"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "DQP"
+        },
+        {
+            "type": "containment",
+            "small": "DQP",
+            "large": "EXP"
+        },
+        {
+            "type": "containment",
+            "small": "L",
+            "large": "NL"
+        },
+        {
+            "type":"containment",
+            "small": "NL",
+            "large": "P"
+        },
+        {
+            "type":"containment",
+            "small": "SZK",
+            "large":"DQP"
+        },
+        {
+            "type":"containment",
+            "small": "NP",
+            "large": "MA"
+        },
+        {
+            "type":"containment",
+            "small": "BPP",
+            "large": "MA"
+        },
+        {
+            "type":"containment",
+            "small": "MA",
+            "large": "QCMA"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"AM"
+        },
+        {
+            "type":"containment",
+            "small":"AM",
+            "large": "PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"SZK",
+            "large": "AM"
+        },
+        {
+            "type":"containment",
+            "small": "NONE",
+            "large": "L"
         }
-        
-        
     ]
 }

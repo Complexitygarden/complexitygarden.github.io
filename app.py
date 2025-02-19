@@ -74,9 +74,7 @@ def add_remove_class():
 def search():
    query = request.args.get('query')
    network: complexity_network = NETWORK
-   cc_dict = network.get_checked_classes_dict()
-   all_class_list = network.get_all_class_identifiers()
-   results = search_classes(query, cc_dict, all_class_list)
+   results = search_classes(query, network)
    if len(results) > MAX_SEARCH_OUTPUT:
       results = results[:MAX_SEARCH_OUTPUT]
    return jsonify(results)

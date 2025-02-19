@@ -117,30 +117,32 @@ class complexity_network():
                 self.turn_vertex_into_edge(current_class)
 
         # Dropping direct edges
+        pairs_to_delete = []
         for source in [self.classes_dict[c] for c in class_list]:
             for target in source.get_trim_contains():
+                print(f'Checking: {source.name} - {target.name}')
                 if source.has_indirect_path(target, self.classes_dict):
-                    source.trim_contains.remove(target)
-                    target.trim_within.remove(source)
+                    pairs_to_delete.append((source, target))
 
+        for pair in pairs_to_delete:
+            pair[0].trim_contains.remove(pair[1])
+            pair[1].trim_within.remove(pair[0])
 
     def turn_vertex_into_edge(self, vertex: complexity_class):
         within_classes = vertex.get_trim_within()
         contained_classes = vertex.get_trim_contains()
 
-        for container in within_classes:
-            for contained in contained_classes:
-                if container.get_identifier() != contained.get_identifier():
-                    if contained not in container.get_trim_contains():
-                        container.trim_contains.append(contained)
-                    if container not in contained.get_trim_within():
-                        contained.trim_within.append(container)
-
-        # Remove the vertex from all neighbor relationships
-        for cont in vertex.get_trim_contains():
-            if vertex in cont.get_trim_within():
-                cont.trim_within.remove(vertex)
-        for within in vertex.get_trim_within():
+        for contained in contained_classes:
+            for within in within_classes:
+                if within.get_identifier() != contained.get_identifier():
+                    if contained not in within.get_trim_contains():
+                        within.trim_contains.append(contained)
+                    if within not in contained.get_trim_within():
+                        contained.trim_within.append(within)
+        for contained in contained_classes:
+            if vertex in contained.get_trim_within():
+                contained.trim_within.remove(vertex)
+        for within in within_classes:
             if vertex in within.get_trim_contains():
                 within.trim_contains.remove(vertex)
 
