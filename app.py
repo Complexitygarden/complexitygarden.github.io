@@ -119,5 +119,16 @@ def all_class_request():
     
     return jsonify({'success': True})
 
+@app.route('/update_server', methods=['POST'])
+def webhook():
+   try:
+      repo = git.Repo('/home/complexitytest/website')
+      origin = repo.remotes.origin
+      origin.pull()
+      return 'Updated PythonAnywhere successfully', 200
+   except Exception as e:
+      print("Error during git pull"), e
+      return 'Failed to update server', 500
+
 if __name__ == '__main__':
     app.run(debug=True)
