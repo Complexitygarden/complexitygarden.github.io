@@ -131,7 +131,7 @@ def webhook():
       print("Error during git pull"), e
       return 'Failed to update server', 500
 
-#test commit comment
+#test commit comment 2
 
 if __name__ == '__main__':
     app.run(debug=True)
