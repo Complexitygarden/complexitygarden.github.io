@@ -26,7 +26,7 @@ var fontSize = radius/2;
 var node_distance = radius * 4;
 
 // Gravity variables
-window.gravityEnabled = true;
+window.gravityEnabled = false;
 
 // Information about user interaction
 var user_interaction = {
@@ -36,46 +36,64 @@ var user_interaction = {
 // This should be done in python - gonna put it there soon (hopefully)
 function calculateNodeLevels(nodes, links) {
     const outgoing = {};
-    nodes.forEach(node => {
-        outgoing[node.name] = [];
-    });
-    links.forEach(link => {
-        outgoing[link.source.name || link.source].push(link.target.name || link.target);
-    });
-
-    // Find nodes with no incoming edges (root nodes)
     const incoming = {};
     nodes.forEach(node => {
+        outgoing[node.name] = [];
         incoming[node.name] = [];
     });
     links.forEach(link => {
+        outgoing[link.source.name || link.source].push(link.target.name || link.target);
         incoming[link.target.name || link.target].push(link.source.name || link.source);
     });
     
+    // Find root nodes (no incoming edges)
     const rootNodes = nodes.filter(node => incoming[node.name].length === 0);
     
-    // Assign levels through BFS
-    const levels = {};
+    // Calculate minimum levels (from top down)
+    const minLevels = {};
     rootNodes.forEach(root => {
-        levels[root.name] = 0;
+        minLevels[root.name] = 0;
     });
     
     let queue = [...rootNodes];
     while (queue.length > 0) {
         const current = queue.shift();
-        const currentLevel = levels[current.name];
+        const currentLevel = minLevels[current.name];
         
         outgoing[current.name].forEach(targetName => {
-            if (!(targetName in levels) || levels[targetName] < currentLevel + 1) {
-                levels[targetName] = currentLevel + 1;
+            if (!(targetName in minLevels) || minLevels[targetName] < currentLevel + 1) {
+                minLevels[targetName] = currentLevel + 1;
                 queue.push(nodes.find(n => n.name === targetName));
             }
         });
     }
+
+    // Find leaf nodes (no outgoing edges)
+    const leafNodes = nodes.filter(node => outgoing[node.name].length === 0);
     
-    const maxLevel = Math.max(...Object.values(levels));
+    // Calculate maximum levels (from bottom up)
+    const maxLevels = {};
+    const maxLevel = Math.max(...Object.values(minLevels));
+    leafNodes.forEach(leaf => {
+        maxLevels[leaf.name] = maxLevel;
+    });
+    
+    queue = [...leafNodes];
+    while (queue.length > 0) {
+        const current = queue.shift();
+        const currentLevel = maxLevels[current.name];
+        
+        incoming[current.name].forEach(sourceName => {
+            if (!(sourceName in maxLevels) || maxLevels[sourceName] > currentLevel - 1) {
+                maxLevels[sourceName] = currentLevel - 1;
+                queue.push(nodes.find(n => n.name === sourceName));
+            }
+        });
+    }
+    
+    // Set each node's level to the average of its min and max levels
     nodes.forEach(node => {
-        node.level = levels[node.name] || 0;
+        node.level = Math.floor((minLevels[node.name] + maxLevels[node.name]) / 2);
         node.maxLevel = maxLevel;
     });
 }
@@ -218,10 +236,28 @@ function draw_graph(){
                     .force("charge_force", null)
                     .force("center_force", null);
                 
-                // Fix all nodes in their current positions
+                // Position and fix nodes based on their level
+                const nodesPerLevel = {};
                 data.nodes.forEach(node => {
-                    node.fx = node.x;
-                    node.fy = node.y;
+                    if (!nodesPerLevel[node.level]) {
+                        nodesPerLevel[node.level] = [];
+                    }
+                    nodesPerLevel[node.level].push(node);
+                });
+
+                // For each level, distribute nodes evenly across the width
+                Object.entries(nodesPerLevel).forEach(([level, nodes]) => {
+                    const spacing = 3*graph_width / (nodes.length + 1);
+                    nodes.forEach((node, index) => {
+                        // Calculate y position based on level (higher level = lower on screen)
+                        const levelSpacing = graph_height / 3;
+                        node.y = (node.maxLevel - node.level) * levelSpacing + levelSpacing/2;
+                        // Evenly space x positions
+                        node.x = spacing * (index + 1);
+                        // Fix the position
+                        node.fx = node.x;
+                        node.fy = node.y;
+                    });
                 });
                 
                 simulation.alpha(1).restart();
@@ -485,12 +521,19 @@ function draw_graph(){
         setTimeout(function() {
             var svgElement = d3.select("#graph_viz svg");
             var bounds = svg.node().getBBox();
+            var padding_scale = 1;
+
+            if (nodeCount == 1){
+                console.log("Only one node");
+                padding_scale = 0.4;
+            } else {
+                padding_scale = 0.7;
+            }
             
             // Calculate scale to fit with some padding
-            var padding = 100; // Padding around the graph
             var scale = Math.min(
-                (graph_width - padding) / bounds.width,
-                (graph_height - padding) / bounds.height
+                (graph_width*padding_scale) / bounds.width,
+                (graph_height*padding_scale) / bounds.height
             );
 
             // Calculate translation to center the graph
