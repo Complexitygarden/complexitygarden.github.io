@@ -9,6 +9,8 @@ from script.search import search_classes
 from script.load_classes import create_class_network
 from script.complexity_network import complexity_network
 import git
+import hashlib
+import hmac
 
 """
 Key variables
@@ -47,6 +49,10 @@ def before_req():
 @app.route('/', methods=["GET"])
 def index():
    return render_template('index.html')
+
+@app.route('/references', methods=["GET"])
+def references():
+   return render_template('references.html')
 
 @app.route('/searchresults', methods=['GET', "POST"])
 def add_remove_class():

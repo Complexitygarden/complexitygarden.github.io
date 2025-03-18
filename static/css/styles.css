@@ -55,6 +55,23 @@ body {
     letter-spacing: 1.25px;
 }
 
+/*References Page */
+.reference-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+    background-color: #1a365d;
+    position: static;
+    height: 100px!important;
+    overflow: visible;
+    z-index: 16;
+}
+
+
 /* Left sidebar menu */
 
 #leftSidebarMenu {

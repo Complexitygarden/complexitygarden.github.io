@@ -570,6 +570,9 @@ function open_side_window(d, force_open = true) {
         .then(data => {
             document.getElementById("class-description").textContent = data.description || "No description available";
             document.getElementById("class-title").textContent = data.title || "No title available";
+            let class_information = data.information || "No information available";
+            let formatted_information = format_information(class_information);
+            document.getElementById("class-information").innerHTML = formatted_information;
             // Open the right sidebar
             if (force_open){
                 document.getElementById("openRightSidebarMenu").checked = true;
@@ -590,5 +593,13 @@ function open_side_window(d, force_open = true) {
             searchBar.blur();
     }
 }
+
+
+function format_information(htmlString)
+{
+    //find all substrings of the format [.*] and replace them with <a href="/references" class="citation-link"> /*SUBSTRING[.*]*/ </a>
+    return htmlString.replace(/\[([a-zA-Z0-9]+)\]/g, '<a href="/references" class="citation-link">[$1]</a>')
+}
+
 
 draw_graph();
