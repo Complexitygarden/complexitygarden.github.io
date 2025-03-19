@@ -33,71 +33,6 @@ var user_interaction = {
     selected_class: null
 }
 
-// This should be done in python - gonna put it there soon (hopefully)
-function calculateNodeLevels(nodes, links) {
-    const outgoing = {};
-    const incoming = {};
-    nodes.forEach(node => {
-        outgoing[node.name] = [];
-        incoming[node.name] = [];
-    });
-    links.forEach(link => {
-        outgoing[link.source.name || link.source].push(link.target.name || link.target);
-        incoming[link.target.name || link.target].push(link.source.name || link.source);
-    });
-    
-    // Find root nodes (no incoming edges)
-    const rootNodes = nodes.filter(node => incoming[node.name].length === 0);
-    
-    // Calculate minimum levels (from top down)
-    const minLevels = {};
-    rootNodes.forEach(root => {
-        minLevels[root.name] = 0;
-    });
-    
-    let queue = [...rootNodes];
-    while (queue.length > 0) {
-        const current = queue.shift();
-        const currentLevel = minLevels[current.name];
-        
-        outgoing[current.name].forEach(targetName => {
-            if (!(targetName in minLevels) || minLevels[targetName] < currentLevel + 1) {
-                minLevels[targetName] = currentLevel + 1;
-                queue.push(nodes.find(n => n.name === targetName));
-            }
-        });
-    }
-
-    // Find leaf nodes (no outgoing edges)
-    const leafNodes = nodes.filter(node => outgoing[node.name].length === 0);
-    
-    // Calculate maximum levels (from bottom up)
-    const maxLevels = {};
-    const maxLevel = Math.max(...Object.values(minLevels));
-    leafNodes.forEach(leaf => {
-        maxLevels[leaf.name] = maxLevel;
-    });
-    
-    queue = [...leafNodes];
-    while (queue.length > 0) {
-        const current = queue.shift();
-        const currentLevel = maxLevels[current.name];
-        
-        incoming[current.name].forEach(sourceName => {
-            if (!(sourceName in maxLevels) || maxLevels[sourceName] > currentLevel - 1) {
-                maxLevels[sourceName] = currentLevel - 1;
-                queue.push(nodes.find(n => n.name === sourceName));
-            }
-        });
-    }
-    
-    // Set each node's level to the average of its min and max levels
-    nodes.forEach(node => {
-        node.level = Math.floor((minLevels[node.name] + maxLevels[node.name]) / 2);
-        node.maxLevel = maxLevel;
-    });
-}
-
 // Color scale
 var colorScale = d3.scaleLinear()
     .range(["#63B3ED", "#2C5282"]);
@@ -175,37 +110,41 @@ function draw_graph(){
 
         // Initialize positions for nodes
         data.nodes.forEach(node => {
-            if (node === rootNode) {
-                // Position root node at the top center
-                node.x = graph_width / 2;
-                node.y = -5000; // Placing it extremely to the top - the force will return it
-                node.fx = node.x;
-                node.fy = node.y;
-            } else if (node === topNode) {
-                // Position top node at the bottom center
-                node.x = graph_width / 2;
-                node.y = 5000; // Placing it extremely to the bottom - the force will return it
-                node.fx = node.x;
-                node.fy = node.y;
-            }
-            else {
-                // Random positions for other nodes
-                node.x = Math.random() * graph_width;
-                node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
+            if (window.gravityEnabled){
+                if (node === rootNode) {
+                    // Position root node at the top center
+                    node.x = graph_width / 2;
+                    node.y = -5000; // Placing it extremely to the top - the force will return it
+                    node.fx = node.x;
+                    node.fy = node.y;
+                } else if (node === topNode) {
+                    // Position top node at the bottom center
+                    node.x = graph_width / 2;
+                    node.y = 5000; // Placing it extremely to the bottom - the force will return it
+                    node.fx = node.x;
+                    node.fy = node.y;
+                }
+                else {
+                    // Random positions for other nodes
+                    node.x = Math.random() * graph_width;
+                    node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
+                }
             }
         });
 
          // Unfixing the root node - so that it drags around, but it is still at the top of the screen
-        setTimeout(function() {
-            if (rootNode !== null && rootNode !== undefined) {
-                rootNode.fx = null;
+        if (window.gravityEnabled){ 
+            setTimeout(function() {
+                if (rootNode !== null && rootNode !== undefined) {
+                    rootNode.fx = null;
                 rootNode.fy = null;
             }
             if (topNode !== null && topNode !== undefined) {
                 topNode.fx = null;
                 topNode.fy = null;
             }
-        }, 500);
+            }, 500);
+        }
 
         // Reset simulation with new data
         simulation.nodes(data.nodes);
@@ -236,32 +175,28 @@ function draw_graph(){
                     .force("charge_force", null)
                     .force("center_force", null);
                 
-                // Position and fix nodes based on their level
-                const nodesPerLevel = {};
                 data.nodes.forEach(node => {
-                    if (!nodesPerLevel[node.level]) {
-                        nodesPerLevel[node.level] = [];
-                    }
-                    nodesPerLevel[node.level].push(node);
-                });
-
-                // For each level, distribute nodes evenly across the width
-                Object.entries(nodesPerLevel).forEach(([level, nodes]) => {
-                    const spacing = 3*graph_width / (nodes.length + 1);
-                    nodes.forEach((node, index) => {
-                        // Calculate y position based on level (higher level = lower on screen)
-                        const levelSpacing = graph_height / 3;
+                    // Use saved coordinates if they exist and are valid
+                    if (node.savedX && node.savedX !== -1 && node.savedY && node.savedY !== -1) {
+                        node.x = node.savedX * graph_width;
+                        node.y = node.savedY * graph_height;
+                    } else {
+                        // Calculate position based on level as fallback
+                        const levelSpacing = graph_height / 2;
                         node.y = (node.maxLevel - node.level) * levelSpacing + levelSpacing/2;
-                        // Evenly space x positions
-                        node.x = spacing * (index + 1);
-                        // Fix the position
-                        node.fx = node.x;
-                        node.fy = node.y;
-                    });
+                        // Calculate x position (this will be overridden if we have saved coordinates)
+                        const nodesAtLevel = data.nodes.filter(n => n.level === node.level).length;
+                        const indexAtLevel = data.nodes.filter(n => n.level === node.level && n.name <= node.name).length;
+                        const spacing = 3 * graph_width / (nodesAtLevel + 1);
+                        node.x = spacing * indexAtLevel;
+                    }
+                    // Fix the position
+                    node.fx = node.x;
+                    node.fy = node.y;
                 });
                 
                 simulation.alpha(1).restart();
-            }, 1000); // Let gravity work for 1 second
+            }, 1); // Let gravity work for 1 milisecond - I WANT TO REMOVE THIS BUT EVERY TIME I DO IT BREAKS THE GRAPH ARGH
         }
         
         //add tick instructions: 
@@ -410,7 +345,7 @@ function draw_graph(){
         }
     
         // Calculating levels and color scale
-        calculateNodeLevels(data.nodes, data.links);
+        // calculateNodeLevels(data.nodes, data.links);
         colorScale.domain([0, d3.max(data.nodes, d => d.maxLevel)]);
         draw_everything();
         
@@ -517,7 +452,8 @@ function draw_graph(){
             }
         });
 
-        // After drawing everything and letting the simulation run a bit
+        // Rescaling the graph
+        var rescaling_timer = window.gravityEnabled ? 2000 : 20;
         setTimeout(function() {
             var svgElement = d3.select("#graph_viz svg");
             var bounds = svg.node().getBBox();
@@ -527,7 +463,7 @@ function draw_graph(){
                 console.log("Only one node");
                 padding_scale = 0.4;
             } else {
-                padding_scale = 0.7;
+                padding_scale = 0.85;
             }
             
             // Calculate scale to fit with some padding
@@ -548,13 +484,27 @@ function draw_graph(){
             svgElement.transition()
                 .duration(750)
                 .call(zoom.transform, transform);
-        }, 2000);
+        }, rescaling_timer);
+
+        // Get the saved positions
+        fetch('/get_checked_classes')
+            .then(response => response.json())
+            .then(savedPositions => {
+                // Add saved positions to the nodes
+                data.nodes.forEach(node => {
+                    if (savedPositions[node.name]) {
+                        node.savedX = savedPositions[node.name].x;
+                        node.savedY = savedPositions[node.name].y;
+                    }
+                });
+                
+                // Continue with the rest of the graph initialization
+                // ... rest of the existing code ...
+            })
+            .catch(error => console.error('Error loading saved positions:', error));
     });
     drawn = 1;
 }
-
-
-
 
 
 // Javascript file which creates a sidewindow

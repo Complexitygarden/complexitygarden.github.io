@@ -28,6 +28,9 @@ class complexity_class():
         self.trim_within: list[self] = []
         self.visible: bool = False
         self.network: complexity_network = network # type: ignore
+        self.level: int = -1
+        self.x: int = -1
+        self.y: int = -1
         return
     
     def get_identifier(self):
@@ -104,8 +107,25 @@ class complexity_class():
     
     def get_information(self):
         return self.information
-            
-            
+    
+    def get_level(self):
+        return self.level
+    
+    def get_x(self):
+        return self.x
+    
+    def get_y(self):
+        return self.y
+    
+    def set_level(self, level: int):
+        if not isinstance(level, int):
+            raise ValueError("Level must be an integer")    
+        self.level = level
+        return
+    
+    def get_classes_below(self) -> list[complexity_class]:
+            nodes_above = self.get_trim_within()
+            return [n for n in self.get_trim_contains() if n not in nodes_above]
 
 if __name__=='__main__':
     p_class = complexity_class({

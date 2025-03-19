@@ -15,6 +15,8 @@ except Exception as e:
     from theorem import VALID_THEOREMS
 import json
 import copy
+import math
+import random
 
 class complexity_network():
     def __init__(self) -> None:
@@ -23,6 +25,8 @@ class complexity_network():
         self.classes_dict: dict[str, complexity_class] = {}
         self.theorems: list[theorem] = []
         self.trimmed_network = []
+        self.max_level = -1
+        self.min_level = -1
         return
     
     def add_class(self, class_def: dict, class_name: str):
@@ -168,7 +172,7 @@ class complexity_network():
         Printing the trimmed network
         """
         for c in [self.classes_dict[c] for c in self.trimmed_network]:
-            print(f"{c.get_identifier()}: Contains: {c.get_trim_contains_identifiers()}, Within: {c.get_trim_within_identifiers()}")
+            print(f"{c.get_identifier()}: Contains: {c.get_trim_contains_identifiers()}, Within: {c.get_trim_within_identifiers()}, Level: {c.level}")
         return
     
     def add_class_to_trimmed_network(self, class_identifier: str):
@@ -194,19 +198,204 @@ class complexity_network():
         network_dict = {"nodes": [], "links": []}
         if len(self.trimmed_network) == 0:
             return network_dict
+        self.set_positions()
         for c in self.trimmed_network:
             class_obj = self.classes_dict[c]
-            network_dict["nodes"].append({"name": c, "label": class_obj.get_name(), "group": "A"})
+            network_dict["nodes"].append({
+                "name": c,
+                "label": class_obj.get_name(),
+                "group": "A",
+                "savedX": class_obj.get_x()/1000,
+                "savedY": class_obj.get_y()/1000,
+                "level": class_obj.get_level(),
+                "maxLevel":self.max_level
+            })
             for cont in class_obj.get_trim_within():
-                network_dict["links"].append({"source": c, "target": cont.get_identifier(), "type": "A"})
+                network_dict["links"].append({
+                    "source": c,
+                    "target": cont.get_identifier(),
+                    "type": "A"
+                })
         return network_dict
     
     def get_checked_classes_dict(self):
-        return {k:{'name':v.get_name(), 'value':v.visible} for k,v in self.classes_dict.items()}
+        return {
+            k: {
+                'name': v.get_name(),
+                'value': v.visible,
+            } for k, v in self.classes_dict.items()
+        }
     
     def get_trimmed_network(self):
         return self.trimmed_network.copy()
     
+    def set_levels(self):
+        """
+        Setting the levels of the classes
+        - Calculates levels based on both top-down and bottom-up traversal
+        - Final level is the average of both approaches
+        - Root nodes (top) have highest level numbers
+        - Leaf nodes (bottom) have level 0
+        """
+        if len(self.trimmed_network) == 0:
+            return
+
+        # Reset all levels to -1
+        for c in self.classes:
+            c.set_level(-1)
+
+        # Find root nodes (no nodes contain them) and leaf nodes (they don't contain any nodes)
+        root_nodes = []
+        leaf_nodes = []
+        for class_name in self.trimmed_network:
+            class_obj = self.classes_dict[class_name]
+            if not any(within.visible for within in class_obj.get_trim_within()):
+                root_nodes.append(class_name)
+            if not any(contains.visible for contains in class_obj.get_trim_contains()):
+                leaf_nodes.append(class_name)
+        
+        # Calculate minimum levels (from bottom up)
+        min_levels = {}
+        for leaf in leaf_nodes:
+            min_levels[leaf] = 0
+        
+        # Process queue for bottom-up
+        queue = leaf_nodes.copy()
+        while queue:
+            current = queue.pop(0)
+            current_level = min_levels[current]
+            current_obj = self.classes_dict[current]
+            
+            for source in current_obj.get_trim_within():
+                source_name = source.get_identifier()
+                if source_name not in min_levels or min_levels[source_name] < current_level + 1:
+                    min_levels[source_name] = current_level + 1
+                    queue.append(source_name)
+
+        # Calculate maximum levels (from top down)
+        max_levels = {}
+        max_level = max(min_levels.values()) if min_levels else 0
+        for root in root_nodes:
+            max_levels[root] = max_level
+        
+        # Process queue for top-down
+        queue = root_nodes.copy()
+        while queue:
+            current = queue.pop(0)
+            current_level = max_levels[current]
+            current_obj = self.classes_dict[current]
+            
+            for target in current_obj.get_trim_contains():
+                target_name = target.get_identifier()
+                if target_name not in max_levels or max_levels[target_name] > current_level - 1:
+                    max_levels[target_name] = current_level - 1
+                    queue.append(target_name)
+
+        # Set each node's level to the average of its min and max levels
+        final_max_level = 0
+        for class_name in self.trimmed_network:
+            class_obj = self.classes_dict[class_name]
+            min_level = min_levels.get(class_name, 0)
+            max_level = max_levels.get(class_name, max_level)
+            avg_level = math.ceil((min_level + max_level) / 2)
+            class_obj.set_level(avg_level)
+            final_max_level = max(final_max_level, avg_level)
+
+        self.max_level = final_max_level
+        self.min_level = 0
+
+    def set_positions(self):
+        """
+        Setting the levels and positions of the classes
+        - The level is calculated as the average of:
+          1. Distance from top (nodes with no containers)
+          2. Distance from bottom (nodes that don't contain anything)
+        - X positions are calculated to minimize edge crossings using barycenter method
+        """
+        if len(self.trimmed_network) == 0:
+            return
+        self.set_levels()
+
+        # Get visible nodes and their levels
+        nodes_per_level = {}
+        max_level = 0
+        for class_id in self.trimmed_network:
+            class_obj = self.classes_dict[class_id]
+            level = class_obj.get_level()
+            if level not in nodes_per_level:
+                nodes_per_level[level] = []
+            nodes_per_level[level].append(class_obj)
+            max_level = max(max_level, level)
+
+        # Sort levels from top to bottom
+        sorted_levels = sorted(nodes_per_level.keys())
+        width = 1000
+        height = 1000
+
+        # First pass: top to bottom
+        for i in range(len(sorted_levels)):
+            current_level = sorted_levels[i]
+            current_nodes = nodes_per_level[current_level]
+            
+            if i == 0:
+                # For the first level, just space nodes evenly
+                for idx, node in enumerate(current_nodes):
+                    node.x = width * (idx + 1) / (len(current_nodes) + 1)
+            else:
+                # Calculate barycenter for each node
+                node_positions = []
+                for node in current_nodes:
+                    connected_nodes = node.get_classes_below()
+                    if connected_nodes:
+                        barycenter = sum(n.x for n in connected_nodes) / len(connected_nodes)
+                    else:
+                        # If no connections, place based on position in list
+                        barycenter = width * (len(node_positions) + 1) / (len(current_nodes) + 1)
+                    node_positions.append((node, barycenter))
+                
+                # Sort nodes by their barycenter
+                node_positions.sort(key=lambda x: x[1])
+                
+                # Assign x positions while maintaining minimum spacing
+                min_spacing = width / (len(current_nodes) + 1)
+                for idx, (node, _) in enumerate(node_positions):
+                    node.x = min_spacing * (idx + 1)
+
+            sorted_nodes = sorted(current_nodes, key=lambda x: x.x)
+            for node in sorted_nodes:
+                print(f"{node.get_identifier()}: {node.x}")
+
+        # # Second pass: bottom to top (averaging with first pass positions)
+        for i in range(len(sorted_levels) - 1, -1, -1):
+            current_level = sorted_levels[i]
+            current_nodes = nodes_per_level[current_level]
+            
+            if i == len(sorted_levels) - 1:
+                continue  # Skip bottom level as it's already positioned
+            
+            next_level = sorted_levels[i+1]
+            next_nodes = nodes_per_level[next_level]
+            
+            # Calculate and average with bottom-up barycenter
+            for node in current_nodes:
+                connected_nodes = [n for n in next_nodes if (n in node.get_trim_contains() or node in n.get_trim_within())]
+                if connected_nodes:
+                    bottom_up_barycenter = sum(n.x for n in connected_nodes) / len(connected_nodes)
+                    # Average with current position
+                    node.x = (node.x + bottom_up_barycenter) / 2
+
+        # Set y positions based on levels
+        for level, nodes in nodes_per_level.items():
+            level_spacing = height / 2
+            y_pos = (max_level - level) * level_spacing + level_spacing/2
+            randomize_level: bool = len(nodes) > 1
+            for node in nodes:
+                node.y = y_pos
+                node.x = node.x * 2
+                # Idea - randomizing the nodes to avoid having all edges overlay since way may often have the same edges go over each other
+                # if randomize_level:
+                    # node.x = node.x * (1 + random.random()/10)
+
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]
     tagged_vertex = {k:False for k in classes_dict.keys()}
@@ -221,9 +410,11 @@ if __name__ == "__main__":
     network.add_classes_from_dict(classes_dict)
     network.add_theorems_from_dict(theorems_dict)
     network.new_trimmed_network([c.get_identifier() for c in network.classes])
+    network.set_positions()
     network.print_trimmed_network()
     print("\n\n New network")
     network.new_trimmed_network(['BQP', 'NP', 'P', 'PP', 'PDQP', 'BPP', 'SZK', 'all'])
+    network.set_positions()
     network.print_trimmed_network()
     print("test")
     
