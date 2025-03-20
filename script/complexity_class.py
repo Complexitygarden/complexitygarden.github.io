@@ -126,6 +126,38 @@ class complexity_class():
     def get_classes_below(self) -> list[complexity_class]:
             nodes_above = self.get_trim_within()
             return [n for n in self.get_trim_contains() if n not in nodes_above]
+    
+    def find_all_paths(self, target: complexity_class, visited: set[str] = None) -> list[list[complexity_class]]:
+        """
+        Finds all paths between this class and the target class
+        - If we are at a level below the target, we only move upwards
+        - If we are at the same level, then we check both upwards and downwards directions
+        """
+        # Initialize visited set if None
+        if visited is None:
+            visited = set()
+        
+        # Add current node to visited
+        visited.add(self.get_identifier())
+        
+        # Base case: if we've reached the target
+        if self.get_identifier() == target.get_identifier():
+            return [[self]]
+        
+        paths = []
+        
+        # If we're at a lower level than target, only look at nodes above us
+        if self.level < target.level:
+            # Get all nodes that contain this class (nodes above)
+            for higher_node in self.get_within():
+                if higher_node.identifier not in visited:
+                    # Recursively find paths from the higher node to target
+                    sub_paths = higher_node.find_all_paths(target, visited.copy())
+                    # Add current node to the beginning of each found path
+                    for path in sub_paths:
+                        paths.append([self] + path)
+        
+        return paths
 
 if __name__=='__main__':
     p_class = complexity_class({

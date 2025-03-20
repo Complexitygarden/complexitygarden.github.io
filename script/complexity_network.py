@@ -293,16 +293,27 @@ class complexity_network():
 
         # Set each node's level to the average of its min and max levels
         final_max_level = 0
+        levels = {}
         for class_name in self.trimmed_network:
             class_obj = self.classes_dict[class_name]
             min_level = min_levels.get(class_name, 0)
             max_level = max_levels.get(class_name, max_level)
             avg_level = math.ceil((min_level + max_level) / 2)
             class_obj.set_level(avg_level)
+            if avg_level not in levels:
+                levels[avg_level] = []
+            levels[avg_level].append(class_obj)
             final_max_level = max(final_max_level, avg_level)
 
         self.max_level = final_max_level
         self.min_level = 0
+
+        # Setting the mid_levels - only for classes which are not in the trimmed network
+        for level in sorted(levels.keys()):
+            for class_obj in levels[level]:
+                for class_within in class_obj.get_trim_within():
+                    if class_within.get_level() == -1:
+                        class_obj.level = level
 
     def set_positions(self):
         """
@@ -362,8 +373,8 @@ class complexity_network():
                     node.x = min_spacing * (idx + 1)
 
             sorted_nodes = sorted(current_nodes, key=lambda x: x.x)
-            for node in sorted_nodes:
-                print(f"{node.get_identifier()}: {node.x}")
+            # for node in sorted_nodes:
+            #     print(f"{node.get_identifier()}: {node.x}")
 
         # # Second pass: bottom to top (averaging with first pass positions)
         for i in range(len(sorted_levels) - 1, -1, -1):
@@ -395,6 +406,43 @@ class complexity_network():
                 # Idea - randomizing the nodes to avoid having all edges overlay since way may often have the same edges go over each other
                 # if randomize_level:
                     # node.x = node.x * (1 + random.random()/10)
+
+    def expand_edge(self, source_class: str, target_class: str):
+        """
+        Expanding an edge between two classes
+        """
+        source_class = source_class.lower()
+        target_class = target_class.lower()
+        
+        # Checking if the classes and edges exist
+        if source_class not in self.classes_dict or target_class not in self.classes_dict:
+            raise ValueError(f"Class {source_class} or {target_class} not found in the network")
+        else:
+            source_class_obj = self.classes_dict[source_class]
+            target_class_obj = self.classes_dict[target_class]
+        if target_class not in source_class_obj.get_trim_within_identifiers():
+            raise ValueError(f"Edge {source_class} -> {target_class} not found in the network")
+        
+        if target_class_obj in source_class_obj.get_within():
+            print(f"Edge {source_class} -> {target_class} already exists")
+            return False, []
+        
+        # Finding all paths between the two classes
+        paths = self.find_all_paths(source_class_obj, target_class_obj)
+
+        # Add all of these nodes to the trimmed network
+        new_classes = list(set([p.get_identifier() for path in paths for p in path if p.get_identifier() not in self.trimmed_network]))
+        self.new_trimmed_network(self.trimmed_network + new_classes)
+        return True, [c.upper() for c in new_classes]
+        
+    def find_all_paths(self, source_class_obj: complexity_class, target_class_obj: complexity_class):
+        """
+        Finding all paths between two classes
+        """
+        paths = source_class_obj.find_all_paths(target_class_obj)
+        for path in paths:
+            print(" -- ".join([p.get_identifier() for p in path]))
+        return paths
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]

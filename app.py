@@ -25,6 +25,12 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y3l"Fp7z\n\xec]/'
 
+def update_network_information():
+   network: complexity_network = NETWORK
+   session['selected_classes'] = network.get_trimmed_network()
+   network.print_trimmed_network()
+   return
+
 @app.before_request
 def before_req():
    # if 'network' not in session:
@@ -68,13 +74,7 @@ def add_remove_class():
          print('Removing')
          network.remove_class_from_trimmed_network(var_name)
       
-      # Updating the checked_classes_dictionary
-      # cc_dict = session['check_classes_dict']
-      # if var_name in cc_dict:
-      #    cc_dict[var_name]['value'] = checked
-      # session['check_classes_dict'] = cc_dict
-      session['selected_classes'] = network.get_trimmed_network()
-      network.print_trimmed_network()
+      update_network_information()
       return var_name
 
 @app.route('/search_complexity_classes', methods=['GET'])
@@ -137,7 +137,15 @@ def webhook():
       print("Error during git pull"), e
       return 'Failed to update server', 500
 
-#test commit comment 2
+@app.route('/expand_edge', methods=['GET'])
+def expand_edge():
+   source_class = request.args.get('source_class')
+   target_class = request.args.get('target_class')
+   network: complexity_network = NETWORK
+   expand_success, new_classes = network.expand_edge(source_class, target_class)
+   if expand_success:
+      update_network_information()
+   return jsonify({'success': expand_success, 'new_classes': new_classes})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -111,6 +111,14 @@ function all_class_request(select) {
     });
 }
 
+function select_class_list(class_list, select){
+    $('#complexity_class_search_results input[type="checkbox"]').each(function() {
+        if (this.checked != select && class_list.includes(this.id)) {
+            this.checked = select;
+        }
+    });
+}
+
 function ajaxRequest(inp) {
     console.log(inp);
     var checked = document.getElementById(inp.id).checked;

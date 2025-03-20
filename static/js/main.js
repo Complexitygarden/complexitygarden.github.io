@@ -272,6 +272,17 @@ function draw_graph(){
                     .filter(a => a.source === d.source && a.target === d.target)
                     .style("stroke", "#2c5282")
                     .style("fill", "#2c5282");
+            })
+            .on("dblclick", function(d) {
+                // Prevent default behavior and event propagation
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
+                
+                // Get the source and target class names
+                var sourceClass = d.source.name;
+                var targetClass = d.target.name;
+                
+                expand_edge(sourceClass, targetClass);
             });
     
         // Arrow layer
@@ -313,6 +324,17 @@ function draw_graph(){
                     .select(".link-visible")
                     .style("stroke", "#2c5282")
                     .attr("stroke-width", 2);
+            })
+            .on("dblclick", function(d) {
+                // Prevent default behavior and event propagation
+                d3.event.preventDefault();
+                d3.event.stopPropagation();
+                
+                // Get the source and target class names
+                var sourceClass = d.source.name;
+                var targetClass = d.target.name;
+                
+                expand_edge(sourceClass, targetClass);
             });
 
         function draw_everything(){
@@ -455,6 +477,9 @@ function draw_graph(){
         // Rescaling the graph
         var rescaling_timer = window.gravityEnabled ? 2000 : 20;
         setTimeout(function() {
+            if (nodeCount == 0){
+                return;
+            }
             var svgElement = d3.select("#graph_viz svg");
             var bounds = svg.node().getBBox();
             var padding_scale = 1;
@@ -485,23 +510,6 @@ function draw_graph(){
                 .duration(750)
                 .call(zoom.transform, transform);
         }, rescaling_timer);
-
-        // Get the saved positions
-        fetch('/get_checked_classes')
-            .then(response => response.json())
-            .then(savedPositions => {
-                // Add saved positions to the nodes
-                data.nodes.forEach(node => {
-                    if (savedPositions[node.name]) {
-                        node.savedX = savedPositions[node.name].x;
-                        node.savedY = savedPositions[node.name].y;
-                    }
-                });
-                
-                // Continue with the rest of the graph initialization
-                // ... rest of the existing code ...
-            })
-            .catch(error => console.error('Error loading saved positions:', error));
     });
     drawn = 1;
 }
@@ -544,6 +552,30 @@ function open_side_window(d, force_open = true) {
     }
 }
 
+
+// Expanding an edge we double-clicked on
+function expand_edge(sourceClass, targetClass){
+    // Prevent default behavior and event propagation
+    d3.event.preventDefault();
+    d3.event.stopPropagation();
+    
+    // Create an alert showing the relationship
+    console.log(`From ${sourceClass} to ${targetClass}`);
+    fetch(`/expand_edge?source_class=${sourceClass}&target_class=${targetClass}`)
+        .then(response => response.json())
+        .then(data => {
+            // Redraw the graph
+            if (data.success){
+                draw_graph();
+                console.log("Successfully expanded edge");
+                console.log(data.new_classes);
+                select_class_list(data.new_classes, true);
+            } else {
+                console.log("Failed to expand edge");
+            }
+        })
+        .catch(error => console.error('Error expanding edge:', error));
+}
 
 function format_information(htmlString)
 {
