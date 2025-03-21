@@ -119,6 +119,18 @@ function select_class_list(class_list, select){
     });
 }
 
+function delete_class(class_name){
+    fetch(`/delete_class?class_name=${class_name.toUpperCase()}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success){
+                // Deleting the class from the search bar
+                select_class_list([class_name.toUpperCase()], false);
+                draw_graph();
+            }
+        });
+}
+
 function ajaxRequest(inp) {
     console.log(inp);
     var checked = document.getElementById(inp.id).checked;

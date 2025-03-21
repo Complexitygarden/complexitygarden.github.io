@@ -6,6 +6,8 @@ var drawn = 0;
 
 var clickTimeout = null;
 
+var zoom_out = true;
+
 const body = $('body');
 const searchBar = $('#complexity_class_search_bar');
 
@@ -333,31 +335,64 @@ function draw_graph(){
 
         function draw_everything(){
             var nodeGroups = node.append("g")
-            .on("mouseover", function(d) {
-                d3.select(this).select("circle")
-                    .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
-                    .attr("stroke", "#2c5282");
-            })
-            .on("mouseout", function(d) {
-                d3.select(this).select("circle")
-                    .attr("fill", d => colorScale(d.level))
-                    .attr("stroke", "none");
-            });
+                .on("mouseover", function(d) {
+                    d3.select(this).select("circle")
+                        .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
+                        .attr("stroke", "#2c5282");
+                    // Show delete button on hover
+                    d3.select(this).select(".delete-button")
+                        .style("display", "block");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).select("circle")
+                        .attr("fill", d => colorScale(d.level))
+                        .attr("stroke", "none");
+                    // Hide delete button when not hovering
+                    d3.select(this).select(".delete-button")
+                        .style("display", "none");
+                });
 
             // Adding the circle
             nodeGroups.append("circle")
-            .attr("r", radius)
-            .attr("fill", d => colorScale(d.level))
-            .attr("stroke", "none")
-            .attr("stroke-width", 3);
+                .attr("r", radius)
+                .attr("fill", d => colorScale(d.level))
+                .attr("stroke", "none")
+                .attr("stroke-width", 3);
     
             // Adding a label on the circle
             nodeGroups.append('text')
-            .text(nodeLabel)
-            .attr("text-anchor", "middle")
-            .style("fill", "#fff")
-            .style("font-size", fontSize)
-            .attr("dy", (fontSize)/2);
+                .text(nodeLabel)
+                .attr("text-anchor", "middle")
+                .style("fill", "#fff")
+                .style("font-size", fontSize)
+                .attr("dy", (fontSize)/2);
+
+            // Add delete button
+            nodeGroups.append("g")
+                .attr("class", "delete-button")
+                .attr("transform", `translate(${0.7*radius}, ${-0.7*radius})`)
+                .style("display", "none")
+                .style("cursor", "pointer")
+                .on("click", function(d) {
+                    d3.event.stopPropagation(); // Prevent node click event
+                    zoom_out = false; // Avoid zooming out when we delete a class - we're not moving the graph
+                    delete_class(d.name);
+                })
+                .append("circle")
+                .attr("r", radius/6)
+                .attr("fill", "#E53E3E")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1);
+
+            // Add X symbol to delete button
+            nodeGroups.select(".delete-button")
+                .append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", "0.35em")
+                .style("fill", "#fff")
+                .style("font-size", `${radius/4}px`)
+                .style("pointer-events", "none")
+                .text("×");
         }
     
         // Calculating levels and color scale
@@ -489,6 +524,10 @@ function draw_graph(){
         var rescaling_timer = window.gravityEnabled ? 2000 : 20;
         setTimeout(function() {
             if (nodeCount == 0){
+                return;
+            }
+            if (!zoom_out){
+                zoom_out = true;
                 return;
             }
             var svgElement = d3.select("#graph_viz svg");

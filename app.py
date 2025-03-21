@@ -156,5 +156,13 @@ def expand_node():
    expand_success, new_classes = network.expand_node(class_name)
    return jsonify({'success': expand_success, 'new_classes': new_classes})
 
+@app.route('/delete_class', methods=['GET'])
+def delete_class():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   network.remove_class_from_trimmed_network(class_name)
+   update_network_information()
+   return jsonify({'success': True})
+
 if __name__ == '__main__':
     app.run(debug=True)

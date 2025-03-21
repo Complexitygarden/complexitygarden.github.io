@@ -27,6 +27,7 @@ class complexity_network():
         self.trimmed_network = []
         self.max_level = -1
         self.min_level = -1
+        self.update_location = True
         return
     
     def add_class(self, class_def: dict, class_name: str):
@@ -192,13 +193,20 @@ class complexity_network():
             self.trimmed_network.remove(class_identifier)
             self.classes_dict[class_identifier].visible = False
             self.new_trimmed_network(self.trimmed_network)
+            self.update_location = False
         return
     
     def get_trimmed_network_json(self):
         network_dict = {"nodes": [], "links": []}
         if len(self.trimmed_network) == 0:
             return network_dict
-        self.set_positions()
+        """
+        Updating locations - only if requested, otherwise we don't, but enable updating it next time
+        """
+        if self.update_location:
+            self.set_positions()
+        else:
+            self.update_location = True
         for c in self.trimmed_network:
             class_obj = self.classes_dict[c]
             network_dict["nodes"].append({
