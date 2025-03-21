@@ -4,6 +4,8 @@ Main javascript file
 var arrow_scale = 3.5;
 var drawn = 0;
 
+var clickTimeout = null;
+
 const body = $('body');
 const searchBar = $('#complexity_class_search_bar');
 
@@ -274,15 +276,11 @@ function draw_graph(){
                     .style("fill", "#2c5282");
             })
             .on("dblclick", function(d) {
-                // Prevent default behavior and event propagation
-                d3.event.preventDefault();
-                d3.event.stopPropagation();
-                
                 // Get the source and target class names
                 var sourceClass = d.source.name;
                 var targetClass = d.target.name;
                 
-                expand_edge(sourceClass, targetClass);
+                expand(sourceClass, targetClass, true);
             });
     
         // Arrow layer
@@ -326,15 +324,11 @@ function draw_graph(){
                     .attr("stroke-width", 2);
             })
             .on("dblclick", function(d) {
-                // Prevent default behavior and event propagation
-                d3.event.preventDefault();
-                d3.event.stopPropagation();
-                
                 // Get the source and target class names
                 var sourceClass = d.source.name;
                 var targetClass = d.target.name;
                 
-                expand_edge(sourceClass, targetClass);
+                expand(sourceClass, targetClass, true);
             });
 
         function draw_everything(){
@@ -456,12 +450,20 @@ function draw_graph(){
         
         // Events which show complexity class descriptions
         node.on("click", function(d){
-            // Disallowing zooming in on the graph
-            d3.event.preventDefault();
-            d3.event.stopPropagation();
-            // Opening the side window and showing a class description
-            open_side_window(d);
-            set_node = d;
+            // Clear any existing timeout
+            if (clickTimeout) {
+                clearTimeout(clickTimeout);
+            }
+            
+            // Set a new timeout
+            clickTimeout = setTimeout(function() {
+                // Only execute click behavior if it wasn't part of a double-click
+                // d3.event.preventDefault();
+                // d3.event.stopPropagation();
+                // Opening the side window and showing a class description
+                open_side_window(d);
+                set_node = d;
+            }, 250); // 250ms delay
         });
 
         node.on("mouseover", function(d){
@@ -472,6 +474,15 @@ function draw_graph(){
             if (set_node !== d && set_node !== null){ 
                 open_side_window(set_node, false)
             }
+        });
+
+        node.on("dblclick", function(d) {
+            // Clear the click timeout so the click handler won't fire
+            if (clickTimeout) {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+            }
+            expand(d.name, null, false);
         });
 
         // Rescaling the graph
@@ -554,14 +565,22 @@ function open_side_window(d, force_open = true) {
 
 
 // Expanding an edge we double-clicked on
-function expand_edge(sourceClass, targetClass){
+function expand(sourceClass, targetClass, edge = true){
     // Prevent default behavior and event propagation
     d3.event.preventDefault();
     d3.event.stopPropagation();
-    
-    // Create an alert showing the relationship
-    console.log(`From ${sourceClass} to ${targetClass}`);
-    fetch(`/expand_edge?source_class=${sourceClass}&target_class=${targetClass}`)
+    var fetch_url;
+    if (edge){
+        console.log("Expanding edge from " + sourceClass + " to " + targetClass);
+        // Create an alert showing the relationship
+        console.log(`From ${sourceClass} to ${targetClass}`);
+        fetch_url = `/expand_item?expand_edge=true&source_class=${sourceClass}&target_class=${targetClass}`;
+    } else {
+        console.log("Expanding node " + sourceClass);
+        fetch_url = `/expand_item?expand_edge=false&source_class=${sourceClass}`;
+    }
+
+    fetch(fetch_url)
         .then(response => response.json())
         .then(data => {
             // Redraw the graph
@@ -571,7 +590,7 @@ function expand_edge(sourceClass, targetClass){
                 console.log(data.new_classes);
                 select_class_list(data.new_classes, true);
             } else {
-                console.log("Failed to expand edge");
+                console.log("Did not expand -> are there any new classes to add?");
             }
         })
         .catch(error => console.error('Error expanding edge:', error));

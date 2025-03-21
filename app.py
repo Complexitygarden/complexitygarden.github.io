@@ -41,14 +41,6 @@ def before_req():
    # Keeping track of classes from last session
    if 'selected_classes' not in session:
       session['selected_classes'] = NETWORK.get_trimmed_network()
-   # if 'checked_classes' not in session:
-   #    session['checked_classes'] = []
-   # if 'check_classes_dict' not in session:
-   #    checked_classes_dict = {c:{'name': c, 'value':False} for c in CLASS_LIST }
-   #    checked_classes = session['checked_classes']
-   #    for cc in checked_classes:
-   #       checked_classes_dict[cc]['value'] = True
-   #    session['check_classes_dict'] = checked_classes_dict
    
    return
 
@@ -137,14 +129,31 @@ def webhook():
       print("Error during git pull"), e
       return 'Failed to update server', 500
 
-@app.route('/expand_edge', methods=['GET'])
-def expand_edge():
-   source_class = request.args.get('source_class')
-   target_class = request.args.get('target_class')
+"""
+Expand item - either an edge or a node
+   - expanding an edge: Find all the classes which are between the source and target classes and add those
+   - expanding a node: Find all the classes which are connected to the node and add those
+"""
+@app.route('/expand_item', methods=['GET'])
+def expand_item():
    network: complexity_network = NETWORK
-   expand_success, new_classes = network.expand_edge(source_class, target_class)
+   expand_edge = request.args.get('expand_edge') == 'true'
+   if expand_edge:
+      source_class = request.args.get('source_class')
+      target_class = request.args.get('target_class')
+      expand_success, new_classes = network.expand_edge(source_class, target_class)
+   else:
+      class_name = request.args.get('source_class')
+      expand_success, new_classes = network.expand_node(class_name)
    if expand_success:
       update_network_information()
+   return jsonify({'success': expand_success, 'new_classes': new_classes})
+
+@app.route('/expand_node', methods=['GET'])
+def expand_node():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   expand_success, new_classes = network.expand_node(class_name)
    return jsonify({'success': expand_success, 'new_classes': new_classes})
 
 if __name__ == '__main__':

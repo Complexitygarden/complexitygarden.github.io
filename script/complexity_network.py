@@ -443,6 +443,22 @@ class complexity_network():
         for path in paths:
             print(" -- ".join([p.get_identifier() for p in path]))
         return paths
+    
+    def expand_node(self, class_name: str):
+        """
+        Expanding a node
+        """
+        class_name = class_name.lower()
+        if class_name not in self.classes_dict:
+            raise ValueError(f"Class {class_name} not found in the network")
+        class_obj = self.classes_dict[class_name]
+        neighbors = [c.get_identifier() for c in class_obj.get_neighbors()]
+        connected_classes = [c for c in neighbors if c not in self.trimmed_network]
+        if len(connected_classes) == 0:
+            print(f"No new classes to add from {class_name}")
+            return False, []
+        self.new_trimmed_network(self.trimmed_network + connected_classes)
+        return True, [c.upper() for c in connected_classes]
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]
