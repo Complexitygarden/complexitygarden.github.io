@@ -61,11 +61,17 @@
                                 <input type="checkbox" class="settings-checkbox" onclick="toggleGravity(this)">
                             </div>
                         </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <button onclick="redrawVisualization()" class="settings-button">Redraw</button>
+                            </div>
+                        </li>
                     </ul>
                 </li>
                 <!-- You can add more rows here if needed -->
             </ul>
             <script src="{{ url_for('static', filename='js/side_bar.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/references.js') }}"></script>
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">
@@ -84,11 +90,11 @@
         <!-- Graph of the classes -->
         <div id='center' class="main center">
             <div class="mainInner">
-                <div id="graph_viz"></div>
-                <script>
-                    const complexity_network_url = "{{ url_for('get_complexity_network')}}"
-                </script>
-                <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+                <div id="visualisation_div"></div>
+                <script src="{{ url_for('static', filename='js/main_vis.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/visual_objects.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/sunburst.js') }}"></script>
             </div>
         </div>
     </body>

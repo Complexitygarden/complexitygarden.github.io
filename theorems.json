@@ -3,7 +3,7 @@
         {
             "type": "containment",
             "small": "EXP",
-            "large": "ALL"
+            "large": "NEXP"
         },
         {
             "type": "containment",
@@ -124,6 +124,68 @@
             "type":"containment",
             "small": "NONE",
             "large": "L"
+        },
+        {
+            "type":"containment",
+            "small": "QMA",
+            "large": "QMA(2)"
+        },
+        {
+            "type":"containment",
+            "small": "QMA(2)",
+            "large": "NEXP"
+        },
+        {
+            "type":"containment",
+            "small": "RE",
+            "large": "ALL"
+        },
+        {
+            "type":"containment",
+            "small": "R",
+            "large": "RE"
+        },
+        {
+            "type":"containment",
+            "small": "A0PP",
+            "large": "PP"
+        },
+        {
+            "type":"containment",
+            "small": "AWPP",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "QMA",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "BQP",
+            "large": "AWPP"
+        },
+        {
+            "type":"containment",
+            "small": "NEXP",
+            "large": "R"
+        },
+        {
+            "type":"containment",
+            "small":"ZPP",
+            "large":"RP"   
+        },
+        {
+            "type":"containment",
+            "small":"RP",
+            "large":"BPP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"ZPP"
         }
+        
+        
     ]
 }

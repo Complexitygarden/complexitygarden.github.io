@@ -39,3 +39,11 @@ function toggleGravity(checkbox) {
     }
     simulation.alpha(1).restart();
 }
+
+function redrawVisualization() {
+    // Clear the existing visualization
+    vis_svg.selectAll("*").remove();
+    
+    // Redraw
+    create_visualisation();
+}

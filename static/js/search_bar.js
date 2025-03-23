@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    const searchBar = $('#complexity_class_search_bar');
     const body = $('body');
+    const searchBar = $('#complexity_class_search_bar');
     const searchContainer = $('.search-container');
     
     // Show dropdown and overlay when focusing on search
@@ -106,7 +106,7 @@ function deselect_all() {
 function all_class_request(select) {
     $.get('/all_class_request', {select: select}, function(data) {
         if (data.success) {
-            draw_graph();
+            create_visualisation();
         }
     });
 }
@@ -126,7 +126,7 @@ function delete_class(class_name){
             if (data.success){
                 // Deleting the class from the search bar
                 select_class_list([class_name.toUpperCase()], false);
-                draw_graph();
+                // Deleting the node from the graph
             }
         });
 }
@@ -154,7 +154,7 @@ function ajaxRequest(inp) {
       if(xhttp.readyState==4 && xhttp.status == 200)
       {
          // We changed the graph -> redrawing it
-         draw_graph();
+        create_visualisation();
       }
     }
     xhttp.send("name=" + inp.id + "&checked=" +checked);

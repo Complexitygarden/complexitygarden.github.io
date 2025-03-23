@@ -83,7 +83,7 @@ class complexity_class():
     def get_trim_neighbors(self) -> list[complexity_class]:
         return list(set(self.get_trim_within() + self.get_trim_contains()))
     
-    def has_indirect_path(self, target: complexity_class, classes_dict: dict[str, complexity_class], visited: set[str] = None) -> bool:
+    def has_indirect_path(self, target: complexity_class, classes_dict: dict[str, complexity_class], visited: set[str] = None, disregard: list[str] = []) -> bool:
         """
         Check if there exists a path from this complexity class to target through other nodes
         """
@@ -93,13 +93,12 @@ class complexity_class():
         for intermediate in self.get_trim_contains():
             # Skipping over checking itself
             intermediate_id = intermediate.get_identifier()
-            if intermediate_id == target.get_identifier():
+            if intermediate_id == target.get_identifier() or intermediate_id in disregard:
                 continue
             if intermediate_id not in visited:
                 visited.add(intermediate_id)
-                if target in intermediate.get_trim_contains() or intermediate.has_indirect_path(target, classes_dict, visited):
+                if target in intermediate.get_trim_contains() or intermediate.has_indirect_path(target, classes_dict, visited, disregard):
                     return True
-        
         return False
     
     def get_description(self):

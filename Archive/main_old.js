@@ -6,8 +6,6 @@ var drawn = 0;
 
 var clickTimeout = null;
 
-var zoom_out = true;
-
 const body = $('body');
 const searchBar = $('#complexity_class_search_bar');
 
@@ -375,7 +373,7 @@ function draw_graph(){
                 .style("cursor", "pointer")
                 .on("click", function(d) {
                     d3.event.stopPropagation(); // Prevent node click event
-                    zoom_out = false; // Avoid zooming out when we delete a class - we're not moving the graph
+                    delete_node(d.name);
                     delete_class(d.name);
                 })
                 .append("circle")
@@ -415,8 +413,7 @@ function draw_graph(){
         
         drag_handler(node)
         
-        // //drag handler
-        // //d is the node 
+        // drag handler
         function drag_start(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -526,10 +523,6 @@ function draw_graph(){
             if (nodeCount == 0){
                 return;
             }
-            if (!zoom_out){
-                zoom_out = true;
-                return;
-            }
             var svgElement = d3.select("#graph_viz svg");
             var bounds = svg.node().getBBox();
             var padding_scale = 1;
@@ -561,6 +554,56 @@ function draw_graph(){
                 .call(zoom.transform, transform);
         }, rescaling_timer);
     });
+
+    function delete_node(className) {
+        // Remove the node from the DOM
+        node.filter(d => d.name === className).remove();
+        
+        // Remove associated links from the DOM
+        link.filter(d => d.source.name === className || d.target.name === className).remove();
+        
+        // Remove arrows associated with the removed links
+        d3.selectAll(".arrow")
+            .filter(d => d.source.name === className || d.target.name === className)
+            .remove();
+    
+        // Update simulation data
+        var nodes = simulation.nodes();
+        var links = simulation.force("links").links();
+        var new_links;
+    
+        fetch(`/check_indirect_paths?class_name=${className}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                new_links = data.direct_paths;
+
+                // Filter out the deleted node and its links
+                simulation.nodes(nodes.filter(n => n.name !== className));
+                simulation.force("links")
+                    .links(links.filter(l => l.source.name !== className && l.target.name !== className));
+            
+                // Add the new links
+                console.log("Drawing new links")
+                for (var i = 0; i < new_links.length; i++) {
+                    var newLink = new_links[i];
+                    // Find the actual node objects that match the source and target names
+                    var sourceNode = nodes.find(n => n.name === newLink[0]);
+                    var targetNode = nodes.find(n => n.name === newLink[1]);
+                    if (sourceNode && targetNode) {
+                        links.push({source: sourceNode, target: targetNode, type: "A"});
+                    }
+                    else {
+                        console.log("Could not find node " + newLink[0] + " or " + newLink[1]);
+                    }
+                }
+            
+                // Restart the simulation gently
+                simulation.alpha(1).restart();
+            })
+            .catch(error => console.error('Error checking indirect paths:', error));
+    }
+
     drawn = 1;
 }
 
@@ -640,6 +683,5 @@ function format_information(htmlString)
     //find all substrings of the format [.*] and replace them with <a href="/references" class="citation-link"> /*SUBSTRING[.*]*/ </a>
     return htmlString.replace(/\[([a-zA-Z0-9]+)\]/g, '<a href="/references" class="citation-link">[$1]</a>')
 }
-
 
 draw_graph();

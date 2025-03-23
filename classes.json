@@ -91,6 +91,46 @@
             "name": "AM",
             "description": "Arthur-Merlin",
             "information": "test AM"
+        },
+        "QMA(2)": {
+            "name": "QMA(2)",
+            "description": "Quantum Merlin-Arthur with two unentangled certificates.",
+            "information": "For k>=2, QMA(2)=QMA(k) where QMA(k) is the class with k unentangled certificates."
+        },
+        "NEXP":{
+            "name": "NEXP",
+            "description": "Non-deterministic Exponential Time",
+            "information": "test NEXP"
+        },
+        "RE":{
+            "name": "RE",
+            "description": "Recursive Enumerable Languages",
+            "information": "Class of decision problems for which a 'yes' answer may be verified by a Turing machine in a finite amount of time, while if the answer is 'no' the machine may never halt."
+        },
+        "A0PP":{
+            "name": "A0PP",
+            "description": "One-Sided Analog of AWPP",
+            "information": "test A0PP"
+        },
+        "AWPP":{
+            "name": "AWPP",
+            "description": "Almost WPP",
+            "information": "test AWPP"
+        },
+        "R":{
+            "name": "R",
+            "description": "Recursive Languages",
+            "information": "test R"
+        },
+        "RP":{
+            "name": "RP",
+            "description": "Randomized Polynomial Time",
+            "information": "test RP"
+        },
+        "ZPP":{
+            "name": "ZPP",
+            "description": "Zero-Error Probabilistic Polynomial Time",
+            "information": "test ZPP"
         }
     }
 }

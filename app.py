@@ -28,7 +28,7 @@ app.secret_key = b'_5#y3l"Fp7z\n\xec]/'
 def update_network_information():
    network: complexity_network = NETWORK
    session['selected_classes'] = network.get_trimmed_network()
-   network.print_trimmed_network()
+   # network.print_trimmed_network()
    return
 
 @app.before_request
@@ -154,6 +154,8 @@ def expand_node():
    class_name = request.args.get('class_name')
    network: complexity_network = NETWORK
    expand_success, new_classes = network.expand_node(class_name)
+   if expand_success:
+      update_network_information()
    return jsonify({'success': expand_success, 'new_classes': new_classes})
 
 @app.route('/delete_class', methods=['GET'])
@@ -163,6 +165,13 @@ def delete_class():
    network.remove_class_from_trimmed_network(class_name)
    update_network_information()
    return jsonify({'success': True})
+
+@app.route('/check_indirect_paths', methods=['GET'])
+def check_indirect_paths():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   direct_paths = network.get_direct_paths(class_name)
+   return jsonify({'success': True, 'direct_paths': direct_paths})
 
 if __name__ == '__main__':
     app.run(debug=True)

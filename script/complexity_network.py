@@ -28,6 +28,7 @@ class complexity_network():
         self.max_level = -1
         self.min_level = -1
         self.update_location = True
+        self.set_root_and_top_nodes()
         return
     
     def add_class(self, class_def: dict, class_name: str):
@@ -125,13 +126,27 @@ class complexity_network():
         pairs_to_delete = []
         for source in [self.classes_dict[c] for c in class_list]:
             for target in source.get_trim_contains():
-                print(f'Checking: {source.name} - {target.name}')
+                #print(f'Checking: {source.name} - {target.name}')
                 if source.has_indirect_path(target, self.classes_dict):
                     pairs_to_delete.append((source, target))
 
         for pair in pairs_to_delete:
             pair[0].trim_contains.remove(pair[1])
             pair[1].trim_within.remove(pair[0])
+
+        self.set_root_and_top_nodes()
+
+    def set_root_and_top_nodes(self):
+        """
+        Setting the root and top nodes
+        """
+        self.root_nodes = []
+        self.top_nodes = []
+        if len(self.trimmed_network) == 0:
+            return
+        self.root_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_within()) == 0]
+        self.top_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_contains()) == 0]
+        return
 
     def turn_vertex_into_edge(self, vertex: complexity_class):
         within_classes = vertex.get_trim_within()
@@ -186,6 +201,10 @@ class complexity_network():
         return
     
     def remove_class_from_trimmed_network(self, class_identifier: str):
+        """
+        Removing a class from the trimmed network
+        David note: This can be made more efficient by not recalculating the entire network
+        """
         class_identifier = class_identifier.lower()
         if class_identifier not in self.classes_dict:
             raise ValueError(f"Class {class_identifier} not found in the network")
@@ -212,18 +231,18 @@ class complexity_network():
             network_dict["nodes"].append({
                 "name": c,
                 "label": class_obj.get_name(),
-                "group": "A",
                 "savedX": class_obj.get_x()/1000,
                 "savedY": class_obj.get_y()/1000,
-                "level": class_obj.get_level(),
-                "maxLevel":self.max_level
+                "level": class_obj.get_level()
             })
             for cont in class_obj.get_trim_within():
                 network_dict["links"].append({
                     "source": c,
-                    "target": cont.get_identifier(),
-                    "type": "A"
+                    "target": cont.get_identifier()
                 })
+        network_dict["root_nodes"] = self.root_nodes
+        network_dict["top_nodes"] = self.top_nodes
+        network_dict["maxLevel"] = self.max_level
         return network_dict
     
     def get_checked_classes_dict(self):
@@ -405,7 +424,7 @@ class complexity_network():
 
         # Set y positions based on levels
         for level, nodes in nodes_per_level.items():
-            level_spacing = height / 2
+            level_spacing = height*(0.5)
             y_pos = (max_level - level) * level_spacing + level_spacing/2
             randomize_level: bool = len(nodes) > 1
             for node in nodes:
@@ -467,6 +486,27 @@ class complexity_network():
             return False, []
         self.new_trimmed_network(self.trimmed_network + connected_classes)
         return True, [c.upper() for c in connected_classes]
+
+    def get_direct_paths(self, class_name: str):
+        """
+        Checking if there are indirect paths that go through this class
+        """
+        class_name = class_name.lower()
+        if class_name not in self.classes_dict:
+            raise ValueError(f"Class {class_name} not found in the network")
+        class_obj = self.classes_dict[class_name]
+
+        direct_paths = []
+        for c_top in class_obj.get_trim_within():
+            for c_bottom in class_obj.get_trim_contains():
+                if c_top.get_identifier() == class_name or c_bottom.get_identifier() == class_name or c_top.get_identifier() == c_bottom.get_identifier():
+                    continue
+                if c_top.has_indirect_path(c_bottom, self.classes_dict, disregard=[class_obj.get_identifier()]):
+                    print(f"Indirect path found between {c_top.get_identifier()} and {c_bottom.get_identifier()}")
+                else:
+                    direct_paths.append([c_bottom.get_identifier(), c_top.get_identifier()])
+        print(f"Direct paths: {direct_paths}")
+        return direct_paths
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]
