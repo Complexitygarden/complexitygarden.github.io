@@ -17,11 +17,6 @@
         },
         {
             "type": "containment",
-            "small": "QMA",
-            "large": "PP"
-        },
-        {
-            "type": "containment",
             "small": "QCMA",
             "large": "QMA"
         },
