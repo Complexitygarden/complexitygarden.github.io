@@ -131,6 +131,17 @@
             "name": "ZPP",
             "description": "Zero-Error Probabilistic Polynomial Time",
             "information": "test ZPP"
+        },
+        "CH":{
+            "name": "CH",
+            "description": "Counting Hierarchy",
+            "information": "test CH"
+        },
+        "PH":{
+            "name": "PH",
+            "description": "Polynomial Hierarchy",
+            "information": "test PH"
         }
+        
     }
 }

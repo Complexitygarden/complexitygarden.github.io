@@ -179,8 +179,31 @@
             "type":"containment",
             "small":"P",
             "large":"ZPP"
+        },
+        {
+            "type":"containment",
+            "small":"PH",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"CH",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"NP",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"CH"
         }
-        
-        
     ]
 }
