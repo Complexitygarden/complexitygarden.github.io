@@ -97,6 +97,11 @@ def get_complexity_network():
    network: complexity_network = NETWORK
    return jsonify(network.get_trimmed_network_json())
 
+@app.route('/get_complexity_sunburst')
+def get_complexity_sunburst():
+   network: complexity_network = NETWORK
+   return jsonify(network.get_trimmed_sunburst_json())
+
 """
 Selecting all/no classes in the visualization
  - If 'select', then we show all classes, otherwise we unselect all

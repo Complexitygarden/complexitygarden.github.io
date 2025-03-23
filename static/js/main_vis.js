@@ -11,6 +11,7 @@ var user_interaction = {
         selected_class_b: null // The class selected on the right
     }
 var id_visualisation_div = "#visualisation_div";
+var currentVisualization = 'graph';
 
 // Sizes of the divs
 var window_width = 200,
@@ -114,7 +115,25 @@ function logSVGBoundaries() {
 
 // Controlling the type and style of visualisation
 function create_visualisation(){
-    draw_graph();
+    // Clear the existing visualization
+    d3.select(id_visualisation_div).select("svg").remove();
+
+    // Create new SVG
+    vis_svg = d3.select(id_visualisation_div)
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", "0 0 " + vis_width + " " + vis_height)
+        .classed("svg-content-responsive", true)
+        .call(zoom)
+        .append("g");
+
+    // Draw the selected visualization
+    if (currentVisualization === 'graph') {
+        draw_graph();
+    } else if (currentVisualization === 'sunburst') {
+        draw_sunburst();
+    }
 }
 
 // Javascript file which creates a sidewindow
@@ -153,3 +172,18 @@ function open_side_window(d, force_open = true) {
             searchBar.blur();
     }
 }
+
+// Add after other initialization code
+function initializeVisualizationControls() {
+    // Set up visualization type selector
+    const visTypeSelect = document.getElementById('vis-type-select');
+    if (visTypeSelect) {
+        visTypeSelect.addEventListener('change', function(e) {
+            currentVisualization = e.target.value;
+            create_visualisation();
+        });
+    }
+}
+
+// Call initialization when the window loads
+window.addEventListener('load', initializeVisualizationControls);

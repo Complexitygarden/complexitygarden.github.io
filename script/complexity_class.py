@@ -31,6 +31,7 @@ class complexity_class():
         self.level: int = -1
         self.x: int = -1
         self.y: int = -1
+        self.max_level: int = -1
         return
     
     def get_identifier(self):
@@ -116,11 +117,17 @@ class complexity_class():
     def get_y(self):
         return self.y
     
+    def get_max_level(self):
+        return self.max_level
+    
     def set_level(self, level: int):
         if not isinstance(level, int):
             raise ValueError("Level must be an integer")    
         self.level = level
         return
+    
+    def set_max_level(self, max_level: int):
+        self.max_level = max_level
     
     def get_classes_below(self) -> list[complexity_class]:
             nodes_above = self.get_trim_within()
@@ -157,6 +164,31 @@ class complexity_class():
                         paths.append([self] + path)
         
         return paths
+    
+    def build_sunburst_hierarchy(self, processed = None, only_return_data = False):
+        """
+        Building the hierarchy for the sunburst visualization
+        """
+        if processed is None:
+            processed = set()
+
+        if self.get_identifier() in processed:
+            return None
+        
+        processed.add(self.get_identifier())
+
+        self_data = {
+            "name": self.get_identifier(),
+            "label": self.get_name(),
+            "level": self.get_level(),
+        }
+        if only_return_data:
+            return self_data
+        self_data["children"] = []
+        for child in self.get_trim_within():
+            self_data["children"].append(child.build_sunburst_hierarchy(processed, (child.get_identifier() in processed)))
+
+        return self_data
 
 if __name__=='__main__':
     p_class = complexity_class({

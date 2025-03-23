@@ -25,8 +25,9 @@ class complexity_network():
         self.classes_dict: dict[str, complexity_class] = {}
         self.theorems: list[theorem] = []
         self.trimmed_network = []
-        self.max_level = -1
+        self.max_avg_level = -1
         self.min_level = -1
+        self.max_max_level = -1
         self.update_location = True
         self.set_root_and_top_nodes()
         return
@@ -242,9 +243,59 @@ class complexity_network():
                 })
         network_dict["root_nodes"] = self.root_nodes
         network_dict["top_nodes"] = self.top_nodes
-        network_dict["maxLevel"] = self.max_level
+        network_dict["maxLevel"] = self.max_avg_level
         return network_dict
     
+    def get_trimmed_sunburst_json(self):
+        """
+        Creates a JSON structure where each class spans across its levels.
+        """
+        if len(self.trimmed_network) == 0:
+            return {"success": True, "data": {"name": "root", "children": []}}
+        
+        self.set_levels()
+
+        # Calculate the level range for each class
+        class_ranges = {}
+        for class_name in self.trimmed_network:
+            class_obj = self.classes_dict[class_name]
+
+            # Find the highest level (classes that contain this one)
+            max_level = class_obj.get_max_level()
+            print(f"Max level: {class_name}: {max_level}")
+            
+            # Find the lowest level (classes this one contains)
+            min_level = [contained.get_max_level() + 1 for contained in class_obj.get_trim_contains()] + [max_level]
+            min_level = min(min_level)
+            print(f"Min level: {class_name}: {min_level}")
+            
+            class_ranges[class_name] = {
+                "min_level": min_level,
+                "max_level": max_level,
+                "span": max_level - min_level + 1
+            }
+
+        # Create nodes that span their full range
+        nodes = []
+        for class_name, range_info in class_ranges.items():
+            class_obj = self.classes_dict[class_name]
+            nodes.append({
+                "name": class_obj.get_identifier(),
+                "label": class_obj.get_name(),
+                "level_start": range_info["min_level"],
+                "level_end": range_info["max_level"],
+                "contains": [c.get_identifier() for c in class_obj.get_trim_contains()],
+                "within": [c.get_identifier() for c in class_obj.get_trim_within()]
+            })
+            nodes[-1]["contains_level"] = {c: self.classes_dict[c].get_max_level() for c in nodes[-1]["contains"]}
+            nodes[-1]["within_level"] = {c: self.classes_dict[c].get_max_level() for c in nodes[-1]["within"]}
+
+        return {"success": True, "data": {
+            "name": "root",
+            "children": nodes,
+            "max_level": max(r["max_level"] for r in class_ranges.values()) if class_ranges else 0
+        }}
+
     def get_checked_classes_dict(self):
         return {
             k: {
@@ -319,20 +370,21 @@ class complexity_network():
                     queue.append(target_name)
 
         # Set each node's level to the average of its min and max levels
-        final_max_level = 0
+        self.max_avg_level, self.max_max_level = 0, 0
         levels = {}
         for class_name in self.trimmed_network:
             class_obj = self.classes_dict[class_name]
             min_level = min_levels.get(class_name, 0)
             max_level = max_levels.get(class_name, max_level)
             avg_level = math.ceil((min_level + max_level) / 2)
+            class_obj.set_max_level(max_level)
             class_obj.set_level(avg_level)
             if avg_level not in levels:
                 levels[avg_level] = []
             levels[avg_level].append(class_obj)
-            final_max_level = max(final_max_level, avg_level)
+            self.max_avg_level = max(self.max_avg_level, avg_level)
+            self.max_max_level = max(self.max_max_level, max_level)
 
-        self.max_level = final_max_level
         self.min_level = 0
 
         # Setting the mid_levels - only for classes which are not in the trimmed network
