@@ -540,7 +540,7 @@ function draw_graph(){
             
             // Use the smaller scale, but don't let it get too small
             if (nodeCount > 20){
-                var scale = Math.max(Math.min(scaleX, scaleY), 0.15)*0.7;
+                var scale = Math.max(Math.min(scaleX, scaleY), 0.15);
             } else {
                 var scale = Math.max(Math.min(scaleX, scaleY), 0.15);
             }
