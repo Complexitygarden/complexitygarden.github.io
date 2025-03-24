@@ -192,8 +192,13 @@
         },
         {
             "type":"containment",
-            "small":"NP",
-            "large":"PH"
+            "small":"MA",
+            "large":"Sigma2"
+        },
+        {
+            "type":"containment",
+            "small":"AM",
+            "large":"Pi2"
         },
         {
             "type":"containment",

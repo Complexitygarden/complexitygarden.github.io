@@ -172,15 +172,15 @@
         },
         "Sigma2":{
             "name": "Sigma2",
-            "latex_name": "$\\mathsf{\\Sigma_{2}}^{p}$",
+            "latex_name": "$\\mathsf{\\Sigma_{2}^{p}}$",
             "description": "NP with an NP oracle",
-            "information": "Together with $\\mathsf{\\Pi_{2}}^{p}$ comprises the second level of the polynomial hierarchy."
+            "information": "Together with $\\mathsf{\\Pi_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
         },
         "Pi2":{
             "name": "Pi2",
-            "latex_name": "$\\mathsf{\\Pi_{2}}^{p}$",
+            "latex_name": "$\\mathsf{\\Pi_{2}^{p}}$",
             "description": "co-NP with an NP oracle",
-            "information": "Together with $\\mathsf{\\Sigma_{2}}^{p}$ comprises the second level of the polynomial hierarchy."
+            "information": "Together with $\\mathsf{\\Sigma_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
         }
     }
 }
