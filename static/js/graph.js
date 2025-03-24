@@ -359,15 +359,15 @@ function draw_graph(){
                 }, 250); // 250ms delay
             });
 
-            node.on("mouseover", function(d){
-                open_side_window(d, false);
-            });
+            // node.on("mouseover", function(d){
+            //     open_side_window(d, false);
+            // });
 
-            node.on("mouseout", function(d){
-                if (select_node_a !== d && select_node_a !== null){ 
-                    open_side_window(select_node_a, false)
-                }
-            });
+            // node.on("mouseout", function(d){
+            //     if (select_node_a !== d && select_node_a !== null){ 
+            //         open_side_window(select_node_a, false)
+            //     }
+            // });
 
             node.on("dblclick", function(d) {
                 // Clear the click timeout so the click handler won't fire
@@ -559,46 +559,35 @@ function draw_graph(){
         // Rescaling the graph
         var rescaling_timer = window.gravityEnabled ? 2000 : 20;
         function rescaling_zoom() {
-            // Get all nodes and find min/max coordinates
             var nodes = simulation.nodes();
-            var minX = d3.min(nodes, d => d.x - radius);
-            var maxX = d3.max(nodes, d => d.x + radius);
-            var minY = d3.min(nodes, d => d.y - radius);
-            var maxY = d3.max(nodes, d => d.y + radius);
+            var minX = d3.min(nodes, d => d.x);
+            var maxX = d3.max(nodes, d => d.x);
+            var minY = d3.min(nodes, d => d.y);
+            var maxY = d3.max(nodes, d => d.y);
 
-            // Calculate the bounds width and height
-            var boundsWidth = maxX - minX;
-            var boundsHeight = maxY - minY;
+            // Bounds
+            var boundsWidth = maxX - minX + 2*radius;
+            var boundsHeight = maxY - minY + 2*radius;
 
-            // Calculate the available space
+            // Available space
             var availableWidth = vis_width;
             var availableHeight = vis_height - margin;
-
-            // Calculate scale to fit
-            var scaleX = availableWidth / boundsWidth;
-            var scaleY = availableHeight / boundsHeight;
             
-            // Use the smaller scale, but don't let it get too small
-            if (nodeCount > 20){
-                var scale = Math.max(Math.min(scaleX, scaleY), 0.15)*0.7;
-            } else {
-                var scale = Math.max(Math.min(scaleX, scaleY), 0.15);
-            }
+            // Scaling the change
+            var scale = Math.min(availableWidth / boundsWidth, availableHeight / boundsHeight);
 
-            // Calculate center points
+            // Center points
             var centerX = (minX + maxX) / 2;
             var centerY = (minY + maxY) / 2;
 
-            // Calculate translations to center the content
+            // Translations to center the content
             var tx = (availableWidth / 2) - (centerX * scale);
             var ty = (availableHeight / 2) - (centerY * scale) + margin/2;
-
-            // Create and apply transform
             var transform = d3.zoomIdentity
                 .translate(tx, ty)
                 .scale(scale);
 
-            // Apply the transform smoothly
+            // Smoothing
             d3.select("#visualisation_div svg")
                 .transition()
                 .duration(750)

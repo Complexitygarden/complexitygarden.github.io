@@ -80,7 +80,7 @@ def search():
 
 @app.route('/get_class_description', methods=['GET'])
 def get_class_description():
-   class_name = request.args.get('class_name')
+   class_name = request.args.get('class_name').lower()
    network: complexity_network = NETWORK
    description = network.get_class(class_name).get_description()
    information = network.get_class(class_name).get_information()
