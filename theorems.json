@@ -48,7 +48,7 @@
         {
             "type": "containment",
             "small": "PDQP",
-            "large": "PSPACE"
+            "large": "CH"
         },
         {
             "type": "containment",
