@@ -181,6 +181,42 @@
             "latex_name": "$\\mathsf{\\Pi_{2}^{p}}$",
             "description": "co-NP with an NP oracle",
             "information": "Together with $\\mathsf{\\Sigma_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
+        },
+        "AC0":{
+            "name":"AC0",
+            "latex_name":"$\\mathsf{AC^0}$",
+            "description":"The class of constant-depth, polynomial-size circuits with unbounded fan-in AND, OR, and NOT gates.",
+            "information":"test AC0"
+        },
+        "TC0":{
+            "name":"TC0",
+            "latex_name":"$\\mathsf{TC^0}$",
+            "description":"The class of constant-depth, polynomial-size circuits with unbounded fan-in AND, OR, and MAJ (Majority) gates.",
+            "information":"test TC0"
+        },
+        "NC0":{
+            "name":"NC0",
+            "latex_name":"$\\mathsf{NC^0}$",
+            "description":"The class of constant-depth, polynomial-size circuits with binary AND, OR gates and unary NOT gates.",
+            "information":"test NC0"
+        },
+        "NC1":{
+            "name":"NC1",
+            "latex_name":"$\\mathsf{NC^1}$",
+            "description":"The class of $O(\\log (n))$ depth, polynomial-size circuits with binary AND, OR gates and unary NOT gates.",
+            "information":"test NC1"
+        },
+        "AC1":{
+            "name":"AC1",
+            "latex_name":"$\\mathsf{AC^1}$",
+            "description":"The class of $O(\\log (n))$ depth, polynomial-size circuits with unbounded fan-in AND, OR, and NOT gates.",
+            "information":"test AC1"
+        },
+        "TC1":{
+            "name":"TC1",
+            "latex_name":"$\\mathsf{TC^1}$",
+            "description":"The class of $O(\\log (n))$ depth, polynomial-size circuits with unbounded fan-in AND, OR, and MAJ (Majority) gates..",
+            "information":"test TC1"
         }
     }
 }

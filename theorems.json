@@ -77,11 +77,6 @@
         },
         {
             "type":"containment",
-            "small": "NL",
-            "large": "P"
-        },
-        {
-            "type":"containment",
             "small": "SZK",
             "large":"DQP"
         },
@@ -114,11 +109,6 @@
             "type":"containment",
             "small":"SZK",
             "large": "AM"
-        },
-        {
-            "type":"containment",
-            "small": "NONE",
-            "large": "L"
         },
         {
             "type":"containment",
@@ -224,6 +214,46 @@
             "type":"containment",
             "small":"BPP",
             "large":"Sigma2"
+        },
+        {
+            "type":"containment",
+            "small":"TC0",
+            "large":"NC1"
+        },
+        {
+            "type":"containment",
+            "small":"NC1",
+            "large":"L"
+        },
+        {
+            "type":"containment",
+            "small":"NL",
+            "large":"AC1"
+        },
+        {
+            "type":"containment",
+            "small":"AC1",
+            "large":"TC1"
+        },
+        {
+            "type":"containment",
+            "small":"NONE",
+            "large":"NC0"
+        },
+        {
+            "type":"containment",
+            "small":"NC0",
+            "large":"AC0"
+        },
+        {
+            "type":"containment",
+            "small":"AC0",
+            "large":"TC0"
+        },
+        {
+            "type":"containment",
+            "small":"TC1",
+            "large":"P"
         }
     ]
 }
