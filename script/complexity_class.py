@@ -19,6 +19,7 @@ class complexity_class():
         self.name = def_dict['name']
         self.identifier = identifier.lower()
         #self.full_name = def_dict['full_name']
+        self.latex_name = def_dict['latex_name'] if 'latex_name' in def_dict else self.name
         self.description = def_dict['description'] if 'description' in def_dict else None
         self.information = def_dict['information'] if 'information' in def_dict else None
         self.theorems: list[theorem] = []
@@ -39,6 +40,9 @@ class complexity_class():
     
     def get_name(self):
         return self.name
+    
+    def get_latex_name(self):
+        return self.latex_name
     
     def add_theorem(self, thm: theorem):
         """

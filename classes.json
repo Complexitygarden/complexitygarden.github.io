@@ -2,146 +2,185 @@
     "class_list":{
         "ALL": {
             "name": "ALL",
+            "latex_name": "$\\mathsf{ALL}$",
             "top": true,
             "description": "The class of all languages.",
             "information": "ALL is the complexity class of all languages. "
         },
         "NONE": {
             "name": "NONE",
+            "latex_name": "$\\mathsf{NONE}$",
             "bottom": true,
             "description": "The class which does not contain any languages. It is the opposite of ALL.",
             "information": "test NONE"
         },
         "PP": {
             "name": "PP",
+            "latex_name": "$\\mathsf{PP}$",
             "description": "Probabilistic Polynomial Time",
             "information": "test PP"
         },
         "QMA": {
             "name": "QMA",
+            "latex_name": "$\\mathsf{QMA}$",
             "description": "Quantum Merlin-Arthur",
             "information": "test QMA"
         },
         "QCMA": {
             "name": "QCMA",
+            "latex_name": "$\\mathsf{QCMA}$",
             "description": "Quantum Classical Merlin-Arthur",
             "information": "test QCMA"
         },
         "PDQP": {
             "name": "PDQP",
+            "latex_name": "$\\mathsf{PDQP}$",
             "description": "Polynomial Dynamical Quantum Polynomial Time",
             "information": "test PDQP"
         },
         "P": {
             "name": "P",
+            "latex_name": "$\\mathsf{P}$",
             "description": "Polynomial Time",
             "information": "<ul><li><p>P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine.</p> </li> <li><p>Defined in [Edm65], [Cob64], [Rab60], and other seminal early papers.</p> </li></ul>"
         },
         "BQP": {
             "name": "BQP",
+            "latex_name": "$\\mathsf{BQP}$",
             "description": "Bounded-Error Quantum Polynomial Time",
             "information": "test BQP"
         },
         "NP": {
             "name": "NP",
+            "latex_name": "$\\mathsf{NP}$",
             "description": "Non-deterministic Polynomial Time",
             "information": "test NP"
         },
         "SZK": {
             "name": "SZK",
+            "latex_name": "$\\mathsf{SZK}$",
             "description": "Statistical Zero-Knowledge",
             "information": "test SZK"
         },
         "BPP": {
             "name": "BPP",
+            "latex_name": "$\\mathsf{BPP}$",
             "description": "Bounded-Error Probabilistic Polynomial Time",
             "information": "test BPP"
         },
         "PSPACE": {
             "name": "PSPACE",
+            "latex_name": "$\\mathsf{PSPACE}$",
             "description": "Polynomial Space",
             "information": "test PSPACE"
         },
         "EXP": {
             "name": "EXP",
+            "latex_name": "$\\mathsf{EXP}$",
             "description": "Exponential Time",
             "information": "test EXP"
         },
         "DQP":{
             "name": "DQP",
+            "latex_name": "$\\mathsf{DQP}$",
             "description": "Dynamical Quantum Polynomial-Time",
             "information": "text DQP"
         },
         "L": {
             "name": "L",
+            "latex_name": "$\\mathsf{L}$",
             "description": "Logarithmic Space",
             "information":"Class of decision problems solvable by a Turing machine restricted to a memory of logarithmic size in terms of the input size n. Note that the input is not part of the memory."
         },
         "NL":{
             "name": "NL",
+            "latex_name": "$\\mathsf{NL}$",
             "description": "Non-deterministic Logarithmic Space",
             "information": "The Non-deterministic version of L."
         },
         "MA":{
             "name": "MA",
+            "latex_name": "$\\mathsf{MA}$",
             "description": "Merlin-Arthur",
             "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP."
         },
         "AM": {
             "name": "AM",
+            "latex_name": "$\\mathsf{AM}$",
             "description": "Arthur-Merlin",
             "information": "test AM"
         },
         "QMA(2)": {
             "name": "QMA(2)",
+            "latex_name": "$\\mathsf{QMA(2)}$",
             "description": "Quantum Merlin-Arthur with two unentangled certificates.",
             "information": "For k>=2, QMA(2)=QMA(k) where QMA(k) is the class with k unentangled certificates."
         },
         "NEXP":{
             "name": "NEXP",
+            "latex_name": "$\\mathsf{NEXP}$",
             "description": "Non-deterministic Exponential Time",
             "information": "test NEXP"
         },
         "RE":{
             "name": "RE",
+            "latex_name": "$\\mathsf{RE}$",
             "description": "Recursive Enumerable Languages",
             "information": "Class of decision problems for which a 'yes' answer may be verified by a Turing machine in a finite amount of time, while if the answer is 'no' the machine may never halt."
         },
         "A0PP":{
             "name": "A0PP",
+            "latex_name": "$\\mathsf{A_{0}PP}$",
             "description": "One-Sided Analog of AWPP",
             "information": "test A0PP"
         },
         "AWPP":{
             "name": "AWPP",
+            "latex_name": "$\\mathsf{AWPP}$",
             "description": "Almost WPP",
             "information": "test AWPP"
         },
         "R":{
             "name": "R",
+            "latex_name": "$\\mathsf{R}$",
             "description": "Recursive Languages",
             "information": "test R"
         },
         "RP":{
             "name": "RP",
+            "latex_name": "$\\mathsf{RP}$",
             "description": "Randomized Polynomial Time",
             "information": "test RP"
         },
         "ZPP":{
             "name": "ZPP",
+            "latex_name": "$\\mathsf{ZPP}$",
             "description": "Zero-Error Probabilistic Polynomial Time",
             "information": "test ZPP"
         },
         "CH":{
             "name": "CH",
+            "latex_name": "$\\mathsf{CH}$",
             "description": "Counting Hierarchy",
             "information": "test CH"
         },
         "PH":{
             "name": "PH",
+            "latex_name": "$\\mathsf{PH}$",
             "description": "Polynomial Hierarchy",
             "information": "test PH"
+        },
+        "Sigma2":{
+            "name": "Sigma2",
+            "latex_name": "$\\mathsf{\\Sigma_{2}}^{p}$",
+            "description": "NP with an NP oracle",
+            "information": "Together with $\\mathsf{\\Pi_{2}}^{p}$ comprises the second level of the polynomial hierarchy."
+        },
+        "Pi2":{
+            "name": "Pi2",
+            "latex_name": "$\\mathsf{\\Pi_{2}}^{p}$",
+            "description": "co-NP with an NP oracle",
+            "information": "Together with $\\mathsf{\\Sigma_{2}}^{p}$ comprises the second level of the polynomial hierarchy."
         }
-        
     }
 }

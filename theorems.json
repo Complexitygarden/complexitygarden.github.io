@@ -197,13 +197,28 @@
         },
         {
             "type":"containment",
-            "small":"BPP",
+            "small":"PP",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"Sigma2",
             "large":"PH"
         },
         {
             "type":"containment",
-            "small":"PP",
-            "large":"CH"
+            "small":"Pi2",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"Pi2"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"Sigma2"
         }
     ]
 }

@@ -234,7 +234,8 @@ class complexity_network():
                 "label": class_obj.get_name(),
                 "savedX": class_obj.get_x()/1000,
                 "savedY": class_obj.get_y()/1000,
-                "level": class_obj.get_level()
+                "level": class_obj.get_level(),
+                "latex_name": class_obj.get_latex_name()
             })
             for cont in class_obj.get_trim_within():
                 network_dict["links"].append({
@@ -301,6 +302,7 @@ class complexity_network():
             k: {
                 'name': v.get_name(),
                 'value': v.visible,
+                'latex_name': v.get_latex_name()
             } for k, v in self.classes_dict.items()
         }
     

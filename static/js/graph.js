@@ -126,7 +126,7 @@ function draw_graph(){
         simulation.on("tick", tickActions);
 
         // Returning the label
-        function nodeLabel(d){return d.label}
+        function nodeLabel(d){return d.latex_name}
 
         // Layers - Created in their order from behind to the front
         layer1 = vis_svg.append("g");
@@ -267,12 +267,24 @@ function draw_graph(){
                 .attr("stroke-width", 3);
     
             // Adding a label on the circle
-            nodeGroups.append('text')
-                .text(nodeLabel)
-                .attr("text-anchor", "middle")
-                .style("fill", "#fff")
-                .style("font-size", fontSize)
-                .attr("dy", (fontSize)/2);
+            nodeGroups.append('foreignObject')
+                .attr("x", -radius)
+                .attr("y", -fontSize)
+                .attr("width", radius * 2)
+                .attr("height", fontSize * 2)
+                .append("xhtml:div")
+                .style("text-align", "center")
+                .style("color", "#fff")
+                .style("font-size", fontSize + "px")
+                .style("display", "flex")
+                .style("justify-content", "center")
+                .style("align-items", "center")
+                .style("height", "100%")
+                .style("pointer-events", "none") // This prevents interaction issues
+                .html(d => d.latex_name);
+
+            // Process all MathJax at once after adding all nodes
+            MathJax.typesetPromise();
 
             // Add delete button
             nodeGroups.append("g")

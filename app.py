@@ -87,7 +87,7 @@ def get_class_description():
    try:
       # title = class_dict[class_name]['title']
       # Going to add a proper title later - we should decide how to format this page
-      title = network.get_class(class_name).get_name()
+      title = network.get_class(class_name).get_latex_name()
    except:
       title = "No title available"
    return jsonify({'description': description, 'title': title, 'information':information})

@@ -66,11 +66,12 @@ function search_vals(query){
          data.forEach(function(d){
             const infoIcon = '<button class="info-icon" data-class="' + d.name + '" onclick="open_side_window({name: \'' + d.name + '\'})">i</button>';
             if (d.value){
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
             } else {
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
             }
          });
+         MathJax.typesetPromise();
       });
 }
 

@@ -156,6 +156,7 @@ function open_side_window(d, force_open = true) {
             if (force_open){
                 document.getElementById("openRightSidebarMenu").checked = true;
             }
+            MathJax.typesetPromise();
             
             // Adjust the graph width
             graph_width_ratio = 0.9;
