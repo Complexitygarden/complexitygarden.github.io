@@ -46,14 +46,42 @@ function delete_old_graph(){
     if (graph_drawn === 1) {
         vis_svg.selectAll('.nodes').remove();
         vis_svg.selectAll('.links').remove();
+        
+        // Clear layers
+        if (layer1) layer1.selectAll('*').remove();
+        if (layer2) layer2.selectAll('*').remove();
+        if (arrowLayer) arrowLayer.selectAll('*').remove();
+        
+        // Stop and clear the simulation
+        if (simulation) {
+            simulation.stop();
+            simulation.nodes([]);
+            simulation.force("links", null);
+            simulation.force("charge_force", null);
+            simulation.force("center_force", null);
+            simulation.force("collision", null);
+        }
+        
+        // Clear references
+        node = null;
+        link = null;
+        layer1 = null;
+        layer2 = null;
+        arrowLayer = null;
     }
 }
 
 // Main function which draws the graph
 function draw_graph(){
     console.log("Drawing graph");
-    // If graph was previously drawn, remove all existing elements
-    delete_old_graph()
+        // If graph was previously drawn, remove all existing elements
+        delete_old_graph()
+
+    
+    // Create fresh simulation
+    simulation = d3.forceSimulation()
+        .alphaDecay(0.05)  // Faster convergence
+        .velocityDecay(0.3); // Add damping
 
     d3.json('/get_complexity_network', function(data) {
         // Find the root node (node with only incoming edges) and top node (node with only outgoing edges)
