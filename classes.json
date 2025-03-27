@@ -217,6 +217,31 @@
             "latex_name":"$\\mathsf{TC^1}$",
             "description":"The class of $O(\\log (n))$ depth, polynomial-size circuits with unbounded fan-in AND, OR, and MAJ (Majority) gates..",
             "information":"test TC1"
+        },
+        "CZK":{
+            "name":"CZK",
+            "latex_name":"$\\mathsf{CZK}$",
+            "description":"Computational Zero-Knowledge",
+            "information":"The class of decision problems solvable by a zero-knowledge proof system where the distributions which the verifier can simulate are computationally indistinguishable from the distributions which the verifier can simulate through interaction with the prover."
+        },
+        "P/poly":{
+            "name":"P/poly",
+            "latex_name":"$\\mathsf{P/poly}$",
+            "description":"P with polynomial advice",
+            "information":"The class of decision problems solvable by a polynomial-time Turing machine with a polynomial-size advice string. Equals $\\mathsf{BPP/poly}$."
+        },
+        "BQP/poly":{
+            "name":"BQP/poly",
+            "latex_name":"$\\mathsf{BQP/poly}$",
+            "description":"BQP with polynomial advice",
+            "information":"The class of decision problems solvable by a polynomial-time quantum Turing machine with a polynomial-size advice string."
+        },
+        "BQP/qpoly":{
+            "name":"BQP/qpoly",
+            "latex_name":"$\\mathsf{BQP/qpoly}$",
+            "description":"BQP with polynomial quantum advice",
+            "information":"The class of decision problems solvable by a polynomial-time quantum Turing machine with a polynomial-size advice quantum state."
         }
+
     }
 }

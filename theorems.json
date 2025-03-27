@@ -254,6 +254,37 @@
             "type":"containment",
             "small":"TC1",
             "large":"P"
+        },
+        {
+            "type":"containment",
+            "small":"SZK",
+            "large":"CZK"
+        },
+        {
+            "type":"containment",
+            "small":"CZK",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"P/poly"
+        },
+        {
+            "type":"containment",
+            "small":"P/poly",
+            "large":"BQP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/poly",
+            "large":"BQP/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/qpoly",
+            "large":"ALL"
         }
+            
     ]
 }
