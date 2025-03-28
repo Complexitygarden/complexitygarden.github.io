@@ -74,8 +74,6 @@ body {
 .reference-entry {
     padding: 5px;
     margin-bottom: 5px;
-    border-left: 3px solid #ccc;
-
 }
 
 @keyframes highlight-fade {
@@ -88,7 +86,8 @@ body {
     }
 }
 
-.reference-entry.highlight {
+/* highlight the div or the paragraph element? */
+.reference-entry.highlight > p {
     animation: highlight-fade 3s forwards;
 }
 

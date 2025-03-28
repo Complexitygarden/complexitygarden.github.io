@@ -1,31 +1,3 @@
-//console.log("This test has passed");
-
-//fetch('/static/references.json')
-//    .then(response => response.json())
-//    .then(data => {
-//
-//
-//        console.log(data.references[0].identifier);
-//
-//        references = data.references;
-//        
-//    
-//        for (i = 0; i < references.length; i++)
-//        {
-//            //console.log(references[i]);
-//            if (references[i].identifier === "[Aar04b]")
-//            {
-//                console.log(references[i].identifier);
-//
-//
-//            }
-//        }
-//
-//
-//
-//    })
-//    .catch(error => console.log("Error fetching JSON:", error));
-
 document.addEventListener("DOMContentLoaded", function() {
     fetch("/static/references.json")
     .then(response => response.json())
@@ -110,7 +82,6 @@ function scroll_and_highlight_target(duration)
         if (target_element)
         {
             target_element.scrollIntoView({behavior: "smooth", block:"center"});
-
 
             target_element.classList.add("highlight");
 
