@@ -1,6 +1,6 @@
 $(document).ready(function(){
-    const searchBar = $('#complexity_class_search_bar');
     const body = $('body');
+    const searchBar = $('#complexity_class_search_bar');
     const searchContainer = $('.search-container');
     
     // Show dropdown and overlay when focusing on search
@@ -66,11 +66,12 @@ function search_vals(query){
          data.forEach(function(d){
             const infoIcon = '<button class="info-icon" data-class="' + d.name + '" onclick="open_side_window({name: \'' + d.name + '\'})">i</button>';
             if (d.value){
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
             } else {
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
+               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
             }
          });
+         MathJax.typesetPromise();
       });
 }
 
@@ -106,9 +107,29 @@ function deselect_all() {
 function all_class_request(select) {
     $.get('/all_class_request', {select: select}, function(data) {
         if (data.success) {
-            draw_graph();
+            create_visualisation();
         }
     });
+}
+
+function select_class_list(class_list, select){
+    $('#complexity_class_search_results input[type="checkbox"]').each(function() {
+        if (this.checked != select && class_list.includes(this.id)) {
+            this.checked = select;
+        }
+    });
+}
+
+function delete_class(class_name){
+    fetch(`/delete_class?class_name=${class_name.toUpperCase()}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success){
+                // Deleting the class from the search bar
+                select_class_list([class_name.toUpperCase()], false);
+                // Deleting the node from the graph
+            }
+        });
 }
 
 function ajaxRequest(inp) {
@@ -134,7 +155,7 @@ function ajaxRequest(inp) {
       if(xhttp.readyState==4 && xhttp.status == 200)
       {
          // We changed the graph -> redrawing it
-         draw_graph();
+        create_visualisation();
       }
     }
     xhttp.send("name=" + inp.id + "&checked=" +checked);

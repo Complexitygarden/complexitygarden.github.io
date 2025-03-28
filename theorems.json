@@ -3,7 +3,7 @@
         {
             "type": "containment",
             "small": "EXP",
-            "large": "ALL"
+            "large": "NEXP"
         },
         {
             "type": "containment",
@@ -14,11 +14,6 @@
             "type": "containment",
             "small": "PP",
             "large": "PSPACE"
-        },
-        {
-            "type": "containment",
-            "small": "QMA",
-            "large": "PP"
         },
         {
             "type": "containment",
@@ -53,7 +48,7 @@
         {
             "type": "containment",
             "small": "PDQP",
-            "large": "PSPACE"
+            "large": "CH"
         },
         {
             "type": "containment",
@@ -79,11 +74,6 @@
             "type": "containment",
             "small": "L",
             "large": "NL"
-        },
-        {
-            "type":"containment",
-            "small": "NL",
-            "large": "P"
         },
         {
             "type":"containment",
@@ -122,8 +112,179 @@
         },
         {
             "type":"containment",
-            "small": "NONE",
-            "large": "L"
+            "small": "QMA",
+            "large": "QMA(2)"
+        },
+        {
+            "type":"containment",
+            "small": "QMA(2)",
+            "large": "NEXP"
+        },
+        {
+            "type":"containment",
+            "small": "RE",
+            "large": "ALL"
+        },
+        {
+            "type":"containment",
+            "small": "R",
+            "large": "RE"
+        },
+        {
+            "type":"containment",
+            "small": "A0PP",
+            "large": "PP"
+        },
+        {
+            "type":"containment",
+            "small": "AWPP",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "QMA",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "BQP",
+            "large": "AWPP"
+        },
+        {
+            "type":"containment",
+            "small": "NEXP",
+            "large": "R"
+        },
+        {
+            "type":"containment",
+            "small":"ZPP",
+            "large":"RP"   
+        },
+        {
+            "type":"containment",
+            "small":"RP",
+            "large":"BPP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"ZPP"
+        },
+        {
+            "type":"containment",
+            "small":"PH",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"CH",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"Sigma2"
+        },
+        {
+            "type":"containment",
+            "small":"AM",
+            "large":"Pi2"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"Sigma2",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"Pi2",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"Pi2"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"Sigma2"
+        },
+        {
+            "type":"containment",
+            "small":"TC0",
+            "large":"NC1"
+        },
+        {
+            "type":"containment",
+            "small":"NC1",
+            "large":"L"
+        },
+        {
+            "type":"containment",
+            "small":"NL",
+            "large":"AC1"
+        },
+        {
+            "type":"containment",
+            "small":"AC1",
+            "large":"TC1"
+        },
+        {
+            "type":"containment",
+            "small":"NONE",
+            "large":"NC0"
+        },
+        {
+            "type":"containment",
+            "small":"NC0",
+            "large":"AC0"
+        },
+        {
+            "type":"containment",
+            "small":"AC0",
+            "large":"TC0"
+        },
+        {
+            "type":"containment",
+            "small":"TC1",
+            "large":"P"
+        },
+        {
+            "type":"containment",
+            "small":"SZK",
+            "large":"CZK"
+        },
+        {
+            "type":"containment",
+            "small":"CZK",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"P/poly"
+        },
+        {
+            "type":"containment",
+            "small":"P/poly",
+            "large":"BQP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/poly",
+            "large":"BQP/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/qpoly",
+            "large":"ALL"
         }
+            
     ]
 }

@@ -25,6 +25,12 @@ app = Flask(__name__)
 
 app.secret_key = b'_5#y3l"Fp7z\n\xec]/'
 
+def update_network_information():
+   network: complexity_network = NETWORK
+   session['selected_classes'] = network.get_trimmed_network()
+   # network.print_trimmed_network()
+   return
+
 @app.before_request
 def before_req():
    # if 'network' not in session:
@@ -35,14 +41,6 @@ def before_req():
    # Keeping track of classes from last session
    if 'selected_classes' not in session:
       session['selected_classes'] = NETWORK.get_trimmed_network()
-   # if 'checked_classes' not in session:
-   #    session['checked_classes'] = []
-   # if 'check_classes_dict' not in session:
-   #    checked_classes_dict = {c:{'name': c, 'value':False} for c in CLASS_LIST }
-   #    checked_classes = session['checked_classes']
-   #    for cc in checked_classes:
-   #       checked_classes_dict[cc]['value'] = True
-   #    session['check_classes_dict'] = checked_classes_dict
    
    return
 
@@ -68,13 +66,7 @@ def add_remove_class():
          print('Removing')
          network.remove_class_from_trimmed_network(var_name)
       
-      # Updating the checked_classes_dictionary
-      # cc_dict = session['check_classes_dict']
-      # if var_name in cc_dict:
-      #    cc_dict[var_name]['value'] = checked
-      # session['check_classes_dict'] = cc_dict
-      session['selected_classes'] = network.get_trimmed_network()
-      network.print_trimmed_network()
+      update_network_information()
       return var_name
 
 @app.route('/search_complexity_classes', methods=['GET'])
@@ -88,14 +80,14 @@ def search():
 
 @app.route('/get_class_description', methods=['GET'])
 def get_class_description():
-   class_name = request.args.get('class_name')
+   class_name = request.args.get('class_name').lower()
    network: complexity_network = NETWORK
    description = network.get_class(class_name).get_description()
    information = network.get_class(class_name).get_information()
    try:
       # title = class_dict[class_name]['title']
       # Going to add a proper title later - we should decide how to format this page
-      title = network.get_class(class_name).get_name()
+      title = network.get_class(class_name).get_latex_name()
    except:
       title = "No title available"
    return jsonify({'description': description, 'title': title, 'information':information})
@@ -104,6 +96,11 @@ def get_class_description():
 def get_complexity_network():
    network: complexity_network = NETWORK
    return jsonify(network.get_trimmed_network_json())
+
+@app.route('/get_complexity_sunburst')
+def get_complexity_sunburst():
+   network: complexity_network = NETWORK
+   return jsonify(network.get_trimmed_sunburst_json())
 
 """
 Selecting all/no classes in the visualization
@@ -137,7 +134,49 @@ def webhook():
       print("Error during git pull"), e
       return 'Failed to update server', 500
 
-#test commit comment 2
+"""
+Expand item - either an edge or a node
+   - expanding an edge: Find all the classes which are between the source and target classes and add those
+   - expanding a node: Find all the classes which are connected to the node and add those
+"""
+@app.route('/expand_item', methods=['GET'])
+def expand_item():
+   network: complexity_network = NETWORK
+   expand_edge = request.args.get('expand_edge') == 'true'
+   if expand_edge:
+      source_class = request.args.get('source_class')
+      target_class = request.args.get('target_class')
+      expand_success, new_classes = network.expand_edge(source_class, target_class)
+   else:
+      class_name = request.args.get('source_class')
+      expand_success, new_classes = network.expand_node(class_name)
+   if expand_success:
+      update_network_information()
+   return jsonify({'success': expand_success, 'new_classes': new_classes})
+
+@app.route('/expand_node', methods=['GET'])
+def expand_node():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   expand_success, new_classes = network.expand_node(class_name)
+   if expand_success:
+      update_network_information()
+   return jsonify({'success': expand_success, 'new_classes': new_classes})
+
+@app.route('/delete_class', methods=['GET'])
+def delete_class():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   network.remove_class_from_trimmed_network(class_name)
+   update_network_information()
+   return jsonify({'success': True})
+
+@app.route('/check_indirect_paths', methods=['GET'])
+def check_indirect_paths():
+   class_name = request.args.get('class_name')
+   network: complexity_network = NETWORK
+   direct_paths = network.get_direct_paths(class_name)
+   return jsonify({'success': True, 'direct_paths': direct_paths})
 
 if __name__ == '__main__':
     app.run(debug=True)

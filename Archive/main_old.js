@@ -4,6 +4,8 @@ Main javascript file
 var arrow_scale = 3.5;
 var drawn = 0;
 
+var clickTimeout = null;
+
 const body = $('body');
 const searchBar = $('#complexity_class_search_bar');
 
@@ -31,71 +33,6 @@ window.gravityEnabled = false;
 // Information about user interaction
 var user_interaction = {
     selected_class: null
-}
-
-// This should be done in python - gonna put it there soon (hopefully)
-function calculateNodeLevels(nodes, links) {
-    const outgoing = {};
-    const incoming = {};
-    nodes.forEach(node => {
-        outgoing[node.name] = [];
-        incoming[node.name] = [];
-    });
-    links.forEach(link => {
-        outgoing[link.source.name || link.source].push(link.target.name || link.target);
-        incoming[link.target.name || link.target].push(link.source.name || link.source);
-    });
-    
-    // Find root nodes (no incoming edges)
-    const rootNodes = nodes.filter(node => incoming[node.name].length === 0);
-    
-    // Calculate minimum levels (from top down)
-    const minLevels = {};
-    rootNodes.forEach(root => {
-        minLevels[root.name] = 0;
-    });
-    
-    let queue = [...rootNodes];
-    while (queue.length > 0) {
-        const current = queue.shift();
-        const currentLevel = minLevels[current.name];
-        
-        outgoing[current.name].forEach(targetName => {
-            if (!(targetName in minLevels) || minLevels[targetName] < currentLevel + 1) {
-                minLevels[targetName] = currentLevel + 1;
-                queue.push(nodes.find(n => n.name === targetName));
-            }
-        });
-    }
-
-    // Find leaf nodes (no outgoing edges)
-    const leafNodes = nodes.filter(node => outgoing[node.name].length === 0);
-    
-    // Calculate maximum levels (from bottom up)
-    const maxLevels = {};
-    const maxLevel = Math.max(...Object.values(minLevels));
-    leafNodes.forEach(leaf => {
-        maxLevels[leaf.name] = maxLevel;
-    });
-    
-    queue = [...leafNodes];
-    while (queue.length > 0) {
-        const current = queue.shift();
-        const currentLevel = maxLevels[current.name];
-        
-        incoming[current.name].forEach(sourceName => {
-            if (!(sourceName in maxLevels) || maxLevels[sourceName] > currentLevel - 1) {
-                maxLevels[sourceName] = currentLevel - 1;
-                queue.push(nodes.find(n => n.name === sourceName));
-            }
-        });
-    }
-    
-    // Set each node's level to the average of its min and max levels
-    nodes.forEach(node => {
-        node.level = Math.floor((minLevels[node.name] + maxLevels[node.name]) / 2);
-        node.maxLevel = maxLevel;
-    });
 }
 
 // Color scale
@@ -175,37 +112,41 @@ function draw_graph(){
 
         // Initialize positions for nodes
         data.nodes.forEach(node => {
-            if (node === rootNode) {
-                // Position root node at the top center
-                node.x = graph_width / 2;
-                node.y = -5000; // Placing it extremely to the top - the force will return it
-                node.fx = node.x;
-                node.fy = node.y;
-            } else if (node === topNode) {
-                // Position top node at the bottom center
-                node.x = graph_width / 2;
-                node.y = 5000; // Placing it extremely to the bottom - the force will return it
-                node.fx = node.x;
-                node.fy = node.y;
-            }
-            else {
-                // Random positions for other nodes
-                node.x = Math.random() * graph_width;
-                node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
+            if (window.gravityEnabled){
+                if (node === rootNode) {
+                    // Position root node at the top center
+                    node.x = graph_width / 2;
+                    node.y = -5000; // Placing it extremely to the top - the force will return it
+                    node.fx = node.x;
+                    node.fy = node.y;
+                } else if (node === topNode) {
+                    // Position top node at the bottom center
+                    node.x = graph_width / 2;
+                    node.y = 5000; // Placing it extremely to the bottom - the force will return it
+                    node.fx = node.x;
+                    node.fy = node.y;
+                }
+                else {
+                    // Random positions for other nodes
+                    node.x = Math.random() * graph_width;
+                    node.y = (Math.random() * graph_height * 0.7) + (graph_height * 0.3); // Position below the root
+                }
             }
         });
 
          // Unfixing the root node - so that it drags around, but it is still at the top of the screen
-        setTimeout(function() {
-            if (rootNode !== null && rootNode !== undefined) {
-                rootNode.fx = null;
+        if (window.gravityEnabled){ 
+            setTimeout(function() {
+                if (rootNode !== null && rootNode !== undefined) {
+                    rootNode.fx = null;
                 rootNode.fy = null;
             }
             if (topNode !== null && topNode !== undefined) {
                 topNode.fx = null;
                 topNode.fy = null;
             }
-        }, 500);
+            }, 500);
+        }
 
         // Reset simulation with new data
         simulation.nodes(data.nodes);
@@ -236,32 +177,28 @@ function draw_graph(){
                     .force("charge_force", null)
                     .force("center_force", null);
                 
-                // Position and fix nodes based on their level
-                const nodesPerLevel = {};
                 data.nodes.forEach(node => {
-                    if (!nodesPerLevel[node.level]) {
-                        nodesPerLevel[node.level] = [];
-                    }
-                    nodesPerLevel[node.level].push(node);
-                });
-
-                // For each level, distribute nodes evenly across the width
-                Object.entries(nodesPerLevel).forEach(([level, nodes]) => {
-                    const spacing = 3*graph_width / (nodes.length + 1);
-                    nodes.forEach((node, index) => {
-                        // Calculate y position based on level (higher level = lower on screen)
-                        const levelSpacing = graph_height / 3;
+                    // Use saved coordinates if they exist and are valid
+                    if (node.savedX && node.savedX !== -1 && node.savedY && node.savedY !== -1) {
+                        node.x = node.savedX * graph_width;
+                        node.y = node.savedY * graph_height;
+                    } else {
+                        // Calculate position based on level as fallback
+                        const levelSpacing = graph_height / 2;
                         node.y = (node.maxLevel - node.level) * levelSpacing + levelSpacing/2;
-                        // Evenly space x positions
-                        node.x = spacing * (index + 1);
-                        // Fix the position
-                        node.fx = node.x;
-                        node.fy = node.y;
-                    });
+                        // Calculate x position (this will be overridden if we have saved coordinates)
+                        const nodesAtLevel = data.nodes.filter(n => n.level === node.level).length;
+                        const indexAtLevel = data.nodes.filter(n => n.level === node.level && n.name <= node.name).length;
+                        const spacing = 3 * graph_width / (nodesAtLevel + 1);
+                        node.x = spacing * indexAtLevel;
+                    }
+                    // Fix the position
+                    node.fx = node.x;
+                    node.fy = node.y;
                 });
                 
                 simulation.alpha(1).restart();
-            }, 1000); // Let gravity work for 1 second
+            }, 1); // Let gravity work for 1 milisecond - I WANT TO REMOVE THIS BUT EVERY TIME I DO IT BREAKS THE GRAPH ARGH
         }
         
         //add tick instructions: 
@@ -337,6 +274,13 @@ function draw_graph(){
                     .filter(a => a.source === d.source && a.target === d.target)
                     .style("stroke", "#2c5282")
                     .style("fill", "#2c5282");
+            })
+            .on("dblclick", function(d) {
+                // Get the source and target class names
+                var sourceClass = d.source.name;
+                var targetClass = d.target.name;
+                
+                expand(sourceClass, targetClass, true);
             });
     
         // Arrow layer
@@ -378,39 +322,79 @@ function draw_graph(){
                     .select(".link-visible")
                     .style("stroke", "#2c5282")
                     .attr("stroke-width", 2);
+            })
+            .on("dblclick", function(d) {
+                // Get the source and target class names
+                var sourceClass = d.source.name;
+                var targetClass = d.target.name;
+                
+                expand(sourceClass, targetClass, true);
             });
 
         function draw_everything(){
             var nodeGroups = node.append("g")
-            .on("mouseover", function(d) {
-                d3.select(this).select("circle")
-                    .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
-                    .attr("stroke", "#2c5282");
-            })
-            .on("mouseout", function(d) {
-                d3.select(this).select("circle")
-                    .attr("fill", d => colorScale(d.level))
-                    .attr("stroke", "none");
-            });
+                .on("mouseover", function(d) {
+                    d3.select(this).select("circle")
+                        .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
+                        .attr("stroke", "#2c5282");
+                    // Show delete button on hover
+                    d3.select(this).select(".delete-button")
+                        .style("display", "block");
+                })
+                .on("mouseout", function(d) {
+                    d3.select(this).select("circle")
+                        .attr("fill", d => colorScale(d.level))
+                        .attr("stroke", "none");
+                    // Hide delete button when not hovering
+                    d3.select(this).select(".delete-button")
+                        .style("display", "none");
+                });
 
             // Adding the circle
             nodeGroups.append("circle")
-            .attr("r", radius)
-            .attr("fill", d => colorScale(d.level))
-            .attr("stroke", "none")
-            .attr("stroke-width", 3);
+                .attr("r", radius)
+                .attr("fill", d => colorScale(d.level))
+                .attr("stroke", "none")
+                .attr("stroke-width", 3);
     
             // Adding a label on the circle
             nodeGroups.append('text')
-            .text(nodeLabel)
-            .attr("text-anchor", "middle")
-            .style("fill", "#fff")
-            .style("font-size", fontSize)
-            .attr("dy", (fontSize)/2);
+                .text(nodeLabel)
+                .attr("text-anchor", "middle")
+                .style("fill", "#fff")
+                .style("font-size", fontSize)
+                .attr("dy", (fontSize)/2);
+
+            // Add delete button
+            nodeGroups.append("g")
+                .attr("class", "delete-button")
+                .attr("transform", `translate(${0.7*radius}, ${-0.7*radius})`)
+                .style("display", "none")
+                .style("cursor", "pointer")
+                .on("click", function(d) {
+                    d3.event.stopPropagation(); // Prevent node click event
+                    delete_node(d.name);
+                    delete_class(d.name);
+                })
+                .append("circle")
+                .attr("r", radius/6)
+                .attr("fill", "#E53E3E")
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1);
+
+            // Add X symbol to delete button
+            nodeGroups.select(".delete-button")
+                .append("text")
+                .attr("text-anchor", "middle")
+                .attr("dy", "0.35em")
+                .style("fill", "#fff")
+                .style("font-size", `${radius/4}px`)
+                .style("pointer-events", "none")
+                .text("×");
         }
     
         // Calculating levels and color scale
-        calculateNodeLevels(data.nodes, data.links);
+        // calculateNodeLevels(data.nodes, data.links);
         colorScale.domain([0, d3.max(data.nodes, d => d.maxLevel)]);
         draw_everything();
         
@@ -429,8 +413,7 @@ function draw_graph(){
         
         drag_handler(node)
         
-        // //drag handler
-        // //d is the node 
+        // drag handler
         function drag_start(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
@@ -499,12 +482,20 @@ function draw_graph(){
         
         // Events which show complexity class descriptions
         node.on("click", function(d){
-            // Disallowing zooming in on the graph
-            d3.event.preventDefault();
-            d3.event.stopPropagation();
-            // Opening the side window and showing a class description
-            open_side_window(d);
-            set_node = d;
+            // Clear any existing timeout
+            if (clickTimeout) {
+                clearTimeout(clickTimeout);
+            }
+            
+            // Set a new timeout
+            clickTimeout = setTimeout(function() {
+                // Only execute click behavior if it wasn't part of a double-click
+                // d3.event.preventDefault();
+                // d3.event.stopPropagation();
+                // Opening the side window and showing a class description
+                open_side_window(d);
+                set_node = d;
+            }, 250); // 250ms delay
         });
 
         node.on("mouseover", function(d){
@@ -517,8 +508,21 @@ function draw_graph(){
             }
         });
 
-        // After drawing everything and letting the simulation run a bit
+        node.on("dblclick", function(d) {
+            // Clear the click timeout so the click handler won't fire
+            if (clickTimeout) {
+                clearTimeout(clickTimeout);
+                clickTimeout = null;
+            }
+            expand(d.name, null, false);
+        });
+
+        // Rescaling the graph
+        var rescaling_timer = window.gravityEnabled ? 2000 : 20;
         setTimeout(function() {
+            if (nodeCount == 0){
+                return;
+            }
             var svgElement = d3.select("#graph_viz svg");
             var bounds = svg.node().getBBox();
             var padding_scale = 1;
@@ -527,7 +531,7 @@ function draw_graph(){
                 console.log("Only one node");
                 padding_scale = 0.4;
             } else {
-                padding_scale = 0.7;
+                padding_scale = 0.85;
             }
             
             // Calculate scale to fit with some padding
@@ -548,13 +552,60 @@ function draw_graph(){
             svgElement.transition()
                 .duration(750)
                 .call(zoom.transform, transform);
-        }, 2000);
+        }, rescaling_timer);
     });
+
+    function delete_node(className) {
+        // Remove the node from the DOM
+        node.filter(d => d.name === className).remove();
+        
+        // Remove associated links from the DOM
+        link.filter(d => d.source.name === className || d.target.name === className).remove();
+        
+        // Remove arrows associated with the removed links
+        d3.selectAll(".arrow")
+            .filter(d => d.source.name === className || d.target.name === className)
+            .remove();
+    
+        // Update simulation data
+        var nodes = simulation.nodes();
+        var links = simulation.force("links").links();
+        var new_links;
+    
+        fetch(`/check_indirect_paths?class_name=${className}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                new_links = data.direct_paths;
+
+                // Filter out the deleted node and its links
+                simulation.nodes(nodes.filter(n => n.name !== className));
+                simulation.force("links")
+                    .links(links.filter(l => l.source.name !== className && l.target.name !== className));
+            
+                // Add the new links
+                console.log("Drawing new links")
+                for (var i = 0; i < new_links.length; i++) {
+                    var newLink = new_links[i];
+                    // Find the actual node objects that match the source and target names
+                    var sourceNode = nodes.find(n => n.name === newLink[0]);
+                    var targetNode = nodes.find(n => n.name === newLink[1]);
+                    if (sourceNode && targetNode) {
+                        links.push({source: sourceNode, target: targetNode, type: "A"});
+                    }
+                    else {
+                        console.log("Could not find node " + newLink[0] + " or " + newLink[1]);
+                    }
+                }
+            
+                // Restart the simulation gently
+                simulation.alpha(1).restart();
+            })
+            .catch(error => console.error('Error checking indirect paths:', error));
+    }
+
     drawn = 1;
 }
-
-
-
 
 
 // Javascript file which creates a sidewindow
@@ -599,6 +650,38 @@ function open_side_window(d, force_open = true) {
 }
 
 
+// Expanding an edge we double-clicked on
+function expand(sourceClass, targetClass, edge = true){
+    // Prevent default behavior and event propagation
+    d3.event.preventDefault();
+    d3.event.stopPropagation();
+    var fetch_url;
+    if (edge){
+        console.log("Expanding edge from " + sourceClass + " to " + targetClass);
+        // Create an alert showing the relationship
+        console.log(`From ${sourceClass} to ${targetClass}`);
+        fetch_url = `/expand_item?expand_edge=true&source_class=${sourceClass}&target_class=${targetClass}`;
+    } else {
+        console.log("Expanding node " + sourceClass);
+        fetch_url = `/expand_item?expand_edge=false&source_class=${sourceClass}`;
+    }
+
+    fetch(fetch_url)
+        .then(response => response.json())
+        .then(data => {
+            // Redraw the graph
+            if (data.success){
+                draw_graph();
+                console.log("Successfully expanded edge");
+                console.log(data.new_classes);
+                select_class_list(data.new_classes, true);
+            } else {
+                console.log("Did not expand -> are there any new classes to add?");
+            }
+        })
+        .catch(error => console.error('Error expanding edge:', error));
+}
+
 function format_information(htmlString)
 {
     var regex = /\[([a-zA-Z0-9]+)\]/g;
@@ -613,6 +696,5 @@ function format_information(htmlString)
     //return a hyperlink with a url anchor at the references page 
     return htmlString.replace(/\[([a-zA-Z0-9]+)\]/g, `<a href="/references#$1" class="citation-link">[$1]</a>`)
 }
-
 
 draw_graph();

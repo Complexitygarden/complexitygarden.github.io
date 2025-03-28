@@ -9,6 +9,8 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://d3js.org/d3.v4.js"></script>
         <script src="https://unpkg.com/d3-arrow@0.0.25/dist/d3-arrow.min.js"></script>
+        <!-- MathJax -->
+        <script src="{{ url_for('static', filename='js/mathjax.js') }}"></script>
         <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
         <!-- Icons sheet -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -57,15 +59,29 @@
                     <ul style="display: none;">
                         <li class="leftSidebarMenuInner_sub_li">
                             <div class="settings-item">
+                                <span>Visualization Type</span>
+                                <select id="vis-type-select" class="settings-select">
+                                    <option value="graph">Graph</option>
+                                    <option value="sunburst">Sunburst</option>
+                                </select>
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
                                 <span>Gravity</span>
                                 <input type="checkbox" class="settings-checkbox" onclick="toggleGravity(this)">
                             </div>
                         </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <button onclick="redrawVisualization()" class="settings-button">Redraw</button>
+                            </div>
+                        </li>
                     </ul>
                 </li>
-                <!-- You can add more rows here if needed -->
             </ul>
             <script src="{{ url_for('static', filename='js/side_bar.js') }}"></script>
+            <script src="{{ url_for('static', filename='js/references.js') }}"></script>
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">
@@ -84,11 +100,11 @@
         <!-- Graph of the classes -->
         <div id='center' class="main center">
             <div class="mainInner">
-                <div id="graph_viz"></div>
-                <script>
-                    const complexity_network_url = "{{ url_for('get_complexity_network')}}"
-                </script>
-                <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+                <div id="visualisation_div"></div>
+                <script src="{{ url_for('static', filename='js/main_vis.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/visual_objects.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/sunburst.js') }}"></script>
             </div>
         </div>
     </body>
