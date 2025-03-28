@@ -1,22 +1,23 @@
 import requests
 from bs4 import BeautifulSoup
+import bibtexparser
 
 
-def get_reference_link(id: str):
-    url = "https://complexityzoo.net/Complexity_Zoo_References"
-    id = id.replace("[", "").replace("]","").lower()
-
-    response = requests.get(url)
-
-    if (response.status_code != 200):
-        return ["Failed to fetch information, Status:" + str(response.status_code)]
-    
-
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    reference_information = soup.find('span', {'id': id})
-
-    print(reference_information.findParent())
+#def get_reference_link(id: str):
+#    url = "https://complexityzoo.net/Complexity_Zoo_References"
+#    id = id.replace("[", "").replace("]","").lower()
+#
+#    response = requests.get(url)
+#
+#    if (response.status_code != 200):
+#        return ["Failed to fetch information, Status:" + str(response.status_code)]
+#    
+#
+#    soup = BeautifulSoup(response.text, 'html.parser')
+#
+#    reference_information = soup.find('span', {'id': id})
+#
+#    print(reference_information.findParent())
 
 
 #get_reference_link("[Aar02]")
@@ -78,3 +79,21 @@ def get_reference_link(id: str):
 #    reference_information = soup.find('div', {'id': "mw-parser-output"})
 
     
+bibtex_str = """
+@comment{
+    Example Comment
+}
+@ARTICLE{Cesar2013,
+    author = {Jean Cesar},
+    title = {An amazing title},
+    year = {2013},
+    volume = {12},
+    pages = {12--23},
+    journal = {Nice Journal}
+}
+"""
+
+#library = bibtexparser.parse_string(bibtex_str)
+#print(library.comments[0].comment) #The comment
+#first_entry = library.entries[0]
+#print(first_entry.fields_dict)
