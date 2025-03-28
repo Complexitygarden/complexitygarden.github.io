@@ -308,11 +308,23 @@ function draw_graph(){
                 .style("justify-content", "center")
                 .style("align-items", "center")
                 .style("height", "100%")
-                .style("pointer-events", "none") // This prevents interaction issues
+                .style("pointer-events", "none")
                 .html(d => d.latex_name);
 
-            // Process all MathJax at once after adding all nodes
-            MathJax.typesetPromise();
+            // Process all MathJax after adding all nodes
+            MathJax.typesetPromise().then(() => {
+                console.log("MathJax processing complete");
+            }).catch((err) => {
+                setTimeout(() => {
+                    console.error("MathJax processing failed:", err);
+                    // If it doesn't work, wait and repeat
+                    MathJax.typesetPromise().then(() => {
+                        console.log("MathJax processing complete");
+                    }).catch((err) => {
+                        console.error("MathJax processing failed:", err);
+                    });
+                }, 100);
+            });
 
             // Add delete button
             nodeGroups.append("g")
@@ -657,3 +669,4 @@ function draw_graph(){
     graph_drawn = 1;
 }
 
+create_visualisation();
