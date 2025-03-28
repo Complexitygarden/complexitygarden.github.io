@@ -71,6 +71,27 @@ body {
     z-index: 16;
 }
 
+.reference-entry {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-left: 3px solid #ccc;
+
+}
+
+@keyframes highlight-fade {
+    0% {
+        background-color: yellow;
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+.reference-entry.highlight {
+    animation: highlight-fade 3s forwards;
+}
+
 
 /* Left sidebar menu */
 

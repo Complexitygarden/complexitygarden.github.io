@@ -1,0 +1,38 @@
+{
+    "references":[
+        {
+            "identifier":"Aar04b",
+            "citation_key":"v001a001",
+            "entry_type":"article",
+
+            "fields":{
+                "author":"Aaronson, Scott",
+                "title":"Limitations of Quantum Advice and One-Way Communication",
+                "year":"2005",
+                "pages":"1--28",
+                "doi":"10.4086/toc.2005.v001a001",
+                "publisher":"Theory of Computing",
+                "journal":"Theory of Computing",
+                "volume":"1",
+                "number":"1",
+                "url":"https://theoryofcomputing.org/articles/v001a001"
+            }
+        },
+        {
+            "identifier":"Edm65",
+            "citation_key":"Edmonds_1965",
+            "entry_type":"article",
+
+            "fields":{
+                "author":"Edmonds, Jack",
+                "title":"Paths, Trees, and Flowers",
+                "year":"1965",
+                "pages":"449-–467",
+                "doi":"10.4153/CJM-1965-045-4",
+                "journal":"Canadian Journal of Mathematics",
+                "volume":"17"
+            }
+        }
+
+    ]
+}

@@ -35,7 +35,7 @@
         "P": {
             "name": "P",
             "description": "Polynomial Time",
-            "information": "<ul><li><p>P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine.</p> </li> <li><p>Defined in [Edm65], [Cob64], [Rab60], and other seminal early papers.</p> </li></ul>"
+            "information": "P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine. Defined in [Edm65], [Cob64], [Rab60], and other seminal early papers."
         },
         "BQP": {
             "name": "BQP",

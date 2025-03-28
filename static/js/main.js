@@ -571,7 +571,11 @@ function open_side_window(d, force_open = true) {
             document.getElementById("class-description").textContent = data.description || "No description available";
             document.getElementById("class-title").textContent = data.title || "No title available";
             let class_information = data.information || "No information available";
+
+            //Take the paragraph of information, and replace any identifier with a hyperlink to the references page
             let formatted_information = format_information(class_information);
+
+            //The set the HTML 
             document.getElementById("class-information").innerHTML = formatted_information;
             // Open the right sidebar
             if (force_open){
@@ -597,8 +601,17 @@ function open_side_window(d, force_open = true) {
 
 function format_information(htmlString)
 {
-    //find all substrings of the format [.*] and replace them with <a href="/references" class="citation-link"> /*SUBSTRING[.*]*/ </a>
-    return htmlString.replace(/\[([a-zA-Z0-9]+)\]/g, '<a href="/references" class="citation-link">[$1]</a>')
+    var regex = /\[([a-zA-Z0-9]+)\]/g;
+    //var identifiers_array = [];
+
+    //while ((match = regex.exec(htmlString)) !== null )
+    //{
+    //    identifiers_array.push(match[1]);
+    //}
+    //encoded_identifiers = encodeURIComponent(JSON.stringify(identifiers_array));
+
+    //return a hyperlink with a url anchor at the references page 
+    return htmlString.replace(/\[([a-zA-Z0-9]+)\]/g, `<a href="/references#$1" class="citation-link">[$1]</a>`)
 }
 
 
