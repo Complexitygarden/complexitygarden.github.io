@@ -138,7 +138,7 @@ function create_visualisation(){
 
 // Javascript file which creates a sidewindow
 function open_side_window(d, force_open = true) {
-    if (user_interaction.selected_class == d.name && !force_open){
+    if (user_interaction.selected_class_a == d.name && !force_open){
         return;
     }
     user_interaction.selected_class = d.name;

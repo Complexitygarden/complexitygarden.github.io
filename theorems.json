@@ -284,7 +284,38 @@
             "type":"containment",
             "small":"BQP/qpoly",
             "large":"ALL"
+        },
+        {
+            "type":"containment",
+            "small":"QCPH",
+            "large":"QPH"
+        },
+        {
+            "type":"containment",
+            "small":"QPH",
+            "large":"R"
+        },
+        {
+            "type":"containment",
+            "small":"QCPH",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"QMA(2)",
+            "large":"QPH",
+            "citation_key":"qph_original"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA",
+            "large":"QCPH"
+        },
+        {
+            "type":"containment",
+            "small":"PH",
+            "large":"QCPH"
         }
-            
+        
     ]
 }

@@ -32,6 +32,25 @@
                 "journal":"Canadian Journal of Mathematics",
                 "volume":"17"
             }
+        },
+        {
+            "identifier":"GSSSY18",
+            "citation_key":"qph_original",
+            "entry_type":"InProceedings",
+
+            "fields":{
+                "author":"Gharibian, Sevag and Santha, Miklos and Sikora, Jamie and Sundaram, Aarthi and Yirka, Justin",
+                "title":"Quantum Generalizations of the Polynomial Hierarchy with Applications to QMA(2)",
+                "year":"2018",
+                "pages":"58:1--58:16",
+                "doi":"10.4230/LIPIcs.MFCS.2018.58",
+                "booktitle":"43rd International Symposium on Mathematical Foundations of Computer Science (MFCS 2018)",
+                "volume":"117",
+                "editor":"Potapov, Igor and Spirakis, Paul and Worrell, James",
+                "publisher":"Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik",
+                "address":"Dagstuhl, Germany",
+                "url":"https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.MFCS.2018.58"
+            }
         }
 
     ]

@@ -241,6 +241,18 @@
             "latex_name":"$\\mathsf{BQP/qpoly}$",
             "description":"BQP with polynomial quantum advice",
             "information":"The class of decision problems solvable by a polynomial-time quantum Turing machine with a polynomial-size advice quantum state."
+        },
+        "QCPH":{
+            "name":"QCPH",
+            "latex_name":"$\\mathsf{QCPH}$",
+            "description":"Quantum-Classical Polynomial Hierarchy",
+            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
+        },
+        "QPH":{
+            "name":"QPH",
+            "latex_name":"$\\mathsf{QPH}$",
+            "description":"Quantum Polynomial Hierarchy",
+            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
         }
 
     }
