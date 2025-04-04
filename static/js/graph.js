@@ -517,7 +517,7 @@ function draw_graph(){
             var nodes = simulation.nodes();
             var currentLinks = simulation.force("links").links();
             
-            fetch(`/check_indirect_paths?class_name=${className}`)
+            fetch(`/check_indirect_paths?class_name=${className}&delete_node=true`)
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);
