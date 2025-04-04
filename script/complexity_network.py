@@ -237,11 +237,24 @@ class complexity_network():
                 "level": class_obj.get_level(),
                 "latex_name": class_obj.get_latex_name()
             })
+            
+            # First add edges from trim_within (direct edges)
             for cont in class_obj.get_trim_within():
                 network_dict["links"].append({
                     "source": c,
                     "target": cont.get_identifier()
                 })
+            
+            # If no edges were added from trim_within, add edges from the original within relationships
+            # This ensures we always have edges in the visualization
+            if len(class_obj.get_trim_within()) == 0 and len(class_obj.get_within()) > 0:
+                for cont in class_obj.get_within():
+                    if cont.get_identifier() in self.trimmed_network:
+                        network_dict["links"].append({
+                            "source": c,
+                            "target": cont.get_identifier()
+                        })
+        
         network_dict["root_nodes"] = self.root_nodes
         network_dict["top_nodes"] = self.top_nodes
         network_dict["maxLevel"] = self.max_avg_level
@@ -561,6 +574,102 @@ class complexity_network():
                     direct_paths.append([c_bottom.get_identifier(), c_top.get_identifier()])
         print(f"Direct paths: {direct_paths}")
         return direct_paths
+
+    def to_json(self):
+        """
+        Converting the network to a JSON dictionary
+        """
+        # Create a dictionary with only serializable values
+        json_dict = {
+            'classes_identifiers': self.classes_identifiers,
+            'trimmed_network': self.trimmed_network,
+            'max_avg_level': self.max_avg_level,
+            'min_level': self.min_level,
+            'max_max_level': self.max_max_level,
+            'update_location': self.update_location
+        }
+        
+        # Add classes as dictionaries
+        json_dict['classes'] = [c.to_json() for c in self.classes]
+        
+        # Add theorems as dictionaries
+        json_dict['theorems'] = [thm.to_json() for thm in self.theorems]
+        
+        # Add root and top nodes
+        json_dict['root_nodes'] = self.root_nodes
+        json_dict['top_nodes'] = self.top_nodes
+        
+        return json_dict
+
+    @staticmethod
+    def from_json(json_dict: dict):
+        """
+        Creating a network from a JSON dictionary
+        """
+        network = complexity_network()
+        
+        # Reconstruct classes
+        network.classes = [complexity_class.from_json(c) for c in json_dict['classes']]
+        network.classes_dict = {c.get_identifier(): c for c in network.classes}
+        network.classes_identifiers = json_dict['classes_identifiers']
+        
+        # Reconstruct theorems
+        network.theorems = []
+        for thm_dict in json_dict.get('theorems', []):
+            if thm_dict['type'] == 'containment':
+                thm = containment_theorem(thm_dict['info_dict'])
+                network.theorems.append(thm)
+        
+        # Set other properties
+        network.trimmed_network = json_dict['trimmed_network']
+        network.max_avg_level = json_dict.get('max_avg_level', -1)
+        network.min_level = json_dict.get('min_level', -1)
+        network.max_max_level = json_dict.get('max_max_level', -1)
+        network.update_location = json_dict.get('update_location', True)
+        
+        # Set root and top nodes
+        network.root_nodes = json_dict.get('root_nodes', [])
+        network.top_nodes = json_dict.get('top_nodes', [])
+        
+        # Reconstruct relationships between classes
+        for class_json in json_dict['classes']:
+            class_obj = network.classes_dict[class_json['identifier']]
+            
+            # Reset relationships
+            class_obj.contains = []
+            class_obj.within = []
+            class_obj.trim_contains = []
+            class_obj.trim_within = []
+            
+            # Reconstruct contains relationships
+            for identifier in class_json.get('contains', []):
+                if identifier in network.classes_dict:
+                    class_obj.contains.append(network.classes_dict[identifier])
+            
+            # Reconstruct within relationships
+            for identifier in class_json.get('within', []):
+                if identifier in network.classes_dict:
+                    class_obj.within.append(network.classes_dict[identifier])
+            
+            # Reconstruct trim_contains relationships
+            for identifier in class_json.get('trim_contains', []):
+                if identifier in network.classes_dict:
+                    class_obj.trim_contains.append(network.classes_dict[identifier])
+            
+            # Reconstruct trim_within relationships
+            for identifier in class_json.get('trim_within', []):
+                if identifier in network.classes_dict:
+                    class_obj.trim_within.append(network.classes_dict[identifier])
+            
+            # Set network reference
+            class_obj.network = network
+        
+        # Set levels and positions
+        network.set_root_and_top_nodes()
+        network.set_levels()
+        network.set_positions()
+        
+        return network
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]

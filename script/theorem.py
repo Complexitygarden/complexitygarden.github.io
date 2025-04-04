@@ -21,6 +21,16 @@ class theorem():
     def set_classes(self):
         raise NotImplementedError("The function \'set_classes\' is not implemented for theorem")
 
+    def to_json(self):
+        """
+        Convert the theorem object to a JSON-serializable dictionary
+        """
+        return {
+            'type': self.type,
+            'info_dict': self.info_dict,
+            'classes': self.classes
+        }
+
 """
 Containment theorem
     - Simply saying that one class is contained in another
