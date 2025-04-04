@@ -169,10 +169,10 @@ function draw_graph(){
                 .append("g");
         }
 
-        function draw_links(){
+        function draw_links(link_data){
             link = layer1.attr("class", "links")
             .selectAll(".links")
-            .data(data.links)
+            .data(link_data)
             .enter()
             .append("g")  // Create a group for each link
             .each(function(d) {
@@ -224,7 +224,7 @@ function draw_graph(){
 
             // Arrows
             arrowLayer.selectAll(".arrow")
-            .data(data.links)
+            .data(link_data)
             .enter()
             .append("path")
             .attr("class", "arrow")
@@ -510,6 +510,7 @@ function draw_graph(){
         }
         
         function delete_node(className) {
+            console.log("Deleting node " + className);
             // Remove the node from the DOM
             node.filter(d => d.name === className).remove();
             
@@ -552,7 +553,7 @@ function draw_graph(){
                     // Update simulation with new links
                     simulation.force("links").links(remainingLinks);
 
-                    redraw_links_and_arrows(remainingLinks);
+                    draw_links(remainingLinks);
                     
                     // Restart the simulation gently
                     simulation.alpha(1).restart();
@@ -560,9 +561,9 @@ function draw_graph(){
                 .catch(error => console.error('Error checking indirect paths:', error));
         }
 
-        function draw_everything(){
+        function draw_everything(data){
             initialize_nodes();
-            draw_links();
+            draw_links(data.links);
             draw_nodes();
             drag_handler(node);
         }
@@ -628,7 +629,7 @@ function draw_graph(){
         }
 
         
-        draw_everything();
+        draw_everything(data);
 
         // Expanding an edge we double-clicked on
         function expand(sourceClass, targetClass, edge = true){

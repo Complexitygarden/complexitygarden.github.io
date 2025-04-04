@@ -42,11 +42,6 @@
         },
         {
             "type": "containment",
-            "small": "P",
-            "large": "BPP"
-        },
-        {
-            "type": "containment",
             "small": "PDQP",
             "large": "CH"
         },
