@@ -544,6 +544,8 @@ class complexity_network():
     def get_direct_paths(self, class_name: str):
         """
         Checking if there are indirect paths that go through this class
+
+        Essentially, we want to ensure that when we delete a class, other classes which are connected through this class remain connected
         """
         class_name = class_name.lower()
         if class_name not in self.classes_dict:
@@ -554,6 +556,7 @@ class complexity_network():
         for c_top in class_obj.get_trim_within():
             for c_bottom in class_obj.get_trim_contains():
                 if c_top.get_identifier() == class_name or c_bottom.get_identifier() == class_name or c_top.get_identifier() == c_bottom.get_identifier():
+                    print(f"These classes are the same: {c_top.get_identifier()} and {c_bottom.get_identifier()}")
                     continue
                 if c_top.has_indirect_path(c_bottom, self.classes_dict, disregard=[class_obj.get_identifier()]):
                     print(f"Indirect path found between {c_top.get_identifier()} and {c_bottom.get_identifier()}")

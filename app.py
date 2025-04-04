@@ -11,6 +11,8 @@ from script.complexity_network import complexity_network
 import git
 import hashlib
 import hmac
+from uuid import uuid4
+import time
 
 """
 Key variables
@@ -19,29 +21,65 @@ MAX_SEARCH_OUTPUT = 100
 # CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 class_json_loc = './classes.json'
 theorem_json_loc = './theorems.json'
-NETWORK = create_class_network(class_json_loc, theorem_json_loc)
+
+# Dictionary to store network instances and their last access times
+network_instances = {}
+network_last_access = {}
 
 app = Flask(__name__)
-
 app.secret_key = b'_5#y3l"Fp7z\n\xec]/'
 
+def cleanup_old_networks():
+    """
+    Remove network instances that haven't been accessed in the last minute
+    """
+    current_time = time.time()
+    expired_sessions = [
+        session_id for session_id, last_access in network_last_access.items()
+        if current_time - last_access > 60
+    ]
+    
+    for session_id in expired_sessions:
+        del network_instances[session_id]
+        del network_last_access[session_id]
+
+def get_network(first_load: bool = False):
+   """
+   Get the network instance for the current session or create a new one
+   """
+   # Clean up old networks first
+   cleanup_old_networks()
+   
+   if 'session_id' not in session:
+      session['session_id'] = str(uuid4())
+   
+   session_id = session['session_id']
+   if session_id not in network_instances:
+      network_instances[session_id] = create_class_network(class_json_loc, theorem_json_loc)
+   if first_load and 'selected_classes' in session:
+      network_instances[session_id].new_trimmed_network(session['selected_classes'])
+   
+   # Update last access time
+   network_last_access[session_id] = time.time()
+   
+   return network_instances[session_id]
+
 def update_network_information():
-   network: complexity_network = NETWORK
+   network = get_network()
    session['selected_classes'] = network.get_trimmed_network()
    # network.print_trimmed_network()
    return
 
 @app.before_request
 def before_req():
-   # if 'network' not in session:
-   #    session['network'] = create_class_network(class_json_loc, theorem_json_loc)
    if 'all_classes' not in session:
-      session['all_classes'] = NETWORK.get_all_class_identifiers()
-      NETWORK.new_trimmed_network(session['all_classes'])
+      network = get_network(True)
+      session['all_classes'] = network.get_all_class_identifiers()
+      network.new_trimmed_network(session['all_classes'])
    # Keeping track of classes from last session
    if 'selected_classes' not in session:
-      session['selected_classes'] = NETWORK.get_trimmed_network()
-   
+      network = get_network()
+      session['selected_classes'] = network.get_trimmed_network()
    return
 
 @app.route('/', methods=["GET"])
@@ -58,7 +96,7 @@ def add_remove_class():
       var_name = request.form["name"]
       checked = bool(int(request.form["checked"]))
       print(f'{var_name} - {checked}')
-      network: complexity_network = NETWORK
+      network = get_network()
       if checked:
          print('Adding')
          network.add_class_to_trimmed_network(var_name)
@@ -72,7 +110,7 @@ def add_remove_class():
 @app.route('/search_complexity_classes', methods=['GET'])
 def search():
    query = request.args.get('query')
-   network: complexity_network = NETWORK
+   network = get_network()
    results = search_classes(query, network)
    if len(results) > MAX_SEARCH_OUTPUT:
       results = results[:MAX_SEARCH_OUTPUT]
@@ -81,7 +119,7 @@ def search():
 @app.route('/get_class_description', methods=['GET'])
 def get_class_description():
    class_name = request.args.get('class_name').lower()
-   network: complexity_network = NETWORK
+   network = get_network()
    description = network.get_class(class_name).get_description()
    information = network.get_class(class_name).get_information()
    try:
@@ -94,12 +132,12 @@ def get_class_description():
 
 @app.route('/get_complexity_network')
 def get_complexity_network():
-   network: complexity_network = NETWORK
+   network = get_network()
    return jsonify(network.get_trimmed_network_json())
 
 @app.route('/get_complexity_sunburst')
 def get_complexity_sunburst():
-   network: complexity_network = NETWORK
+   network = get_network()
    return jsonify(network.get_trimmed_sunburst_json())
 
 """
@@ -109,7 +147,7 @@ Selecting all/no classes in the visualization
 @app.route('/all_class_request', methods=['GET'])
 def all_class_request():
     select = request.args.get('select') == 'true'
-    network: complexity_network = NETWORK
+    network = get_network()
     if select:
         network.new_trimmed_network(network.get_all_class_identifiers())
     else:
@@ -141,7 +179,7 @@ Expand item - either an edge or a node
 """
 @app.route('/expand_item', methods=['GET'])
 def expand_item():
-   network: complexity_network = NETWORK
+   network = get_network()
    expand_edge = request.args.get('expand_edge') == 'true'
    if expand_edge:
       source_class = request.args.get('source_class')
@@ -157,7 +195,7 @@ def expand_item():
 @app.route('/expand_node', methods=['GET'])
 def expand_node():
    class_name = request.args.get('class_name')
-   network: complexity_network = NETWORK
+   network = get_network()
    expand_success, new_classes = network.expand_node(class_name)
    if expand_success:
       update_network_information()
@@ -166,7 +204,7 @@ def expand_node():
 @app.route('/delete_class', methods=['GET'])
 def delete_class():
    class_name = request.args.get('class_name')
-   network: complexity_network = NETWORK
+   network = get_network()
    delete_class_from_network(class_name, network)
    return jsonify({'success': True})
 
@@ -174,7 +212,7 @@ def delete_class():
 def check_indirect_paths():
    class_name = request.args.get('class_name')
    delete_node = request.args.get('delete_node') == 'true'
-   network: complexity_network = NETWORK
+   network = get_network()
    direct_paths = network.get_direct_paths(class_name)
    if delete_node:
       delete_class_from_network(class_name, network)
