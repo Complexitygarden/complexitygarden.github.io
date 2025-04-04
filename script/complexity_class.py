@@ -193,6 +193,62 @@ class complexity_class():
             self_data["children"].append(child.build_sunburst_hierarchy(processed, (child.get_identifier() in processed)))
 
         return self_data
+    
+    def to_json(self):
+        """
+        Convert the complexity_class object to a JSON-serializable dictionary
+        """
+        # Create a dictionary with only serializable values
+        json_dict = {
+            'name': self.name,
+            'identifier': self.identifier,
+            'latex_name': self.latex_name,
+            'description': self.description,
+            'information': self.information,
+            'visible': self.visible,
+            'level': self.level,
+            'x': self.x,
+            'y': self.y,
+            'max_level': self.max_level
+        }
+        
+        # Add theorems as dictionaries
+        json_dict['theorems'] = [thm.to_json() for thm in self.theorems]
+        
+        # Add references to other classes by their identifiers
+        json_dict['contains'] = [c.get_identifier() for c in self.contains]
+        json_dict['within'] = [c.get_identifier() for c in self.within]
+        json_dict['trim_contains'] = [c.get_identifier() for c in self.trim_contains]
+        json_dict['trim_within'] = [c.get_identifier() for c in self.trim_within]
+        
+        return json_dict
+    
+    @staticmethod
+    def from_json(json_dict: dict):
+        """
+        Create a complexity_class object from a JSON dictionary
+        """
+        # Create a new complexity_class object with the basic properties
+        class_obj = complexity_class(
+            {
+                'name': json_dict['name'],
+                'latex_name': json_dict.get('latex_name', json_dict['name']),
+                'description': json_dict.get('description', None),
+                'information': json_dict.get('information', None)
+            },
+            json_dict['identifier']
+        )
+        
+        # Set additional properties
+        class_obj.visible = json_dict.get('visible', False)
+        class_obj.level = json_dict.get('level', -1)
+        class_obj.x = json_dict.get('x', -1)
+        class_obj.y = json_dict.get('y', -1)
+        class_obj.max_level = json_dict.get('max_level', -1)
+        
+        # Theorems and relationships will be reconstructed by the network's from_json method
+        
+        return class_obj
 
 if __name__=='__main__':
     p_class = complexity_class({
