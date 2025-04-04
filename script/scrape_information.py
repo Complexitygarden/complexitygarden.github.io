@@ -97,3 +97,12 @@ bibtex_str = """
 #print(library.comments[0].comment) #The comment
 #first_entry = library.entries[0]
 #print(first_entry.fields_dict)
+
+#url = f"http://dx.doi.org/10.4086/toc.2005.v001a001"
+
+try:
+    response = requests.get("http://dx.doi.org/10.4086/toc.2005.v001a001")
+    print(response.text)
+except:
+    print("error")
+
