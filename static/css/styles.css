@@ -87,7 +87,7 @@ body {
 }
 
 /* highlight the div or the paragraph element? */
-.reference-entry.highlight > p {
+.highlight {
     animation: highlight-fade 3s forwards;
 }
 

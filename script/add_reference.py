@@ -79,19 +79,19 @@ import bibtexparser
 #    reference_information = soup.find('div', {'id': "mw-parser-output"})
 
     
-bibtex_str = """
-@comment{
-    Example Comment
-}
-@ARTICLE{Cesar2013,
-    author = {Jean Cesar},
-    title = {An amazing title},
-    year = {2013},
-    volume = {12},
-    pages = {12--23},
-    journal = {Nice Journal}
-}
-"""
+#bibtex_str = """
+#@comment{
+#    Example Comment
+#}
+#@ARTICLE{Cesar2013,
+#    author = {Jean Cesar},
+#    title = {An amazing title},
+#    year = {2013},
+#    volume = {12},
+#    pages = {12--23},
+#    journal = {Nice Journal}
+#}
+#"""
 
 #library = bibtexparser.parse_string(bibtex_str)
 #print(library.comments[0].comment) #The comment
@@ -101,7 +101,8 @@ bibtex_str = """
 #url = f"http://dx.doi.org/10.4086/toc.2005.v001a001"
 
 try:
-    response = requests.get("http://dx.doi.org/10.4086/toc.2005.v001a001")
+    headers = {"accept":"application/x-bibtex"}
+    response = requests.get("http://dx.doi.org/10.1145/800157.805047", headers=headers)
     print(response.text)
 except:
     print("error")

@@ -1,59 +1,67 @@
 document.addEventListener("DOMContentLoaded", function() {
-    fetch("/static/references.json")
-    .then(response => response.json())
-    .then(data => {
-        const references_array = data.references;
-
-        const references_div = document.getElementById("references-list");
-
-        //Load each reference into the page
-        references_array.forEach(element => {
-            //remove the brackets
-            const identifier = element.identifier;
-
-            //create a div to store the element
-            entry = document.createElement("div");
-
-            entry.classList.add("reference-entry");
-
-            entry.id = identifier;
+    const cached_html = sessionStorage.getItem("references_html");
+    const references_div = document.getElementById("references-list");
 
 
-            const author = format_author(element.fields.author);
-
-            const title   = element.fields.title ?? "";
-            //Change all these to this so that if an element is missing it doesnt look weird with the floating commas later on
-            const journal = element.fields.journal ? element.fields.journal + "," : "";
-            const volume  = element.fields.volume  ?  "vol. " + element.fields.volume + ",": "";
-            const number  = element.fields.number ?? "";
-            const pages   = element.fields.pages ?? "";
-            const year    = element.fields.year ?? "";
-            const doi     = element.fields.doi ?? "";
-            const url     = element.fields.url ?? "";
-
-
-            //construct reference
-
-            entry.innerHTML = 
-            `
-            <p> 
-                [${identifier}] ${author}, "<em>${title}</em>," ${journal} ${volume}, no. ${number}, pp. ${pages}, ${year}, doi:${doi}. 
-            </p>
-            `;
-
-            references_div.appendChild(entry);
-        });
-
-
+    if (cached_html)
+    {
+        //Only load the references once, then cache it in session storage
         
-        //console.log(document.querySelector(window.location.hash));
-
+        references_div.innerHTML = cached_html;
         scroll_and_highlight_target(3000);
+    }
+    else
+    {
 
-        
-    })
-    .catch(error => console.log("ERROR LOADING REFERENCE.JSON", error));
+        fetch("/static/references.json")
+        .then(response => response.json())
+        .then(data => {
+            const references_array = data.references;
+            //Load each reference into the page
+
+
+            references_array.forEach(element => {
+                //remove the brackets
+                const identifier = element.identifier;
+
+
+
+                const author = format_author(element.fields.author);
+                const title   = element.fields.title ?? "";
+                //Change all these to this so that if an element is missing it doesnt look weird with the floating commas later on
+                const journal = element.fields.journal ? element.fields.journal + "," : "";
+                const volume  = element.fields.volume  ?  "vol. " + element.fields.volume + ",": "";
+                const number  = element.fields.number ?? "";
+                const pages   = element.fields.pages ?? "";
+                const year    = element.fields.year ?? "";
+                const doi     = element.fields.doi ?? "";
+                const url     = element.fields.url ?? "";
+
+
+                //append <p> element to the references div
+                references_div.innerHTML += 
+                `
+                <p id="${identifier}"> 
+                    [${identifier}] ${author}, "<em>${title}</em>," ${journal} ${volume}, no. ${number}, pp. ${pages}, ${year}, doi:${doi}. 
+                </p>
+                `;
+            });
+
+
+            //Set these generated html to session storage
+            sessionStorage.setItem("references_html", references_div.innerHTML);
+
+            scroll_and_highlight_target(3000);
+
+
+        })
+        .catch(error => console.log("ERROR LOADING REFERENCE.JSON", error));
+    }
+
 });
+
+
+
 
 
 function format_author(author_string)
