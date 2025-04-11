@@ -312,19 +312,28 @@ function draw_graph(){
                 .html(d => d.latex_name);
 
             // Process all MathJax after adding all nodes
-            MathJax.typesetPromise().then(() => {
-                console.log("MathJax processing complete");
-            }).catch((err) => {
-                setTimeout(() => {
+            // Added as sometimes MathJax doesn't load in time, so then we can't even move the nodes.
+            if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                MathJax.typesetPromise().then(() => {
+                    console.log("MathJax processing complete");
+                }).catch((err) => {
                     console.error("MathJax processing failed:", err);
-                    // If it doesn't work, wait and repeat
-                    MathJax.typesetPromise().then(() => {
-                        console.log("MathJax processing complete");
-                    }).catch((err) => {
-                        console.error("MathJax processing failed:", err);
-                    });
-                }, 100);
-            });
+                    setTimeout(() => {
+                        if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                            MathJax.typesetPromise().then(() => {
+                                console.log("MathJax processing complete");
+                            }).catch((err) => {
+                                console.error("MathJax processing failed:", err);
+                            });
+                        } else {
+                            console.warn("MathJax not available for retry");
+                        }
+                    }, 100);
+                });
+            } else {
+                console.warn("MathJax not available, skipping typesetting");
+                drag_handler(node);
+            }
 
             // Add delete button
             nodeGroups.append("g")
