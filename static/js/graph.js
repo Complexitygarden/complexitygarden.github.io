@@ -344,7 +344,6 @@ function draw_graph(){
                 .on("click", function(d) {
                     d3.event.stopPropagation(); // Prevent node click event
                     delete_node(d.name);
-                    delete_class(d.name);
                 })
                 .append("circle")
                 .attr("r", radius/6)
@@ -555,6 +554,9 @@ function draw_graph(){
                             console.log("Could not find node " + newLink[0] + " or " + newLink[1]);
                         }
                     }
+
+                    // Deleting the node from the network
+                    delete_class(className)
                     
                     // Delete all current edges
                     delete_all_edges();

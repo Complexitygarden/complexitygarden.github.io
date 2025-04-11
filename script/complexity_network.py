@@ -50,9 +50,12 @@ class complexity_network():
             self.add_class(class_def, class_name)
         return
     
-    def get_class(self, class_name: str):
+    def get_class(self, class_name: str, raise_error: bool = True):
         if class_name not in self.classes_dict:
-            raise ValueError(f"Class {class_name} not found in the network")
+            if raise_error:
+                raise ValueError(f"Class {class_name} not found in the network")
+            else:
+                return None
         return self.classes_dict[class_name]
     
     def get_all_class_identifiers(self):
@@ -112,7 +115,7 @@ class complexity_network():
             if current_class_identifier not in self.classes_dict:
                 continue
             # Iterating through all neighbors
-            neighbors = list(set(current_class.get_trim_neighbors()))
+            neighbors = list(set(current_class.get_trim_neighbors_objects()))
             neighbor_names = [n.get_identifier() for n in neighbors]
             for neighbor in neighbor_names:
                 # Adding unprocessed neighbors
@@ -126,14 +129,14 @@ class complexity_network():
         # Dropping direct edges
         pairs_to_delete = []
         for source in [self.classes_dict[c] for c in class_list]:
-            for target in source.get_trim_contains():
+            for target in source.get_trim_contains_objects():
                 #print(f'Checking: {source.name} - {target.name}')
                 if source.has_indirect_path(target, self.classes_dict):
                     pairs_to_delete.append((source, target))
 
         for pair in pairs_to_delete:
-            pair[0].trim_contains.remove(pair[1])
-            pair[1].trim_within.remove(pair[0])
+            pair[0].trim_contains.remove(pair[1].get_identifier())
+            pair[1].trim_within.remove(pair[0].get_identifier())
 
         self.set_root_and_top_nodes()
 
@@ -145,27 +148,27 @@ class complexity_network():
         self.top_nodes = []
         if len(self.trimmed_network) == 0:
             return
-        self.root_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_within()) == 0]
-        self.top_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_contains()) == 0]
+        self.root_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_within_objects()) == 0]
+        self.top_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_contains_objects()) == 0]
         return
 
     def turn_vertex_into_edge(self, vertex: complexity_class):
-        within_classes = vertex.get_trim_within()
-        contained_classes = vertex.get_trim_contains()
+        within_classes = vertex.get_trim_within_objects()
+        contained_classes = vertex.get_trim_contains_objects()
 
         for contained in contained_classes:
             for within in within_classes:
                 if within.get_identifier() != contained.get_identifier():
-                    if contained not in within.get_trim_contains():
-                        within.trim_contains.append(contained)
-                    if within not in contained.get_trim_within():
-                        contained.trim_within.append(within)
+                    if contained not in within.get_trim_contains_objects():
+                        within.trim_contains.append(contained.get_identifier())
+                    if within not in contained.get_trim_within_objects():
+                        contained.trim_within.append(within.get_identifier())
         for contained in contained_classes:
-            if vertex in contained.get_trim_within():
-                contained.trim_within.remove(vertex)
+            if vertex in contained.get_trim_within_objects():
+                contained.trim_within.remove(vertex.get_identifier())
         for within in within_classes:
-            if vertex in within.get_trim_contains():
-                within.trim_contains.remove(vertex)
+            if vertex in within.get_trim_contains_objects():
+                within.trim_contains.remove(vertex.get_identifier())
 
         # Clear the vertex's relationships
         vertex.trim_contains = []
@@ -237,7 +240,7 @@ class complexity_network():
                 "level": class_obj.get_level(),
                 "latex_name": class_obj.get_latex_name()
             })
-            for cont in class_obj.get_trim_within():
+            for cont in class_obj.get_trim_within_objects():
                 network_dict["links"].append({
                     "source": c,
                     "target": cont.get_identifier()
@@ -266,7 +269,7 @@ class complexity_network():
             print(f"Max level: {class_name}: {max_level}")
             
             # Find the lowest level (classes this one contains)
-            min_level = [contained.get_max_level() + 1 for contained in class_obj.get_trim_contains()] + [max_level]
+            min_level = [contained.get_max_level() + 1 for contained in class_obj.get_trim_contains_objects()] + [max_level]
             min_level = min(min_level)
             print(f"Min level: {class_name}: {min_level}")
             
@@ -285,8 +288,8 @@ class complexity_network():
                 "label": class_obj.get_name(),
                 "level_start": range_info["min_level"],
                 "level_end": range_info["max_level"],
-                "contains": [c.get_identifier() for c in class_obj.get_trim_contains()],
-                "within": [c.get_identifier() for c in class_obj.get_trim_within()]
+                "contains": [c.get_identifier() for c in class_obj.get_trim_contains_objects()],
+                "within": [c.get_identifier() for c in class_obj.get_trim_within_objects()]
             })
             nodes[-1]["contains_level"] = {c: self.classes_dict[c].get_max_level() for c in nodes[-1]["contains"]}
             nodes[-1]["within_level"] = {c: self.classes_dict[c].get_max_level() for c in nodes[-1]["within"]}
@@ -329,9 +332,9 @@ class complexity_network():
         leaf_nodes = []
         for class_name in self.trimmed_network:
             class_obj = self.classes_dict[class_name]
-            if not any(within.visible for within in class_obj.get_trim_within()):
+            if not any(within.visible for within in class_obj.get_trim_within_objects()):
                 root_nodes.append(class_name)
-            if not any(contains.visible for contains in class_obj.get_trim_contains()):
+            if not any(contains.visible for contains in class_obj.get_trim_contains_objects()):
                 leaf_nodes.append(class_name)
         
         # Calculate minimum levels (from bottom up)
@@ -346,7 +349,7 @@ class complexity_network():
             current_level = min_levels[current]
             current_obj = self.classes_dict[current]
             
-            for source in current_obj.get_trim_within():
+            for source in current_obj.get_trim_within_objects():
                 source_name = source.get_identifier()
                 if source_name not in min_levels or min_levels[source_name] < current_level + 1:
                     min_levels[source_name] = current_level + 1
@@ -365,7 +368,7 @@ class complexity_network():
             current_level = max_levels[current]
             current_obj = self.classes_dict[current]
             
-            for target in current_obj.get_trim_contains():
+            for target in current_obj.get_trim_contains_objects():
                 target_name = target.get_identifier()
                 if target_name not in max_levels or max_levels[target_name] > current_level - 1:
                     max_levels[target_name] = current_level - 1
@@ -392,7 +395,7 @@ class complexity_network():
         # Setting the mid_levels - only for classes which are not in the trimmed network
         for level in sorted(levels.keys()):
             for class_obj in levels[level]:
-                for class_within in class_obj.get_trim_within():
+                for class_within in class_obj.get_trim_within_objects():
                     if class_within.get_level() == -1:
                         class_obj.level = level
 
@@ -470,7 +473,7 @@ class complexity_network():
             
             # Calculate and average with bottom-up barycenter
             for node in current_nodes:
-                connected_nodes = [n for n in next_nodes if (n in node.get_trim_contains() or node in n.get_trim_within())]
+                connected_nodes = [n for n in next_nodes if (n in node.get_trim_contains_objects() or node in n.get_trim_within_objects())]
                 if connected_nodes:
                     bottom_up_barycenter = sum(n.x for n in connected_nodes) / len(connected_nodes)
                     # Average with current position
@@ -480,7 +483,7 @@ class complexity_network():
         for level, nodes in nodes_per_level.items():
             level_spacing = height*(0.5)
             y_pos = (max_level - level) * level_spacing + level_spacing/2
-            randomize_level: bool = len(nodes) > 1
+            # randomize_level: bool = len(nodes) > 1
             for node in nodes:
                 node.y = y_pos
                 node.x = node.x * 2
@@ -504,7 +507,7 @@ class complexity_network():
         if target_class not in source_class_obj.get_trim_within_identifiers():
             raise ValueError(f"Edge {source_class} -> {target_class} not found in the network")
         
-        if target_class_obj in source_class_obj.get_within():
+        if target_class_obj in source_class_obj.get_within_objects():
             print(f"Edge {source_class} -> {target_class} already exists")
             return False, []
         
@@ -533,7 +536,7 @@ class complexity_network():
         if class_name not in self.classes_dict:
             raise ValueError(f"Class {class_name} not found in the network")
         class_obj = self.classes_dict[class_name]
-        neighbors = [c.get_identifier() for c in class_obj.get_neighbors()]
+        neighbors = [c.get_identifier() for c in class_obj.get_neighbors_objects()]
         connected_classes = [c for c in neighbors if c not in self.trimmed_network]
         if len(connected_classes) == 0:
             print(f"No new classes to add from {class_name}")
@@ -553,8 +556,8 @@ class complexity_network():
         class_obj = self.classes_dict[class_name]
 
         direct_paths = []
-        for c_top in class_obj.get_trim_within():
-            for c_bottom in class_obj.get_trim_contains():
+        for c_top in class_obj.get_trim_within_objects():
+            for c_bottom in class_obj.get_trim_contains_objects():
                 if c_top.get_identifier() == class_name or c_bottom.get_identifier() == class_name or c_top.get_identifier() == c_bottom.get_identifier():
                     print(f"These classes are the same: {c_top.get_identifier()} and {c_bottom.get_identifier()}")
                     continue

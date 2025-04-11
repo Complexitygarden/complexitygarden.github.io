@@ -212,9 +212,10 @@ def delete_class():
 def check_indirect_paths():
    class_name = request.args.get('class_name')
    delete_node = request.args.get('delete_node') == 'true'
-   network = get_network()
+   network: complexity_network = get_network()
    direct_paths = network.get_direct_paths(class_name)
    if delete_node:
+      print(f"Deleting class {class_name}")
       delete_class_from_network(class_name, network)
    return jsonify({'success': True, 'direct_paths': direct_paths})
 

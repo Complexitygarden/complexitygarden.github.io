@@ -23,10 +23,10 @@ class complexity_class():
         self.description = def_dict['description'] if 'description' in def_dict else None
         self.information = def_dict['information'] if 'information' in def_dict else None
         self.theorems: list[theorem] = []
-        self.contains: list[self] = []
-        self.within: list[self] = []
-        self.trim_contains: list[self] = []
-        self.trim_within: list[self] = []
+        self.contains: list[str] = []
+        self.within: list[str] = []
+        self.trim_contains: list[str] = []
+        self.trim_within: list[str] = []
         self.visible: bool = False
         self.network: complexity_network = network # type: ignore
         self.level: int = -1
@@ -57,36 +57,36 @@ class complexity_class():
     def process_containment_theorem(self):
         thm = self.theorems[-1]
         if thm.small_class == self.identifier:
-            self.within.append(self.network.get_class(thm.large_class))
+            self.within.append(thm.large_class)
             self.trim_within.append(self.within[-1])
         elif thm.large_class == self.identifier:
-            self.contains.append(self.network.get_class(thm.small_class))
+            self.contains.append(thm.small_class)
             self.trim_contains.append(self.contains[-1])
         return
     
-    def get_within(self) -> list[complexity_class]:
-        return self.within
+    def get_within_objects(self) -> list[complexity_class]:
+        return [self.network.get_class(c) for c in self.within]
     
-    def get_contains(self) -> list[complexity_class]:
-        return self.contains
+    def get_contains_objects(self) -> list[complexity_class]:
+        return [self.network.get_class(c) for c in self.contains]
     
-    def get_neighbors(self) -> list[complexity_class]:
-        return list(set(self.get_within() + self.get_contains()))
+    def get_neighbors_objects(self) -> list[complexity_class]:
+        return list(set(self.get_within_objects() + self.get_contains_objects()))
     
-    def get_trim_within(self) -> list[complexity_class]:
-        return self.trim_within
+    def get_trim_within_objects(self) -> list[complexity_class]:
+        return [self.network.get_class(c) for c in self.trim_within]
     
     def get_trim_within_identifiers(self) -> list[str]:
-        return [c.get_identifier() for c in self.get_trim_within()]
+        return self.trim_within
     
     def get_trim_contains_identifiers(self) -> list[str]:
-        return [c.get_identifier() for c in self.get_trim_contains()]
-    
-    def get_trim_contains(self) -> list[complexity_class]:
         return self.trim_contains
     
-    def get_trim_neighbors(self) -> list[complexity_class]:
-        return list(set(self.get_trim_within() + self.get_trim_contains()))
+    def get_trim_contains_objects(self) -> list[complexity_class]:
+        return [self.network.get_class(c) for c in self.trim_contains]
+    
+    def get_trim_neighbors_objects(self) -> list[complexity_class]:
+        return list(set(self.get_trim_within_objects() + self.get_trim_contains_objects()))
     
     def has_indirect_path(self, target: complexity_class, classes_dict: dict[str, complexity_class], visited: set[str] = None, disregard: list[str] = []) -> bool:
         """
@@ -95,14 +95,14 @@ class complexity_class():
         if visited is None:
             visited = {self.get_identifier()}
         # Checking immediate connections excluding direct path to target
-        for intermediate in self.get_trim_contains():
+        for intermediate in self.get_trim_contains_objects():
             # Skipping over checking itself
             intermediate_id = intermediate.get_identifier()
             if intermediate_id == target.get_identifier() or intermediate_id in disregard:
                 continue
             if intermediate_id not in visited:
                 visited.add(intermediate_id)
-                if target in intermediate.get_trim_contains() or intermediate.has_indirect_path(target, classes_dict, visited, disregard):
+                if target in intermediate.get_trim_contains_objects() or intermediate.has_indirect_path(target, classes_dict, visited, disregard):
                     return True
         return False
     
@@ -134,8 +134,8 @@ class complexity_class():
         self.max_level = max_level
     
     def get_classes_below(self) -> list[complexity_class]:
-            nodes_above = self.get_trim_within()
-            return [n for n in self.get_trim_contains() if n not in nodes_above]
+        nodes_above = self.get_trim_within_objects()
+        return [n for n in self.get_trim_contains_objects() if n not in nodes_above]
     
     def find_all_paths(self, target: complexity_class, visited: set[str] = None) -> list[list[complexity_class]]:
         """
@@ -189,7 +189,7 @@ class complexity_class():
         if only_return_data:
             return self_data
         self_data["children"] = []
-        for child in self.get_trim_within():
+        for child in self.get_trim_within_objects():
             self_data["children"].append(child.build_sunburst_hierarchy(processed, (child.get_identifier() in processed)))
 
         return self_data
