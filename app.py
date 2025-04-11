@@ -73,7 +73,7 @@ def update_network_information():
 @app.before_request
 def before_req():
    if 'all_classes' not in session:
-      network = get_network(True)
+      network = get_network(first_load=True)
       session['all_classes'] = network.get_all_class_identifiers()
       network.new_trimmed_network(session['all_classes'])
    # Keeping track of classes from last session
@@ -132,7 +132,8 @@ def get_class_description():
 
 @app.route('/get_complexity_network')
 def get_complexity_network():
-   network = get_network()
+   network: complexity_network = get_network()
+   network.update_location = True
    return jsonify(network.get_trimmed_network_json())
 
 @app.route('/get_complexity_sunburst')
