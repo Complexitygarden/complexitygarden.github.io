@@ -26,6 +26,16 @@ var window_width = 200,
     center_x = vis_width / 2,
     center_y = vis_height / 2;
 
+// Function to keep the session active by periodically accessing the network
+function keepSessionActive() {
+    fetch('/get_complexity_network')
+        .then(response => response.json())
+        .catch(error => console.error('Error keeping session active:', error));
+}
+
+// Set up an interval to keep the session active every 30 seconds
+setInterval(keepSessionActive, 30000);
+
 // Redrawing the divs based on the window size
 // Essentially an attempt at resizing the graph when the window is adjusted
 function redraw_divs(){

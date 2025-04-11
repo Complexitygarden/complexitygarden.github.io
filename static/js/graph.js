@@ -477,45 +477,6 @@ function draw_graph(){
                         L ${transformedPoints[2][0]} ${transformedPoints[2][1]} Z`;
             });
         }
-
-
-        function redraw_links_and_arrows(links) {
-            // Redraw links manually instead of using draw_links()
-            link = layer1.attr("class", "links")
-            .selectAll(".links")
-            .data(links)
-            .enter()
-            .append("g")
-            .each(function(d) {
-                // Invisible line for better hover detection
-                d3.select(this)
-                    .append("polyline")
-                    .attr("class", "link-hover-area")
-                    .attr("stroke-width", 50)
-                    .style("stroke", "transparent")
-                    .style("fill", "none")
-                    .attr("points", get_points);
-                
-                // Visible line
-                d3.select(this)
-                    .append("polyline")
-                    .attr("class", "link-visible")
-                    .attr("stroke-width", 2)
-                    .style("stroke", "#2c5282")
-                    .style("fill", "none")
-                    .attr("points", get_points);
-            });
-
-            // Redraw arrows
-            arrowLayer.selectAll(".arrow")
-                .data(links)
-                .enter()
-                .append("path")
-                .attr("class", "arrow")
-                .attr("stroke-width", 2)
-                .style("stroke", "#2c5282")
-                .style("fill", "#2c5282");
-        }
         
         function delete_node(className) {
             console.log("Deleting node " + className);

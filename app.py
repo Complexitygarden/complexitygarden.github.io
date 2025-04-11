@@ -49,6 +49,7 @@ def get_network(first_load: bool = False):
    """
    # Clean up old networks first
    cleanup_old_networks()
+   new_session = False
    
    if 'session_id' not in session:
       session['session_id'] = str(uuid4())
@@ -56,7 +57,8 @@ def get_network(first_load: bool = False):
    session_id = session['session_id']
    if session_id not in network_instances:
       network_instances[session_id] = create_class_network(class_json_loc, theorem_json_loc)
-   if first_load and 'selected_classes' in session:
+      new_session = True
+   if (new_session or first_load) and 'selected_classes' in session:
       network_instances[session_id].new_trimmed_network(session['selected_classes'])
    
    # Update last access time
@@ -90,22 +92,21 @@ def index():
 def references():
    return render_template('references.html')
 
-@app.route('/searchresults', methods=['GET', "POST"])
+@app.route('/searchresults', methods=["POST"])
 def add_remove_class():
-   if request.method == 'POST':
-      var_name = request.form["name"]
-      checked = bool(int(request.form["checked"]))
-      print(f'{var_name} - {checked}')
-      network = get_network()
-      if checked:
-         print('Adding')
-         network.add_class_to_trimmed_network(var_name)
-      else:
-         print('Removing')
-         network.remove_class_from_trimmed_network(var_name)
-      
-      update_network_information()
-      return var_name
+   var_name = request.form["name"]
+   checked = bool(int(request.form["checked"]))
+   print(f'{var_name} - {checked}')
+   network = get_network()
+   if checked:
+      print('Adding')
+      network.add_class_to_trimmed_network(var_name)
+   else:
+      print('Removing')
+      network.remove_class_from_trimmed_network(var_name)
+   
+   update_network_information()
+   return var_name
 
 @app.route('/search_complexity_classes', methods=['GET'])
 def search():
@@ -224,6 +225,14 @@ def delete_class_from_network(class_name, network: complexity_network):
    network.remove_class_from_trimmed_network(class_name)
    update_network_information()
    return
+
+@app.route('/keep_session_active', methods=['GET'])
+def keep_session_active():
+   """
+   Endpoint to keep the session active by accessing the network
+   """
+   get_network()
+   return jsonify({'success': True, 'message': 'Session kept active'})
 
 if __name__ == '__main__':
     app.run(debug=True)
