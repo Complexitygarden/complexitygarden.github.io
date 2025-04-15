@@ -253,6 +253,24 @@
             "latex_name":"$\\mathsf{QPH}$",
             "description":"Quantum Polynomial Hierarchy",
             "information":"A generalization of $\\mathsf{PH}$ where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
+        },
+        "IP":{
+            "name":"IP",
+            "latex_name":"$\\mathsf{IP}$",
+            "description":"Interactive Proof System",
+            "information":"test IP"
+        },
+        "testA":{
+            "name":"testA",
+            "latex_name":"$\\mathsf{testA}$",
+            "description":"test testA",
+            "information":"test testA"
+        },
+        "testB":{
+            "name":"testB",
+            "latex_name":"$\\mathsf{testB}$",
+            "description":"test testB",
+            "information":"test testB"
         }
 
     }

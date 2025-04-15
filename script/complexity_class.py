@@ -9,10 +9,10 @@ Below is an explanation for the variables:
 """
 
 try:
-    from .theorem import theorem, containment_theorem
+    from .theorem import theorem, containment_theorem, equality_theorem
 except Exception as e:
     print(f"Error importing modules: {e}")
-    from theorem import theorem, containment_theorem
+    from theorem import theorem, containment_theorem, equality_theorem
 
 class complexity_class():
     def __init__(self, def_dict, identifier: str, network = None) -> None:
@@ -25,14 +25,18 @@ class complexity_class():
         self.theorems: list[theorem] = []
         self.contains: list[str] = []
         self.within: list[str] = []
+        self.equals: list[str] = []
         self.trim_contains: list[str] = []
         self.trim_within: list[str] = []
+        self.trim_equals: list[str] = []
         self.visible: bool = False
         self.network: complexity_network = network # type: ignore
         self.level: int = -1
         self.x: int = -1
         self.y: int = -1
         self.max_level: int = -1
+        self.is_main_class: bool = False # Whether this class is the main class in any equality theorems
+        self.main_class: str = None
         return
     
     def get_identifier(self):
@@ -52,6 +56,8 @@ class complexity_class():
             self.theorems.append(thm)
         if isinstance(thm, containment_theorem):
             self.process_containment_theorem()
+        elif isinstance(thm, equality_theorem):
+            self.process_equality_theorem()
         return
     
     def process_containment_theorem(self):
@@ -64,11 +70,22 @@ class complexity_class():
             self.trim_contains.append(self.contains[-1])
         return
     
+    def process_equality_theorem(self):
+        thm = self.theorems[-1]
+        if thm.a == self.identifier:
+            self.equals.append(thm.b)
+        elif thm.b == self.identifier:
+            self.equals.append(thm.a)
+        self.trim_equals.append(self.equals[-1])
+
     def get_within_objects(self) -> list[complexity_class]:
         return [self.network.get_class(c) for c in self.within]
     
     def get_contains_objects(self) -> list[complexity_class]:
         return [self.network.get_class(c) for c in self.contains]
+    
+    def get_neighbors_identifiers(self) -> list[str]:
+        return list(set(self.within + self.contains))
     
     def get_neighbors_objects(self) -> list[complexity_class]:
         return list(set(self.get_within_objects() + self.get_contains_objects()))
@@ -159,7 +176,7 @@ class complexity_class():
         # If we're at a lower level than target, only look at nodes above us
         if self.level < target.level:
             # Get all nodes that contain this class (nodes above)
-            for higher_node in self.get_within():
+            for higher_node in self.get_within_objects():
                 if higher_node.identifier not in visited:
                     # Recursively find paths from the higher node to target
                     sub_paths = higher_node.find_all_paths(target, visited.copy())
@@ -193,6 +210,30 @@ class complexity_class():
             self_data["children"].append(child.build_sunburst_hierarchy(processed, (child.get_identifier() in processed)))
 
         return self_data
+    
+    def move_connections_to_main_class(self):
+        """
+        Moving all the connections from the equal class to this class, assuming it is main
+        """
+        if not self.is_main_class or len(self.equals) == 0:
+            raise ValueError("Class is not a main class")
+        for eq_class in self.equals:
+            eq_class_obj = self.network.get_class(eq_class)
+            print("Moving connections - must be implemented!")
+        
+    def true_if_main_class(self) -> bool:
+        """
+        Checking if a class is the main class
+        """
+        return self.is_main_class
+    
+    def get_main_class(self) -> str:
+        if self.main_class is None:
+            return self.identifier
+        return self.main_class
+
+            
+                
 
 if __name__=='__main__':
     p_class = complexity_class({

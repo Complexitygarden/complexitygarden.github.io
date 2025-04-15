@@ -6,12 +6,12 @@ Defining the class for the entire complexity network
 # Imports
 try:
     from .complexity_class import complexity_class
-    from .theorem import theorem, containment_theorem
+    from .theorem import theorem, containment_theorem, equality_theorem, group_equality_theorems
     from .theorem import VALID_THEOREMS
 except Exception as e:
     print(f"Error importing modules: {e}")
     from complexity_class import complexity_class
-    from theorem import theorem, containment_theorem
+    from theorem import theorem, containment_theorem, equality_theorem, group_equality_theorems
     from theorem import VALID_THEOREMS
 import json
 import copy
@@ -25,6 +25,7 @@ class complexity_network():
         self.classes_dict: dict[str, complexity_class] = {}
         self.theorems: list[theorem] = []
         self.trimmed_network = []
+        self.visualized_trimmed_network = {} # These are the values which are showcased
         self.max_avg_level = -1
         self.min_level = -1
         self.max_max_level = -1
@@ -80,16 +81,53 @@ class complexity_network():
                 raise ValueError(f"Invalid theorem type: {thm_dict['type']}")
             elif thm_dict['type'] == 'containment':
                 thm = containment_theorem(thm_dict)
-            self.add_theorem(thm)
+            elif thm_dict['type'] == 'equality':
+                thm = equality_theorem(thm_dict)
+            if thm.is_valid():
+                self.add_theorem(thm)
+
+        # Plan: Checking if two inclusions imply an equality
+        self.process_equality_theorems()
         return
+    
+    def process_equality_theorems(self):
+        """
+        Processing the equality theorems
+        """
+        equality_theorems = []
+        for thm in self.theorems:
+            if isinstance(thm, equality_theorem):
+                equality_theorems.append(thm)
+
+        groupped_equality_theorems, main_classes = group_equality_theorems(equality_theorems, self.classes_dict)
+        
+        # Setting the main classes
+        for main_class, class_list in zip(main_classes, groupped_equality_theorems):
+            self.classes_dict[main_class].is_main_class = True
+            for class_name in class_list:
+                self.classes_dict[class_name].main_class = main_class
+                self.classes_dict[class_name].equals = [c for c in class_list if c != class_name]
+            self.classes_dict[main_class].move_connections_to_main_class()
+
+
 
     def new_trimmed_network(self, class_list: list[str]):
         """
         Creating a new trimmed network - we only keep the classes in class_list
         """
-        class_list = [c.lower() for c in class_list]
-        # Deleting the old network
         self.delete_old_trimmed_network()
+        print(f"Class list: {class_list}")
+        class_list = self.process_trimmed_class_list(class_list)
+        print(f"Class list: {class_list}")
+        # Deleting the old network
+
+        """
+        We will update the class_list so that we only keep the main classes and to each main class, we add which classes
+        that are in class_list it is equal to (for the visualisation).
+
+        When we delete a class, then we will delete the class from the class_list and update the main classes
+        """
+
 
         self.trimmed_network = copy.deepcopy(class_list)
 
@@ -98,11 +136,11 @@ class complexity_network():
             return
         elif len(class_list) == 1:
             self.classes_dict[class_list[0]].visible = True
-        elif len(class_list) == len(self.classes):
-            for c in self.classes:
-                c.visible = True
-                c.trim_contains = c.contains.copy()
-                c.trim_within = c.within.copy()
+        # elif len(class_list) == len(self.classes):
+        #     for c in self.classes:
+        #         c.visible = True
+        #         c.trim_contains = c.contains.copy()
+        #         c.trim_within = c.within.copy()
 
         node_queue, tagged_vertex, processed_vertex = variables_for_processing(class_list, self.classes_dict)
 
@@ -139,6 +177,7 @@ class complexity_network():
             pair[1].trim_within.remove(pair[0].get_identifier())
 
         self.set_root_and_top_nodes()
+        return
 
     def set_root_and_top_nodes(self):
         """
@@ -151,6 +190,29 @@ class complexity_network():
         self.root_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_within_objects()) == 0]
         self.top_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_contains_objects()) == 0]
         return
+
+    def process_trimmed_class_list(self, class_list: list[str]):
+        """
+        Processing the trimmed class list
+        - Essentially, replacing the classes with their main classes
+        """
+        if len(class_list) == 0:
+            return []
+        class_list = [c.lower() for c in class_list]
+        graph_class_list = [] # The classes we are visualising
+        vis_dict = {}
+
+        for class_name in class_list:
+            main_class = (self.get_class(class_name)).get_main_class()
+            graph_class_list.append(main_class)
+            if main_class in vis_dict:
+                vis_dict[main_class].append(class_name)
+            else:
+                vis_dict[main_class] = [class_name]
+        graph_class_list = list(set(graph_class_list)) # Dropping repeats
+        self.visualized_trimmed_network = vis_dict
+        print(self.visualized_trimmed_network)
+        return graph_class_list
 
     def turn_vertex_into_edge(self, vertex: complexity_class):
         within_classes = vertex.get_trim_within_objects()
@@ -181,6 +243,7 @@ class complexity_network():
         Resetting all values as if there wasn't any trimmed network
         """
         self.trimmed_network = []
+        self.visualized_trimmed_network = {}
         for c in self.classes:
             c.visible = False
             c.trim_contains = c.contains.copy()
@@ -196,13 +259,20 @@ class complexity_network():
         return
     
     def add_class_to_trimmed_network(self, class_identifier: str):
+        """
+        TO DO: Improve this a little bit, I'm just lazy atm
+        """
         class_identifier = class_identifier.lower()
         if class_identifier not in self.classes_dict:
             raise ValueError(f"Class {class_identifier} not found in the network")
-        self.trimmed_network.append(class_identifier)
+        trimmed_network = list(set(self.get_visualized_classes() + [class_identifier]))
+        # self.trimmed_network.append(class_identifier)
         self.classes_dict[class_identifier].visible = True
-        self.new_trimmed_network(self.trimmed_network)
+        self.new_trimmed_network(trimmed_network)
         return
+    
+    def get_visualized_classes(self):
+        return [c for cl in self.visualized_trimmed_network.values() for c in cl]
     
     def remove_class_from_trimmed_network(self, class_identifier: str):
         """
@@ -212,10 +282,12 @@ class complexity_network():
         class_identifier = class_identifier.lower()
         if class_identifier not in self.classes_dict:
             raise ValueError(f"Class {class_identifier} not found in the network")
-        if class_identifier in self.trimmed_network:
-            self.trimmed_network.remove(class_identifier)
+        vis_classes = self.get_visualized_classes()
+        if class_identifier in vis_classes:
+            # self.trimmed_network.remove(class_identifier)
+            vis_classes.remove(class_identifier)
             self.classes_dict[class_identifier].visible = False
-            self.new_trimmed_network(self.trimmed_network)
+            self.new_trimmed_network(vis_classes)
             self.update_location = False
         return
     
@@ -225,20 +297,25 @@ class complexity_network():
             return network_dict
         """
         Updating locations - only if requested, otherwise we don't, but enable updating it next time
+        TO DO: Update the names so that only those selected ones are shown, not the main ones
         """
         if self.update_location:
             self.set_positions()
         else:
             self.update_location = True
         for c in self.trimmed_network:
-            class_obj = self.classes_dict[c]
+            class_obj, equal_classes = self.classes_dict[c], []
+            print(self.visualized_trimmed_network)
+            if len(self.visualized_trimmed_network[c]) > 1:
+                equal_classes = [c_name for c_name in self.visualized_trimmed_network[c] if c_name != c]
             network_dict["nodes"].append({
                 "name": c,
                 "label": class_obj.get_name(),
                 "savedX": class_obj.get_x()/1000,
                 "savedY": class_obj.get_y()/1000,
                 "level": class_obj.get_level(),
-                "latex_name": class_obj.get_latex_name()
+                "latex_name": class_obj.get_latex_name(),
+                "equal_classes": equal_classes
             })
             for cont in class_obj.get_trim_within_objects():
                 network_dict["links"].append({

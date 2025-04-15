@@ -153,7 +153,7 @@
         {
             "type":"containment",
             "small":"ZPP",
-            "large":"RP"   
+            "large":"RP"
         },
         {
             "type":"containment",
@@ -310,7 +310,21 @@
             "type":"containment",
             "small":"PH",
             "large":"QCPH"
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"IP"
+        },
+        {
+            "type":"equality",
+            "a":"testA",
+            "b":"testB"
+        },
+        {
+            "type":"equality",
+            "a":"IP",
+            "b":"testB"
         }
-        
     ]
 }
