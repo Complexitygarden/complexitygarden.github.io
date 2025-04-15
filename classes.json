@@ -271,6 +271,30 @@
             "latex_name":"$\\mathsf{testB}$",
             "description":"test testB",
             "information":"test testB"
+        },
+        "BPPPath":{
+            "name":"BPPPath",
+            "latex_name":"$\\mathsf{BPP_{\\text{path}}}$",
+            "description":"Threshold BPP",
+            "information":"Also known as PostBPP."
+        },
+        "MIP":{
+            "name":"MIP",
+            "latex_name":"$\\mathsf{MIP}$",
+            "description":"Multi-Prover Interactive Proof System",
+            "information":"test MIP"
+        },
+        "MIPStar":{
+            "name":"MIPStar",
+            "latex_name":"$\\mathsf{MIP^{*}}$",
+            "description":"MIP with Quantum Provers",
+            "information":"test MIP*"
+        },
+        "PostBQP":{
+            "name":"PostBQP",
+            "latex_name":"$\\mathsf{PostBQP}$",
+            "description":"PostBQP",
+            "information":"Equal to $\\mathsf{PP}$."
         }
 
     }

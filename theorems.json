@@ -12,11 +12,6 @@
         },
         {
             "type": "containment",
-            "small": "PP",
-            "large": "PSPACE"
-        },
-        {
-            "type": "containment",
             "small": "QCMA",
             "large": "QMA"
         },
@@ -94,11 +89,6 @@
             "type":"containment",
             "small":"MA",
             "large":"AM"
-        },
-        {
-            "type":"containment",
-            "small":"AM",
-            "large": "PSPACE"
         },
         {
             "type":"containment",
@@ -325,6 +315,31 @@
             "type":"equality",
             "a":"IP",
             "b":"testB"
+        },
+        {
+            "type":"containment",
+            "small":"BPPPath",
+            "large":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"BPPPath"
+        },
+        {
+            "type":"equality",
+            "a":"MIP",
+            "b":"NEXP"
+        },
+        {
+            "type":"equality",
+            "a":"RE",
+            "b":"MIPStar"
+        },
+        {
+            "type":"equality",
+            "a":"PostBQP",
+            "b":"PP"
         }
     ]
 }

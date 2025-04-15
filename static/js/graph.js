@@ -642,8 +642,24 @@ function draw_graph(){
         
         function delete_node(className) {
             console.log("Deleting node " + className);
+            
+            // Close any open tooltip for this node
+            var nodeToDelete = nodeGroups.filter(d => d.name === className);
+            if (!nodeToDelete.empty()) {
+                var button = nodeToDelete.select(".equal-classes-button");
+                if (button.classed("pinned")) {
+                    // Reset the button state
+                    button.classed("pinned", false)
+                        .select(".equal-classes-symbol")
+                        .text("+");
+                    
+                    // Remove the tooltip
+                    d3.selectAll(".equal-classes-tooltip").remove();
+                }
+            }
+            
             // Remove the node from the DOM
-            node.filter(d => d.name === className).remove();
+            nodeToDelete.remove();
             
             // Update simulation data
             var nodes = simulation.nodes();
