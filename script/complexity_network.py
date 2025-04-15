@@ -134,8 +134,8 @@ class complexity_network():
         # Basic cases
         if len(class_list) == 0:
             return
-        elif len(class_list) == 1:
-            self.classes_dict[class_list[0]].visible = True
+        # elif len(class_list) == 1:
+        #     self.classes_dict[class_list[0]].visible = True
         # elif len(class_list) == len(self.classes):
         #     for c in self.classes:
         #         c.visible = True
@@ -159,9 +159,9 @@ class complexity_network():
                 # Adding unprocessed neighbors
                 if not processed_vertex[neighbor]:
                     node_queue.append(neighbor)
-            if tagged_vertex[current_class_identifier]:
-                current_class.visible = True
-            else:
+            if not tagged_vertex[current_class_identifier]:
+            #     current_class.visible = True
+            # else:
                 self.turn_vertex_into_edge(current_class)
 
         # Dropping direct edges
@@ -177,6 +177,8 @@ class complexity_network():
             pair[1].trim_within.remove(pair[0].get_identifier())
 
         self.set_root_and_top_nodes()
+
+        self.set_visible_classes()
         return
 
     def set_root_and_top_nodes(self):
@@ -189,6 +191,15 @@ class complexity_network():
             return
         self.root_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_within_objects()) == 0]
         self.top_nodes = [self.classes_dict[c].get_identifier() for c in self.trimmed_network if len(self.classes_dict[c].get_trim_contains_objects()) == 0]
+        return
+    
+    def set_visible_classes(self):
+        """
+        Setting the visible classes based on the trimmed network
+        """
+        vis_classes = self.get_visualized_classes()
+        for c in vis_classes:
+            self.classes_dict[c].visible = True
         return
 
     def process_trimmed_class_list(self, class_list: list[str]):
@@ -271,7 +282,7 @@ class complexity_network():
         self.new_trimmed_network(trimmed_network)
         return
     
-    def get_visualized_classes(self):
+    def get_visualized_classes(self) -> list:
         return [c for cl in self.visualized_trimmed_network.values() for c in cl]
     
     def remove_class_from_trimmed_network(self, class_identifier: str):
@@ -307,7 +318,7 @@ class complexity_network():
             class_obj, equal_classes = self.classes_dict[c], []
             print(self.visualized_trimmed_network)
             if len(self.visualized_trimmed_network[c]) > 1:
-                equal_classes = [c_name for c_name in self.visualized_trimmed_network[c] if c_name != c]
+                equal_classes = [{'name': c_name, 'latex_name': self.classes_dict[c_name].get_latex_name()} for c_name in self.visualized_trimmed_network[c] if c_name != c]
             network_dict["nodes"].append({
                 "name": c,
                 "label": class_obj.get_name(),

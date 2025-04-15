@@ -38,26 +38,9 @@ var simulation = d3.forceSimulation(), // Gravity simulation
     layer1 = null,
     layer2 = null,
     arrowLayer = null,
-    nodeCount = 0, // Selected node by the user
-    nodeGroups = null; // Node groups for accessing in other functions
+    nodeCount = 0; // Selected node by the user
 
 redraw_divs();
-
-// Add event listener for Escape key to close all tooltips
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        // Close all equal classes tooltips
-        d3.selectAll(".equal-classes-tooltip").remove();
-        
-        // Reset all pinned buttons
-        if (nodeGroups) {
-            nodeGroups.selectAll(".equal-classes-button")
-                .classed("pinned", false)
-                .select(".equal-classes-symbol")
-                .text("+");
-        }
-    }
-});
 
 function delete_old_graph(){
     if (graph_drawn === 1) {
@@ -286,31 +269,136 @@ function draw_graph(){
         }
 
         function draw_nodes(){
-            nodeGroups = node.append("g")
+            var nodeGroups = node.append("g")
                 .on("mouseover", function(d) {
-                    d3.select(this).select("circle")
-                        .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
+                    // Apply different hover colors based on segment type
+                    d3.select(this).selectAll(".node-segment")
                         .attr("stroke", "#2c5282");
+                    
+                    // Main segment gets brighter version of original color
+                    d3.select(this).selectAll(".node-segment.main-segment")
+                        .attr("fill", d3.rgb(colorScale(d.level)).brighter(0.3));
+                    
+                    // Equal class segments get brighter blue
+                    d3.select(this).selectAll(".node-segment.equal-segment")
+                        .attr("fill", d3.rgb("#4299e1").brighter(0.3));
+                    
                     // Show delete button on hover
                     d3.select(this).select(".delete-button")
                         .style("display", "block");
                 })
                 .on("mouseout", function(d) {
-                    d3.select(this).select("circle")
-                        .attr("fill", d => colorScale(d.level))
+                    // Reset colors based on segment type
+                    d3.select(this).selectAll(".node-segment")
                         .attr("stroke", "none");
+                    
+                    // Main segment returns to original color
+                    d3.select(this).selectAll(".node-segment.main-segment")
+                        .attr("fill", colorScale(d.level));
+                    
+                    // Equal class segments return to original blue
+                    d3.select(this).selectAll(".node-segment.equal-segment")
+                        .attr("fill", "#4299e1");
+                    
                     // Hide delete button when not hovering
                     d3.select(this).select(".delete-button")
                         .style("display", "none");
                 });
 
-            // Adding the circle
-            nodeGroups.append("circle")
-                .attr("r", radius)
-                .attr("fill", d => colorScale(d.level))
-                .attr("stroke", "none")
-                .attr("stroke-width", 3);
+            // Create a group for the node segments
+            var nodeSegmentsGroup = nodeGroups.append("g")
+                .attr("class", "node-segments-group");
+                
+            // Create an arc generator
+            var arc = d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius);
+            
+            // Draw the node segments
+            nodeGroups.each(function(d) {
+                var segmentsGroup = d3.select(this).select(".node-segments-group");
+                
+                if (d.equal_classes && d.equal_classes.length > 0) {
+                    // Calculate the angle for each segment
+                    var totalSegments = d.equal_classes.length + 1;
+                    var anglePerSegment = (2 * Math.PI) / totalSegments;
+                    
+                    // Create segments
+                    for (var i = 0; i < totalSegments; i++) {
+                        var startAngle = i * anglePerSegment;
+                        var endAngle = (i + 1) * anglePerSegment;
+                        
+                        // Create the segment
+                        segmentsGroup.append("path")
+                            .attr("class", i === 0 ? "node-segment main-segment" : "node-segment equal-segment")
+                            .attr("d", arc({
+                                startAngle: startAngle,
+                                endAngle: endAngle
+                            }))
+                            .attr("fill", i === 0 ? colorScale(d.level) : "#4299e1")
+                            .attr("stroke", "none")
+                            .attr("data-class-name", i === 0 ? d.latex_name : d.equal_classes[i-1].latex_name)
+                            .on("mouseover", function() {
+                                var className = d3.select(this).attr("data-class-name");
+                                showTooltip(className);
+                            })
+                            .on("mouseout", function() {
+                                hideTooltip();
+                            });
+                    }
+                } else {
+                    // Just a single circle for nodes without equal classes
+                    segmentsGroup.append("circle")
+                        .attr("class", "node-segment main-segment")
+                        .attr("r", radius)
+                        .attr("fill", colorScale(d.level))
+                        .attr("stroke", "none");
+                        // No tooltip for nodes without equal classes
+                }
+            });
     
+            // Add a tooltip div to the document if it doesn't exist
+            if (!d3.select("#node-tooltip").node()) {
+                d3.select("body").append("div")
+                    .attr("id", "node-tooltip")
+                    .style("position", "absolute")
+                    .style("visibility", "hidden")
+                    .style("background-color", "rgba(255, 255, 255, 0.9)")
+                    .style("color", "#333")
+                    .style("padding", "5px 10px")
+                    .style("border-radius", "5px")
+                    .style("box-shadow", "0 2px 5px rgba(0,0,0,0.2)")
+                    .style("font-size", fontSize + "px")
+                    .style("pointer-events", "none")
+                    .style("z-index", "1000");
+            }
+            
+            // Function to show tooltip
+            function showTooltip(text) {
+                var tooltip = d3.select("#node-tooltip");
+                tooltip.html(text)
+                    .style("visibility", "visible");
+                
+                // Position tooltip near the mouse
+                d3.select(document).on("mousemove.tooltip", function() {
+                    tooltip.style("left", (d3.event.pageX + 10) + "px")
+                        .style("top", (d3.event.pageY - 10) + "px");
+                });
+                
+                // Process MathJax in the tooltip
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([tooltip.node()]).then(() => {}).catch((err) => {
+                        console.error("MathJax processing failed for tooltip:", err);
+                    });
+                }
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                d3.select("#node-tooltip").style("visibility", "hidden");
+                d3.select(document).on("mousemove.tooltip", null);
+            }
+            
             // Adding a label on the circle
             nodeGroups.append('foreignObject')
                 .attr("x", -radius)
@@ -332,7 +420,7 @@ function draw_graph(){
             // Added as sometimes MathJax doesn't load in time, so then we can't even move the nodes.
             if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
                 MathJax.typesetPromise().then(() => {
-                    // console.log("MathJax processing complete");
+                    console.log("MathJax processing complete");
                 }).catch((err) => {
                     console.error("MathJax processing failed:", err);
                     setTimeout(() => {
@@ -377,123 +465,6 @@ function draw_graph(){
                 .style("font-size", `${radius/4}px`)
                 .style("pointer-events", "none")
                 .text("×");
-
-            // Add equal classes button (plus button)
-            nodeGroups.append("g")
-                .attr("class", "equal-classes-button")
-                .attr("transform", `translate(${-0.7*radius}, ${-0.7*radius})`)
-                .style("display", d => d.equal_classes && d.equal_classes.length > 0 ? "block" : "none")
-                .style("cursor", "pointer")
-                .append("circle")
-                .attr("r", radius/6)
-                .attr("fill", "#3182CE")
-                .attr("stroke", "#fff")
-                .attr("stroke-width", 1);
-
-            // Add plus symbol to equal classes button
-            nodeGroups.select(".equal-classes-button")
-                .append("text")
-                .attr("class", "equal-classes-symbol")
-                .attr("text-anchor", "middle")
-                .attr("dy", "0.35em")
-                .style("fill", "#fff")
-                .style("font-size", `${radius/4}px`)
-                .style("pointer-events", "none")
-                .text("+");
-
-            // Add tooltip for equal classes
-            nodeGroups.select(".equal-classes-button")
-                .on("mouseover", function(d) {
-                    if (d.equal_classes && d.equal_classes.length > 0) {
-                        // Only show tooltip on hover if it's not already pinned
-                        if (!d3.select(this).classed("pinned")) {
-                            showEqualClassesTooltip(d, this);
-                        }
-                    }
-                })
-                .on("mouseout", function(d) {
-                    // Only hide tooltip on mouseout if it's not pinned
-                    if (!d3.select(this).classed("pinned")) {
-                        d3.selectAll(".equal-classes-tooltip").remove();
-                    }
-                })
-                .on("click", function(d) {
-                    d3.event.stopPropagation(); // Prevent node click event
-                    
-                    // Toggle pinned state
-                    var isPinned = d3.select(this).classed("pinned");
-                    
-                    if (isPinned) {
-                        // Unpin: remove pinned class and hide tooltip
-                        d3.select(this).classed("pinned", false);
-                        d3.selectAll(".equal-classes-tooltip").remove();
-                        // Change symbol back to plus
-                        d3.select(this).select(".equal-classes-symbol").text("+");
-                    } else {
-                        // Pin: add pinned class and show tooltip
-                        d3.select(this).classed("pinned", true);
-                        showEqualClassesTooltip(d, this);
-                        // Change symbol to x
-                        d3.select(this).select(".equal-classes-symbol").text("×");
-                    }
-                });
-                
-            // Function to show the equal classes tooltip
-            function showEqualClassesTooltip(d, buttonElement) {
-                // Remove any existing tooltips first
-                d3.selectAll(".equal-classes-tooltip").remove();
-                
-                // Create tooltip
-                var tooltip = d3.select("body").append("div")
-                    .attr("class", "equal-classes-tooltip")
-                    .style("position", "absolute")
-                    .style("background-color", "white")
-                    .style("border", "1px solid #ccc")
-                    .style("border-radius", "5px")
-                    .style("padding", "10px")
-                    .style("box-shadow", "0 2px 5px rgba(0,0,0,0.2)")
-                    .style("z-index", "1000")
-                    .style("max-width", "300px");
-                
-                // Add title
-                tooltip.append("div")
-                    .style("font-weight", "bold")
-                    .style("margin-bottom", "5px")
-                    .text("Equal Classes:");
-                
-                // Add list of equal classes
-                var list = tooltip.append("ul")
-                    .style("margin", "0")
-                    .style("padding-left", "20px");
-                
-                d.equal_classes.forEach(function(equalClass) {
-                    list.append("li")
-                        .html(equalClass.latex_name)
-                        .style("cursor", "pointer")
-                        .style("color", "#3182CE")
-                        .style("text-decoration", "underline")
-                        .on("click", function() {
-                            // Stop event propagation to prevent tooltip from closing
-                            d3.event.stopPropagation();
-                            open_side_window(equalClass.name);
-                        });
-                });
-                
-                // Process MathJax in the tooltip
-                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-                    MathJax.typesetPromise([tooltip.node()]).then(() => {
-                        // console.log("MathJax processing complete for equal classes tooltip");
-                    }).catch((err) => {
-                        console.error("MathJax processing failed for equal classes tooltip:", err);
-                    });
-                }
-                
-                // Position tooltip near the button
-                var buttonRect = buttonElement.getBoundingClientRect();
-                
-                tooltip.style("left", (buttonRect.right + 10) + "px")
-                    .style("top", (buttonRect.top - tooltip.node().getBoundingClientRect().height/2) + "px");
-            }
 
             // Events which show complexity class descriptions
             node.on("click", function(d){
@@ -609,34 +580,6 @@ function draw_graph(){
                 return `M ${transformedPoints[0][0]} ${transformedPoints[0][1]} 
                         L ${transformedPoints[1][0]} ${transformedPoints[1][1]} 
                         L ${transformedPoints[2][0]} ${transformedPoints[2][1]} Z`;
-            });
-            
-            // Update positions of pinned equal classes tooltips
-            updatePinnedTooltips();
-        }
-        
-        // Function to update positions of pinned tooltips
-        function updatePinnedTooltips() {
-            if (!nodeGroups) return; // Exit if nodeGroups is not defined yet
-            
-            // Find all nodes with pinned equal classes buttons
-            nodeGroups.filter(function(d) {
-                return d3.select(this).select(".equal-classes-button").classed("pinned");
-            }).each(function(d) {
-                // Get the button element
-                var buttonElement = d3.select(this).select(".equal-classes-button").node();
-                
-                // Find the corresponding tooltip
-                var tooltip = d3.select(".equal-classes-tooltip");
-                
-                if (!tooltip.empty()) {
-                    // Get the current button position
-                    var buttonRect = buttonElement.getBoundingClientRect();
-                    
-                    // Update tooltip position
-                    tooltip.style("left", (buttonRect.right + 10) + "px")
-                        .style("top", (buttonRect.top - tooltip.node().getBoundingClientRect().height/2) + "px");
-                }
             });
         }
         
