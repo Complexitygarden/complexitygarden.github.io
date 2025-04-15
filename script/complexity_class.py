@@ -37,10 +37,16 @@ class complexity_class():
         self.max_level: int = -1
         self.is_main_class: bool = False # Whether this class is the main class in any equality theorems
         self.main_class: str = None
+        self.trim_main_class: str = None # The main class label in the trimmed network - in case this is the main class and it is not in the trimmed network
         return
     
     def get_identifier(self):
         return self.identifier
+    
+    def get_link_identifier(self):
+        if self.is_trimmed_main_class():
+            return self.identifier
+        return self.network.get_class(self.trim_main_class).get_identifier()
     
     def get_name(self):
         return self.name
@@ -105,6 +111,9 @@ class complexity_class():
     def get_trim_neighbors_objects(self) -> list[complexity_class]:
         return list(set(self.get_trim_within_objects() + self.get_trim_contains_objects()))
     
+    def get_equal_classes(self) -> list[complexity_class]:
+        return [self.network.get_class(c) for c in self.equals]
+
     def has_indirect_path(self, target: complexity_class, classes_dict: dict[str, complexity_class], visited: set[str] = None, disregard: list[str] = []) -> bool:
         """
         Check if there exists a path from this complexity class to target through other nodes
@@ -231,6 +240,9 @@ class complexity_class():
         if self.main_class is None:
             return self.identifier
         return self.main_class
+    
+    def is_trimmed_main_class(self) -> bool:
+        return (self.trim_main_class is None) or (self.trim_main_class == self.identifier)
 
             
                 

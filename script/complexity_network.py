@@ -206,6 +206,7 @@ class complexity_network():
         """
         Processing the trimmed class list
         - Essentially, replacing the classes with their main classes
+        TO DO: Add ordering based on how important the class is
         """
         if len(class_list) == 0:
             return []
@@ -223,6 +224,13 @@ class complexity_network():
         graph_class_list = list(set(graph_class_list)) # Dropping repeats
         self.visualized_trimmed_network = vis_dict
         print(self.visualized_trimmed_network)
+
+        # Setting the trim_main_class for the classes which are the main class
+        for main_class in vis_dict.keys():
+            if main_class not in vis_dict[main_class]:
+                self.classes_dict[main_class].trim_main_class = vis_dict[main_class][0]
+            else:
+                self.classes_dict[main_class].trim_main_class = None
         return graph_class_list
 
     def turn_vertex_into_edge(self, vertex: complexity_class):
@@ -295,7 +303,6 @@ class complexity_network():
             raise ValueError(f"Class {class_identifier} not found in the network")
         vis_classes = self.get_visualized_classes()
         if class_identifier in vis_classes:
-            # self.trimmed_network.remove(class_identifier)
             vis_classes.remove(class_identifier)
             self.classes_dict[class_identifier].visible = False
             self.new_trimmed_network(vis_classes)
@@ -314,24 +321,34 @@ class complexity_network():
             self.set_positions()
         else:
             self.update_location = True
+        vis_classes = self.get_visualized_classes()
         for c in self.trimmed_network:
             class_obj, equal_classes = self.classes_dict[c], []
+            class_name, class_latex_name, class_label = c, class_obj.get_latex_name(), class_obj.get_name()
             print(self.visualized_trimmed_network)
-            if len(self.visualized_trimmed_network[c]) > 1:
-                equal_classes = [{'name': c_name, 'latex_name': self.classes_dict[c_name].get_latex_name()} for c_name in self.visualized_trimmed_network[c] if c_name != c]
+
+            # Setting the equal classes
+            if not((len(self.visualized_trimmed_network[c]) == 1) and (c in vis_classes)):
+                equal_classes = [{'name': c_name, 'latex_name': self.classes_dict[c_name].get_latex_name(), 'label': self.classes_dict[c_name].get_name()} for c_name in self.visualized_trimmed_network[c] if c_name != c]
+            # The case when the main class is not in the trimmed network
+            if not class_obj.is_trimmed_main_class():
+                class_name = equal_classes[0]['name']
+                class_latex_name = equal_classes[0]['latex_name']
+                class_label = equal_classes[0]['label']
+                equal_classes.pop(0)
             network_dict["nodes"].append({
-                "name": c,
-                "label": class_obj.get_name(),
+                "name": class_name,
+                "label": class_label,
                 "savedX": class_obj.get_x()/1000,
                 "savedY": class_obj.get_y()/1000,
                 "level": class_obj.get_level(),
-                "latex_name": class_obj.get_latex_name(),
+                "latex_name": class_latex_name,
                 "equal_classes": equal_classes
             })
             for cont in class_obj.get_trim_within_objects():
                 network_dict["links"].append({
-                    "source": c,
-                    "target": cont.get_identifier()
+                    "source": class_name,
+                    "target": cont.get_link_identifier()
                 })
         network_dict["root_nodes"] = self.root_nodes
         network_dict["top_nodes"] = self.top_nodes
@@ -626,10 +643,11 @@ class complexity_network():
         class_obj = self.classes_dict[class_name]
         neighbors = [c.get_identifier() for c in class_obj.get_neighbors_objects()]
         connected_classes = [c for c in neighbors if c not in self.trimmed_network]
-        if len(connected_classes) == 0:
+        equal_classes = [c.get_identifier() for c in class_obj.get_equal_classes() if c.get_identifier() not in self.trimmed_network]
+        if len(connected_classes) == 0 and len(equal_classes) == 0:
             print(f"No new classes to add from {class_name}")
             return False, []
-        self.new_trimmed_network(self.trimmed_network + connected_classes)
+        self.new_trimmed_network(self.trimmed_network + connected_classes + equal_classes)
         return True, [c.upper() for c in connected_classes]
 
     def get_direct_paths(self, class_name: str):

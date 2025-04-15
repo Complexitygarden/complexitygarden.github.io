@@ -360,7 +360,7 @@ function draw_graph(){
                 .style("cursor", "pointer")
                 .on("click", function(d) {
                     d3.event.stopPropagation(); // Prevent node click event
-                    delete_node(d.name);
+                    delete_node(d);
                 })
                 .append("circle")
                 .attr("r", radius/6)
@@ -640,7 +640,8 @@ function draw_graph(){
             });
         }
         
-        function delete_node(className) {
+        function delete_node(class_obj) {
+            var className = class_obj.name
             console.log("Deleting node " + className);
             
             // Close any open tooltip for this node
@@ -652,9 +653,6 @@ function draw_graph(){
                     button.classed("pinned", false)
                         .select(".equal-classes-symbol")
                         .text("+");
-                    
-                    // Remove the tooltip
-                    d3.selectAll(".equal-classes-tooltip").remove();
                 }
             }
             
@@ -694,7 +692,12 @@ function draw_graph(){
                         }
                     }
 
-                    // Deleting the node from the network
+                    // Deleting the node from the network - and any equal classes
+                    if (class_obj.equal_classes.length != 0){
+                        for (var i = 0; i < class_obj.equal_classes.length; i++){
+                            delete_class(class_obj.equal_classes[i].name);
+                        }
+                    }
                     delete_class(className)
                     
                     // Delete all current edges
