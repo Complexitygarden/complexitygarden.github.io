@@ -475,7 +475,7 @@ function draw_graph(){
                         .on("click", function() {
                             // Stop event propagation to prevent tooltip from closing
                             d3.event.stopPropagation();
-                            open_side_window(equalClass.name);
+                            open_side_window(equalClass);
                         });
                 });
                 
