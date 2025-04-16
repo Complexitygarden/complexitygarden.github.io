@@ -283,6 +283,24 @@
             "latex_name":"$\\mathsf{PostBQP}$",
             "description":"PostBQP",
             "information":"Equal to $\\mathsf{PP}$."
+        },
+        "EQP":{
+            "name":"EQP",
+            "latex_name":"$\\mathsf{EQP}$",
+            "description":"Exact Quantum Polynomial Time",
+            "information":"Same as $\\mathsf{BQP}$, except we output the correct answer with probability 1."
+        },
+        "LWPP":{
+            "name":"LWPP",
+            "latex_name":"$\\mathsf{LWPP}$",
+            "description":"Length-Dependent Wide $\\mathsf{PP}$",
+            "information":"test LWPP"
+        },
+        "CL":{
+            "name":"CL",
+            "latex_name":"$\\mathsf{CL}$",
+            "description":"Catalytic Logarithmic Space",
+            "information":"test CL"
         }
 
     }

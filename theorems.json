@@ -330,6 +330,36 @@
             "type":"equality",
             "a":"PostBQP",
             "b":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"BQP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"EQP"
+        },
+        {
+            "type":"containment",
+            "small":"LWPP",
+            "large":"AWPP"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"LWPP"
+        },
+        {
+            "type":"containment",
+            "small":"NL",
+            "large":"CL"
+        },
+        {
+            "type":"containment",
+            "small":"CL",
+            "large":"ZPP"
         }
     ]
 }

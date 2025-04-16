@@ -116,9 +116,9 @@ class complexity_network():
         Creating a new trimmed network - we only keep the classes in class_list
         """
         self.delete_old_trimmed_network()
-        print(f"Class list: {class_list}")
+        #print(f"Class list: {class_list}")
         class_list = self.process_trimmed_class_list(class_list)
-        print(f"Class list: {class_list}")
+        #print(f"Class list: {class_list}")
         # Deleting the old network
 
         """
@@ -168,7 +168,7 @@ class complexity_network():
         pairs_to_delete = []
         for source in [self.classes_dict[c] for c in class_list]:
             for target in source.get_trim_contains_objects():
-                #print(f'Checking: {source.name} - {target.name}')
+                ##print(f'Checking: {source.name} - {target.name}')
                 if source.has_indirect_path(target, self.classes_dict):
                     pairs_to_delete.append((source, target))
 
@@ -223,7 +223,7 @@ class complexity_network():
                 vis_dict[main_class] = [class_name]
         graph_class_list = list(set(graph_class_list)) # Dropping repeats
         self.visualized_trimmed_network = vis_dict
-        print(self.visualized_trimmed_network)
+        #print(self.visualized_trimmed_network)
 
         # Setting the trim_main_class for the classes which are the main class
         for main_class in vis_dict.keys():
@@ -325,7 +325,7 @@ class complexity_network():
         for c in self.trimmed_network:
             class_obj, equal_classes = self.classes_dict[c], []
             class_name, class_latex_name, class_label = c, class_obj.get_latex_name(), class_obj.get_name()
-            print(self.visualized_trimmed_network)
+            #print(self.visualized_trimmed_network)
 
             # Setting the equal classes
             if not((len(self.visualized_trimmed_network[c]) == 1) and (c in vis_classes)):
@@ -371,12 +371,12 @@ class complexity_network():
 
             # Find the highest level (classes that contain this one)
             max_level = class_obj.get_max_level()
-            print(f"Max level: {class_name}: {max_level}")
+            #print(f"Max level: {class_name}: {max_level}")
             
             # Find the lowest level (classes this one contains)
             min_level = [contained.get_max_level() + 1 for contained in class_obj.get_trim_contains_objects()] + [max_level]
             min_level = min(min_level)
-            print(f"Min level: {class_name}: {min_level}")
+            #print(f"Min level: {class_name}: {min_level}")
             
             class_ranges[class_name] = {
                 "min_level": min_level,
@@ -563,7 +563,7 @@ class complexity_network():
 
             sorted_nodes = sorted(current_nodes, key=lambda x: x.x)
             # for node in sorted_nodes:
-            #     print(f"{node.get_identifier()}: {node.x}")
+            #     #print(f"{node.get_identifier()}: {node.x}")
 
         # # Second pass: bottom to top (averaging with first pass positions)
         for i in range(len(sorted_levels) - 1, -1, -1):
@@ -613,7 +613,7 @@ class complexity_network():
             raise ValueError(f"Edge {source_class} -> {target_class} not found in the network")
         
         if target_class_obj in source_class_obj.get_within_objects():
-            print(f"Edge {source_class} -> {target_class} already exists")
+            #print(f"Edge {source_class} -> {target_class} already exists")
             return False, []
         
         # Finding all paths between the two classes
@@ -629,8 +629,8 @@ class complexity_network():
         Finding all paths between two classes
         """
         paths = source_class_obj.find_all_paths(target_class_obj)
-        for path in paths:
-            print(" -- ".join([p.get_identifier() for p in path]))
+        # for path in paths:
+        #     #print(" -- ".join([p.get_identifier() for p in path]))
         return paths
     
     def expand_node(self, class_name: str):
@@ -645,7 +645,7 @@ class complexity_network():
         connected_classes = [c for c in neighbors if c not in self.trimmed_network]
         equal_classes = [c.get_identifier() for c in class_obj.get_equal_classes() if c.get_identifier() not in self.trimmed_network]
         if len(connected_classes) == 0 and len(equal_classes) == 0:
-            print(f"No new classes to add from {class_name}")
+            #print(f"No new classes to add from {class_name}")
             return False, []
         self.new_trimmed_network(self.trimmed_network + connected_classes + equal_classes)
         return True, [c.upper() for c in connected_classes]
@@ -665,13 +665,14 @@ class complexity_network():
         for c_top in class_obj.get_trim_within_objects():
             for c_bottom in class_obj.get_trim_contains_objects():
                 if c_top.get_identifier() == class_name or c_bottom.get_identifier() == class_name or c_top.get_identifier() == c_bottom.get_identifier():
-                    print(f"These classes are the same: {c_top.get_identifier()} and {c_bottom.get_identifier()}")
+                    # print(f"These classes are the same: {c_top.get_identifier()} and {c_bottom.get_identifier()}")
                     continue
                 if c_top.has_indirect_path(c_bottom, self.classes_dict, disregard=[class_obj.get_identifier()]):
-                    print(f"Indirect path found between {c_top.get_identifier()} and {c_bottom.get_identifier()}")
+                    # print(f"Indirect path found between {c_top.get_identifier()} and {c_bottom.get_identifier()}")
+                    continue
                 else:
                     direct_paths.append([c_bottom.get_identifier(), c_top.get_identifier()])
-        print(f"Direct paths: {direct_paths}")
+        #print(f"Direct paths: {direct_paths}")
         return direct_paths
     
     def find_cycles(self):
@@ -734,9 +735,9 @@ if __name__ == "__main__":
     network.new_trimmed_network([c.get_identifier() for c in network.classes])
     network.set_positions()
     network.print_trimmed_network()
-    print("\n\n New network")
+    #print("\n\n New network")
     network.new_trimmed_network(['BQP', 'NP', 'P', 'PP', 'PDQP', 'BPP', 'SZK', 'all'])
     network.set_positions()
     network.print_trimmed_network()
-    print("test")
+    #print("test")
     
