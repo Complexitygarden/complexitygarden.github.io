@@ -307,16 +307,6 @@
             "b":"IP"
         },
         {
-            "type":"equality",
-            "a":"testA",
-            "b":"testB"
-        },
-        {
-            "type":"equality",
-            "a":"IP",
-            "b":"testB"
-        },
-        {
             "type":"containment",
             "small":"BPPPath",
             "large":"PP"
@@ -340,11 +330,6 @@
             "type":"equality",
             "a":"PostBQP",
             "b":"PP"
-        },
-        {
-            "type":"containment",
-            "small":"PP",
-            "large":"P"
         }
     ]
 }

@@ -260,18 +260,6 @@
             "description":"Interactive Proof System",
             "information":"test IP"
         },
-        "testA":{
-            "name":"testA",
-            "latex_name":"$\\mathsf{testA}$",
-            "description":"test testA",
-            "information":"test testA"
-        },
-        "testB":{
-            "name":"testB",
-            "latex_name":"$\\mathsf{testB}$",
-            "description":"test testB",
-            "information":"test testB"
-        },
         "BPPPath":{
             "name":"BPPPath",
             "latex_name":"$\\mathsf{BPP_{\\text{path}}}$",
