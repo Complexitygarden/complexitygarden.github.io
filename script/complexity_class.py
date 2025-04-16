@@ -87,8 +87,14 @@ class complexity_class():
     def get_within_objects(self) -> list[complexity_class]:
         return [self.network.get_class(c) for c in self.within]
     
+    def get_within_identifiers(self) -> list[str]:
+        return self.within
+    
     def get_contains_objects(self) -> list[complexity_class]:
         return [self.network.get_class(c) for c in self.contains]
+    
+    def get_contains_identifiers(self) -> list[str]:
+        return self.contains
     
     def get_neighbors_identifiers(self) -> list[str]:
         return list(set(self.within + self.contains))

@@ -340,6 +340,11 @@
             "type":"equality",
             "a":"PostBQP",
             "b":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"P"
         }
     ]
 }

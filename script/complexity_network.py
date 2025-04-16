@@ -673,6 +673,50 @@ class complexity_network():
                     direct_paths.append([c_bottom.get_identifier(), c_top.get_identifier()])
         print(f"Direct paths: {direct_paths}")
         return direct_paths
+    
+    def find_cycles(self):
+        """
+        Checking for cycles -> Which mean that two classes are equal.
+        Returns a list of pairs of class identifiers that form cycles (are equal).
+        TO DO: Make this more efficient and find the actual cycle via indirect paths
+        """
+        cycles = []
+        
+        # Checking for cycles by checking when there is an indirect path going down by using a class above.
+        for class_id in self.classes_identifiers:
+            class_obj = self.classes_dict[class_id]
+            for target in class_obj.get_contains_objects():
+                # Check direct connections
+                if target.get_identifier() in class_obj.get_within_identifiers():
+                    cycles.append((class_id, target.get_identifier()))
+                # Checking for indirect paths
+                else:
+                    if target.has_indirect_path(class_obj, self.classes_dict, disregard=[class_id]):
+                        a,b = class_id, target.get_identifier()
+                        if a>b: a,b = b,a
+                        cycles.append((a,b))
+        # Ordering the connected classes
+        cycles = sorted(cycles, key=lambda x: x[0])
+        return cycles
+    
+    def find_classes_which_collapse(self):
+        """
+        Given the current state of the network, we want to find which classes collapse onto each other based on the containments
+        """
+        equal_classes = []
+        cycles = self.find_cycles()
+        for cycle in cycles:
+            found_other_classes = False
+            for ec in equal_classes:
+                if any(c in cycle for c in ec):
+                    found_other_classes = True
+                    ec.add(cycle[0])
+                    ec.add(cycle[1])
+                    break
+            if not found_other_classes:
+                equal_classes.append(set([c for c in cycle]))
+        return equal_classes
+
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):
     node_queue = [trim_class_list[0]]
