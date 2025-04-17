@@ -51,7 +51,27 @@
                 "address":"Dagstuhl, Germany",
                 "url":"https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.MFCS.2018.58"
             }
+        },
+        {
+            "identifier":"HHT97",
+            "citation_key":"treshold_computation_and_cryptographic_security",
+            "entry_type":"article",
+
+            "fields":{
+                "author":"Han, Yenjo and Hemaspaandra, Lane A. and Thierauf, Thomas",
+                "title":"Threshold Computation and Cryptographic Security",
+                "year":"1997",
+                "pages":"59--78",
+                "doi":"10.1137/S0097539792240467",
+                "journal":"SIAM Journal on Computing",
+                "volume":"26",
+                "number":"1",
+                "url":"https://doi.org/10.1137/S0097539792240467"
+            }
         }
+
+
+
 
     ]
 }
