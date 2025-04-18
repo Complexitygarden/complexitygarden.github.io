@@ -301,6 +301,18 @@
             "latex_name":"$\\mathsf{CL}$",
             "description":"Catalytic Logarithmic Space",
             "information":"test CL"
+        },
+        "QMA1":{
+            "name":"QMA1",
+            "latex_name":"$\\mathsf{QMA_{1}}$",
+            "description":"One-sided $\\mathsf{QMA}$",
+            "information":"$\\mathsf{QMA}$, except for a \"yes\" instance, there exists a state which is accepted with probability 1. It has been shown that Quantum k-SAT is $\\mathsf{QMA_{1}}\\text{-complete}$ for $k\\geq 3$."
+        },
+        "AH":{
+            "name":"AH",
+            "latex_name":"$\\mathsf{AH}$",
+            "description":"Arithmetic Hierarchy",
+            "information":"Analog of $\\mathsf{PH}$ in computability theory."
         }
 
     }

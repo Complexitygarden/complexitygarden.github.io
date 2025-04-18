@@ -717,6 +717,21 @@ class complexity_network():
             if not found_other_classes:
                 equal_classes.append(set([c for c in cycle]))
         return equal_classes
+    
+    def find_redundant_containments(self):
+        """
+        Finding redundant containments - ones where we have a direct and indirect containment
+        """
+        redundant_containments = []
+        old_trimmed_network = self.get_visualized_classes()
+        self.new_trimmed_network(self.get_all_class_identifiers())
+        for class_obj in self.classes_dict.values():
+            trim_contains = class_obj.get_trim_contains_identifiers()
+            for c_top in class_obj.get_contains_identifiers():
+                if c_top not in trim_contains:
+                    redundant_containments.append((c_top, class_obj.get_identifier()))
+        self.new_trimmed_network(old_trimmed_network)
+        return redundant_containments
 
 
 def variables_for_processing(trim_class_list: list, classes_dict: dict):

@@ -47,6 +47,10 @@ def check_validity_of_network(network: complexity_network):
     collapse_classes = network.find_classes_which_collapse()
     if len(collapse_classes) > 0:
         print(f"Error: There are classes which collapse due to cyclic containments: {collapse_classes}")
+
+    redundant_containments = network.find_redundant_containments()
+    if len(redundant_containments) > 0:
+        print(f"Error: There are redundant containments: {redundant_containments}")
     return
 
 def list_of_all_classes(js: dict) -> list:

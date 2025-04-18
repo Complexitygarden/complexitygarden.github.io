@@ -12,11 +12,6 @@
         },
         {
             "type": "containment",
-            "small": "QCMA",
-            "large": "QMA"
-        },
-        {
-            "type": "containment",
             "small": "BQP",
             "large": "QCMA"
         },
@@ -107,11 +102,6 @@
         },
         {
             "type":"containment",
-            "small": "RE",
-            "large": "ALL"
-        },
-        {
-            "type":"containment",
             "small": "R",
             "large": "RE"
         },
@@ -157,18 +147,14 @@
         },
         {
             "type":"containment",
-            "small":"PH",
-            "large":"CH"
-        },
-        {
-            "type":"containment",
             "small":"CH",
             "large":"PSPACE"
         },
         {
             "type":"containment",
             "small":"MA",
-            "large":"Sigma2"
+            "large":"Sigma2",
+            "citation_key":"trading_group_theory_for_randomness"
         },
         {
             "type":"containment",
@@ -189,16 +175,6 @@
             "type":"containment",
             "small":"Pi2",
             "large":"PH"
-        },
-        {
-            "type":"containment",
-            "small":"BPP",
-            "large":"Pi2"
-        },
-        {
-            "type":"containment",
-            "small":"BPP",
-            "large":"Sigma2"
         },
         {
             "type":"containment",
@@ -366,6 +342,26 @@
             "small":"BPPPath",
             "large":"PH",
             "citation_key":"treshold_computation_and_cryptographic_security"
+        },
+        {
+            "type":"containment",
+            "small":"QMA1",
+            "large":"QMA"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA",
+            "large":"QMA1"
+        },
+        {
+            "type":"containment",
+            "small":"AH",
+            "large":"ALL"
+        },
+        {
+            "type":"containment",
+            "small":"RE",
+            "large":"AH"
         }
     ]
 }

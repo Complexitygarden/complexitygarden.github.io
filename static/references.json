@@ -68,10 +68,20 @@
                 "number":"1",
                 "url":"https://doi.org/10.1137/S0097539792240467"
             }
+        },
+        {
+            "identifier":"Bab85",
+            "citation_key":"trading_group_theory_for_randomness",
+            "entry_type":"inproceedings",
+
+            "fields":{
+                "author":"Babai, László",
+                "title":"Trading group theory for randomness",
+                "year":"1985",
+                "booktitle":"Symposium on the Theory of Computing",
+                "url":"https://api.semanticscholar.org/CorpusID:17981195"
+            }
         }
-
-
-
 
     ]
 }
