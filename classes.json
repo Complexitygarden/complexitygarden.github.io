@@ -313,6 +313,18 @@
             "latex_name":"$\\mathsf{AH}$",
             "description":"Arithmetic Hierarchy",
             "information":"Analog of $\\mathsf{PH}$ in computability theory."
+        },
+        "SBQP":{
+            "name":"SBQP",
+            "latex_name":"$\\mathsf{SBQP}$",
+            "description":"Small Bounded-Error Quantum Polynomial-Time",
+            "information":"test SBQP"
+        },
+        "SBPP":{
+            "name":"SBPP",
+            "latex_name":"$\\mathsf{SBPP}$",
+            "description":"Small Bounded-Error Probabilistic Polynomial-Time",
+            "information":"test SBPP"
         }
 
     }

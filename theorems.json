@@ -82,11 +82,6 @@
         },
         {
             "type":"containment",
-            "small":"MA",
-            "large":"AM"
-        },
-        {
-            "type":"containment",
             "small":"SZK",
             "large": "AM"
         },
@@ -288,11 +283,6 @@
             "large":"PP"
         },
         {
-            "type":"containment",
-            "small":"MA",
-            "large":"BPPPath"
-        },
-        {
             "type":"equality",
             "a":"MIP",
             "b":"NEXP"
@@ -362,6 +352,26 @@
             "type":"containment",
             "small":"RE",
             "large":"AH"
+        },
+        {
+            "type":"equality",
+            "a":"SBQP",
+            "b":"A0PP"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"SBPP"
+        },
+        {
+            "type":"containment",
+            "small":"SBPP",
+            "large":"AM"
+        },
+        {
+            "type":"containment",
+            "small":"SBPP",
+            "large":"BPPPath"
         }
     ]
 }
