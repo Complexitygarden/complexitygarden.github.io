@@ -20,6 +20,26 @@ var radius = 50,
 // User settings
 window.gravityEnabled = false; // Whether location is adjusted by gravity
 
+// Function to position tooltips - simplified
+function positionTooltip(tooltip, d) {
+    // Get the tooltip dimensions
+    var tooltipWidth = parseFloat(tooltip.select("rect").attr("width"));
+    var tooltipHeight = parseFloat(tooltip.select("rect").attr("height"));
+    
+    // Position to the left of the node
+    var tooltipX = d.x - tooltipWidth - radius - 10;
+    var tooltipY = d.y - tooltipHeight/2;
+    
+    // Check if tooltip would go off the left edge
+    if (tooltipX < 0) {
+        // Position to the right of the node instead
+        tooltipX = d.x + radius + 10;
+    }
+    
+    // Position the tooltip
+    tooltip.attr("transform", `translate(${tooltipX}, ${tooltipY})`);
+}
+
 // Updating the key variables about the graph based on the width
 function update_graph_values(width, height){
     radius = width/10,
@@ -86,6 +106,9 @@ function delete_old_graph(){
         layer2 = null;
         arrowLayer = null;
     }
+
+    // Hiding tooltips
+    d3.selectAll(".equal-classes-tooltip").remove();
 }
 
 // Main function which draws the graph
@@ -381,6 +404,7 @@ function draw_graph(){
             // Add equal classes button (plus button)
             nodeGroups.append("g")
                 .attr("class", "equal-classes-button")
+                .attr("data-node-id", d => d.name)
                 .attr("transform", `translate(${-0.7*radius}, ${-0.7*radius})`)
                 .style("display", d => d.equal_classes && d.equal_classes.length > 0 ? "block" : "none")
                 .style("cursor", "pointer")
@@ -401,7 +425,162 @@ function draw_graph(){
                 .style("pointer-events", "none")
                 .text("+");
 
-            // Add tooltip for equal classes
+            // Function to show the equal classes tooltip - simplified
+            function showEqualClassesTooltip(d, buttonElement) {
+                // Check if equal_classes exists and has items
+                if (!d.equal_classes || d.equal_classes.length === 0) return;
+                
+                // Check if tooltip already exists for this node
+                var existingTooltip = d3.select(`.equal-classes-tooltip[data-node-id="${d.name}"]`);
+                
+                if (!existingTooltip.empty()) {
+                    // Tooltip already exists, just show it
+                    existingTooltip.style("display", "block");
+                    return;
+                }
+                
+                // Create an SVG group for the tooltip
+                var tooltipGroup = vis_svg.append("g")
+                    .attr("class", "equal-classes-tooltip")
+                    .attr("data-node-id", d.name);
+                
+                // Define tooltip dimensions
+                var tooltipWidth = radius * 4;
+                var tooltipHeight = radius * 3;
+                
+                // Create a background rectangle
+                tooltipGroup.append("rect")
+                    .attr("width", tooltipWidth)
+                    .attr("height", tooltipHeight)
+                    .attr("rx", radius * 0.1)
+                    .attr("ry", radius * 0.1)
+                    .style("fill", "white")
+                    .style("stroke", "#ccc")
+                    .style("stroke-width", 1);
+                
+                // Create a foreignObject to contain HTML content
+                var foreignObject = tooltipGroup.append("foreignObject")
+                    .attr("width", tooltipWidth)
+                    .attr("height", tooltipHeight)
+                    .attr("x", 0)
+                    .attr("y", 0);
+                
+                // Create the HTML content
+                var tooltipContent = foreignObject.append("xhtml:div")
+                    .style("padding", `${radius * 0.3}px`)
+                    .style("font-family", "Arial, sans-serif")
+                    .style("color", "#333")
+                    .style("pointer-events", "all");
+                
+                // Add title
+                tooltipContent.append("div")
+                    .style("font-weight", "bold")
+                    .style("font-size", `${radius * 0.4}px`)
+                    .style("margin-bottom", `${radius * 0.2}px`)
+                    .text("Equal Classes:");
+                
+                // Create a list for the equal classes
+                var list = tooltipContent.append("ul")
+                    .style("list-style-type", "none")
+                    .style("padding", "0")
+                    .style("margin", "0");
+                
+                // Add each equal class as a list item
+                d.equal_classes.forEach(function(equalClass) {
+                    var listItem = list.append("li")
+                        .style("margin-bottom", `${radius * 0.15}px`)
+                        .style("cursor", "pointer")
+                        .style("color", "#3182CE")
+                        .style("text-decoration", "underline")
+                        .style("font-size", `${radius * 0.4}px`)
+                        .style("display", "flex")
+                        .style("align-items", "center");
+                    
+                    // Add bullet point
+                    listItem.append("span")
+                        .style("display", "inline-block")
+                        .style("width", `${radius * 0.2}px`)
+                        .style("height", `${radius * 0.2}px`)
+                        .style("background-color", "#3182CE")
+                        .style("border-radius", "50%")
+                        .style("margin-right", `${radius * 0.15}px`);
+                    
+                    // Add the class name
+                    listItem.append("span")
+                        .html(equalClass.latex_name);
+                    
+                    // Add hover effect
+                    listItem.on("mouseover", function() {
+                        d3.select(this).style("font-weight", "bold");
+                    })
+                    .on("mouseout", function() {
+                        d3.select(this).style("font-weight", "normal");
+                    })
+                    .on("click", function() {
+                        d3.event.stopPropagation();
+                        open_side_window(equalClass);
+                    });
+                });
+                
+                // Process MathJax in the tooltip
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([tooltipContent.node()]).then(() => {
+                        // Adjust the height of the tooltip based on the content
+                        var contentHeight = tooltipContent.node().getBoundingClientRect().height;
+                        tooltipHeight = contentHeight + radius * 0.6;
+                        
+                        // Update the rectangle and foreignObject height
+                        tooltipGroup.select("rect")
+                            .attr("height", tooltipHeight);
+                        
+                        foreignObject.attr("height", tooltipHeight);
+                        
+                        // Position the tooltip
+                        positionTooltip(tooltipGroup, d);
+                    });
+                } else {
+                    // Position the tooltip even if MathJax is not available
+                    positionTooltip(tooltipGroup, d);
+                }
+            }
+            
+            // Function to hide a tooltip - simplified
+            function hideEqualClassesTooltip(d) {
+                var tooltip = d3.select(`.equal-classes-tooltip[data-node-id="${d.name}"]`);
+                if (!tooltip.empty()) {
+                    tooltip.style("display", "none");
+                }
+            }
+            
+            // Update the updatePinnedTooltips function - simplified
+            updatePinnedTooltips = function() {
+                if (!nodeGroups) return;
+                
+                // Find all pinned buttons
+                var pinnedButtons = nodeGroups.filter(function(d) {
+                    return d3.select(this).select(".equal-classes-button").classed("pinned");
+                });
+                
+                // Update each pinned tooltip
+                pinnedButtons.each(function(d) {
+                    var tooltip = d3.select(`.equal-classes-tooltip[data-node-id="${d.name}"]`);
+                    if (!tooltip.empty()) {
+                        positionTooltip(tooltip, d);
+                    }
+                });
+            };
+            
+            // Add the updatePinnedTooltips function to the zoom event
+            var originalZoomHandler = zoom.on("zoom");
+            zoom.on("zoom", function() {
+                // Call the original zoom handler
+                originalZoomHandler.call(this);
+                
+                // Update tooltip positions
+                updatePinnedTooltips();
+            });
+            
+            // Modify the button event handlers to use the new show/hide functions
             nodeGroups.select(".equal-classes-button")
                 .on("mouseover", function(d) {
                     if (d.equal_classes && d.equal_classes.length > 0) {
@@ -414,7 +593,7 @@ function draw_graph(){
                 .on("mouseout", function(d) {
                     // Only hide tooltip on mouseout if it's not pinned
                     if (!d3.select(this).classed("pinned")) {
-                        d3.selectAll(".equal-classes-tooltip").remove();
+                        hideEqualClassesTooltip(d);
                     }
                 })
                 .on("click", function(d) {
@@ -426,7 +605,7 @@ function draw_graph(){
                     if (isPinned) {
                         // Unpin: remove pinned class and hide tooltip
                         d3.select(this).classed("pinned", false);
-                        d3.selectAll(".equal-classes-tooltip").remove();
+                        hideEqualClassesTooltip(d);
                         // Change symbol back to plus
                         d3.select(this).select(".equal-classes-symbol").text("+");
                     } else {
@@ -438,63 +617,6 @@ function draw_graph(){
                     }
                 });
                 
-            // Function to show the equal classes tooltip
-            function showEqualClassesTooltip(d, buttonElement) {
-                // Remove any existing tooltips first
-                d3.selectAll(".equal-classes-tooltip").remove();
-                
-                // Create tooltip
-                var tooltip = d3.select("body").append("div")
-                    .attr("class", "equal-classes-tooltip")
-                    .style("position", "absolute")
-                    .style("background-color", "white")
-                    .style("border", "1px solid #ccc")
-                    .style("border-radius", "5px")
-                    .style("padding", "10px")
-                    .style("box-shadow", "0 2px 5px rgba(0,0,0,0.2)")
-                    .style("z-index", "1000")
-                    .style("max-width", "300px");
-                
-                // Add title
-                tooltip.append("div")
-                    .style("font-weight", "bold")
-                    .style("margin-bottom", "5px")
-                    .text("Equal Classes:");
-                
-                // Add list of equal classes
-                var list = tooltip.append("ul")
-                    .style("margin", "0")
-                    .style("padding-left", "20px");
-                
-                d.equal_classes.forEach(function(equalClass) {
-                    list.append("li")
-                        .html(equalClass.latex_name)
-                        .style("cursor", "pointer")
-                        .style("color", "#3182CE")
-                        .style("text-decoration", "underline")
-                        .on("click", function() {
-                            // Stop event propagation to prevent tooltip from closing
-                            d3.event.stopPropagation();
-                            open_side_window(equalClass);
-                        });
-                });
-                
-                // Process MathJax in the tooltip
-                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-                    MathJax.typesetPromise([tooltip.node()]).then(() => {
-                        // console.log("MathJax processing complete for equal classes tooltip");
-                    }).catch((err) => {
-                        console.error("MathJax processing failed for equal classes tooltip:", err);
-                    });
-                }
-                
-                // Position tooltip near the button
-                var buttonRect = buttonElement.getBoundingClientRect();
-                
-                tooltip.style("left", (buttonRect.right + 10) + "px")
-                    .style("top", (buttonRect.top - tooltip.node().getBoundingClientRect().height/2) + "px");
-            }
-
             // Events which show complexity class descriptions
             node.on("click", function(d){
                 // Clear any existing timeout
@@ -548,16 +670,21 @@ function draw_graph(){
 
         // Drag handler
         function drag_start(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
         }
         
         function drag_drag(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+            
+            // Update tooltip position if it exists
+            var tooltip = d3.select(`.equal-classes-tooltip[data-node-id="${d.name}"]`);
+            if (!tooltip.empty()) {
+                positionTooltip(tooltip, d);
+            }
         }
-        
         
         function drag_end(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
@@ -613,31 +740,6 @@ function draw_graph(){
             
             // Update positions of pinned equal classes tooltips
             updatePinnedTooltips();
-        }
-        
-        // Function to update positions of pinned tooltips
-        function updatePinnedTooltips() {
-            if (!nodeGroups) return; // Exit if nodeGroups is not defined yet
-            
-            // Find all nodes with pinned equal classes buttons
-            nodeGroups.filter(function(d) {
-                return d3.select(this).select(".equal-classes-button").classed("pinned");
-            }).each(function(d) {
-                // Get the button element
-                var buttonElement = d3.select(this).select(".equal-classes-button").node();
-                
-                // Find the corresponding tooltip
-                var tooltip = d3.select(".equal-classes-tooltip");
-                
-                if (!tooltip.empty()) {
-                    // Get the current button position
-                    var buttonRect = buttonElement.getBoundingClientRect();
-                    
-                    // Update tooltip position
-                    tooltip.style("left", (buttonRect.right + 10) + "px")
-                        .style("top", (buttonRect.top - tooltip.node().getBoundingClientRect().height/2) + "px");
-                }
-            });
         }
         
         function delete_node(class_obj) {
