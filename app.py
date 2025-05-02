@@ -166,12 +166,21 @@ def all_class_request():
 @app.route('/update_server', methods=['POST'])
 def webhook():
    try:
+      #Open local repository
       repo = git.Repo('/home/chrispsimadas/website')
+
+      #Origin = remote repository
       origin = repo.remotes.origin
-      origin.pull()
+
+      #Fetch latest changes from remote
+      origin.fetch()
+
+      #Reset the local branch to match the remote main branch exactly
+      repo.git.reset('--hard', 'origin/main')
+
       return 'Updated PythonAnywhere successfully', 200
    except Exception as e:
-      print("Error during git pull"), e
+      print("Error during git fetch/reset"), e
       return 'Failed to update server', 500
 
 """
