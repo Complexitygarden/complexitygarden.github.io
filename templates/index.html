@@ -51,6 +51,7 @@
         <!-- The actual sidebar menu -->
         <div id="leftSidebarMenu">
             <ul class="leftSidebarMenuInner">
+                <!-- Settings -->
                 <li class="leftSidebarMenuInner_li" id="settings_menu_item">
                     <div class="settings-header">
                         <span>Settings</span>
@@ -79,9 +80,17 @@
                         </li>
                     </ul>
                 </li>
+                <!-- References menu item -->
+                <li class="leftSidebarMenuInner_li">
+                    <a target="_blank" href="{{ url_for('references') }}">References</a>
+                </li>
+                <!-- About -->
+                 <script src="{{ url_for('static', filename='js/about.js') }}"></script>
+                <li class="leftSidebarMenuInner_li">
+                    <a href="#" id="about-link">About</a>
+                </li>
             </ul>
             <script src="{{ url_for('static', filename='js/side_bar.js') }}"></script>
-            <script src="{{ url_for('static', filename='js/references.js') }}"></script>
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">
@@ -107,5 +116,15 @@
                 <script src="{{ url_for('static', filename='js/sunburst.js') }}"></script>
             </div>
         </div>
+        <!-- About Modal Overlay -->
+<div id="about-modal-overlay" style="display:none;">
+    <div id="about-modal-window">
+        <button id="about-modal-close" aria-label="Close">&times;</button>
+        <h2>The Complexity Garden</h2>
+        <p>
+            Created by Supartha Podder, Christos Psimadas and David Miloschewsky
+        </p>
+    </div>
+</div>
     </body>
 </html>
