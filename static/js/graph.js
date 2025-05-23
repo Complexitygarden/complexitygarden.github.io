@@ -22,17 +22,13 @@ window.gravityEnabled = false; // Whether location is adjusted by gravity
 
 // Function to position tooltips - simplified
 function positionTooltip(tooltip, d) {
-    // Get the tooltip dimensions
     var tooltipWidth = parseFloat(tooltip.select("rect").attr("width"));
     var tooltipHeight = parseFloat(tooltip.select("rect").attr("height"));
-    
+
     // Position to the left of the node
     var tooltipX = d.x - tooltipWidth - radius - 10;
     var tooltipY = d.y - tooltipHeight/2;
-    
-    // Check if tooltip would go off the left edge
     if (tooltipX < 0) {
-        // Position to the right of the node instead
         tooltipX = d.x + radius + 10;
     }
     
@@ -525,17 +521,20 @@ function draw_graph(){
                 // Process MathJax in the tooltip
                 if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
                     MathJax.typesetPromise([tooltipContent.node()]).then(() => {
-                        // Adjust the height of the tooltip based on the content
-                        var contentHeight = tooltipContent.node().getBoundingClientRect().height;
-                        tooltipHeight = contentHeight + radius * 0.6;
-                        
-                        // Update the rectangle and foreignObject height
+                        var transform = d3.zoomTransform(d3.select("#visualisation_div svg").node());
+                        var contentHeightPx = tooltipContent.node().getBoundingClientRect().height;
+                        var contentWidthPx = tooltipContent.node().getBoundingClientRect().width;
+                        var svgHeight = contentHeightPx / transform.k;
+                        var svgWidth = contentWidthPx / transform.k;
+
                         tooltipGroup.select("rect")
-                            .attr("height", tooltipHeight);
-                        
-                        foreignObject.attr("height", tooltipHeight);
-                        
-                        // Position the tooltip
+                            .attr("height", svgHeight)
+                            .attr("width", svgWidth);
+
+                        foreignObject
+                            .attr("height", svgHeight)
+                            .attr("width", svgWidth);
+
                         positionTooltip(tooltipGroup, d);
                     });
                 } else {
