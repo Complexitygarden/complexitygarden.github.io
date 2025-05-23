@@ -320,12 +320,17 @@
             "description":"Small Bounded-Error Quantum Polynomial-Time",
             "information":"test SBQP"
         },
-        "SBPP":{
-            "name":"SBPP",
-            "latex_name":"$\\mathsf{SBPP}$",
+        "SBP":{
+            "name":"SBP",
+            "latex_name":"$\\mathsf{SBP}$",
             "description":"Small Bounded-Error Probabilistic Polynomial-Time",
-            "information":"test SBPP"
+            "information":"test SBP"
+        },
+        "PP/poly":{
+            "name":"PP/poly",
+            "latex_name":"$\\mathsf{PP/poly}$",
+            "description":"PP with polynomial advice",
+            "information":"test PP/poly"
         }
-
     }
 }
