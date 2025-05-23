@@ -16,7 +16,6 @@ except Exception as e:
 import json
 import copy
 import math
-import random
 
 class complexity_network():
     def __init__(self) -> None:

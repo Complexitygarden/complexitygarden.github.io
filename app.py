@@ -21,6 +21,8 @@ MAX_SEARCH_OUTPUT = 100
 # CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 class_json_loc = './classes.json'
 theorem_json_loc = './theorems.json'
+default_classes = ["P", "PSPACE", "BPP", "NP"] # Classes we visualize on a first load
+
 
 # Dictionary to store network instances and their last access times
 network_instances = {}
@@ -76,7 +78,7 @@ def update_network_information():
 def before_req():
    if 'all_classes' not in session:
       network = get_network(first_load=True)
-      session['all_classes'] = network.get_all_class_identifiers()
+      session['all_classes'] = default_classes#network.get_all_class_identifiers()
       network.new_trimmed_network(session['all_classes'])
    # Keeping track of classes from last session
    if 'selected_classes' not in session:
