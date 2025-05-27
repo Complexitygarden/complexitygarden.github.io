@@ -1,0 +1,387 @@
+{
+    "theorems":[
+        {
+            "type": "containment",
+            "small": "EXP",
+            "large": "NEXP"
+        },
+        {
+            "type": "containment",
+            "small": "PSPACE",
+            "large": "EXP"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "QCMA"
+        },
+        {
+            "type": "containment",
+            "small": "SZK",
+            "large": "PDQP"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "PDQP"
+        },
+        {
+            "type": "containment",
+            "small": "P",
+            "large": "NP"
+        },
+        {
+            "type": "containment",
+            "small": "PDQP",
+            "large": "CH"
+        },
+        {
+            "type": "containment",
+            "small": "BPP",
+            "large": "BQP"
+        },
+        {
+            "type": "containment",
+            "small": "BPP",
+            "large": "SZK"
+        },
+        {
+            "type": "containment",
+            "small": "BQP",
+            "large": "DQP"
+        },
+        {
+            "type": "containment",
+            "small": "DQP",
+            "large": "EXP"
+        },
+        {
+            "type": "containment",
+            "small": "L",
+            "large": "NL"
+        },
+        {
+            "type":"containment",
+            "small": "SZK",
+            "large":"DQP"
+        },
+        {
+            "type":"containment",
+            "small": "NP",
+            "large": "MA"
+        },
+        {
+            "type":"containment",
+            "small": "BPP",
+            "large": "MA"
+        },
+        {
+            "type":"containment",
+            "small": "MA",
+            "large": "QCMA"
+        },
+        {
+            "type":"containment",
+            "small":"SZK",
+            "large": "AM"
+        },
+        {
+            "type":"containment",
+            "small": "QMA",
+            "large": "QMA(2)"
+        },
+        {
+            "type":"containment",
+            "small": "QMA(2)",
+            "large": "NEXP"
+        },
+        {
+            "type":"containment",
+            "small": "R",
+            "large": "RE"
+        },
+        {
+            "type":"containment",
+            "small": "A0PP",
+            "large": "PP"
+        },
+        {
+            "type":"containment",
+            "small": "AWPP",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "QMA",
+            "large": "A0PP"
+        },
+        {
+            "type":"containment",
+            "small": "BQP",
+            "large": "AWPP"
+        },
+        {
+            "type":"containment",
+            "small": "NEXP",
+            "large": "R"
+        },
+        {
+            "type":"containment",
+            "small":"ZPP",
+            "large":"RP"
+        },
+        {
+            "type":"containment",
+            "small":"RP",
+            "large":"BPP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"ZPP"
+        },
+        {
+            "type":"containment",
+            "small":"CH",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"Sigma2",
+            "citation_key":"trading_group_theory_for_randomness"
+        },
+        {
+            "type":"containment",
+            "small":"AM",
+            "large":"Pi2"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"Sigma2",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"Pi2",
+            "large":"PH"
+        },
+        {
+            "type":"containment",
+            "small":"TC0",
+            "large":"NC1"
+        },
+        {
+            "type":"containment",
+            "small":"NC1",
+            "large":"L"
+        },
+        {
+            "type":"containment",
+            "small":"NL",
+            "large":"AC1"
+        },
+        {
+            "type":"containment",
+            "small":"AC1",
+            "large":"TC1"
+        },
+        {
+            "type":"containment",
+            "small":"NONE",
+            "large":"NC0"
+        },
+        {
+            "type":"containment",
+            "small":"NC0",
+            "large":"AC0"
+        },
+        {
+            "type":"containment",
+            "small":"AC0",
+            "large":"TC0"
+        },
+        {
+            "type":"containment",
+            "small":"TC1",
+            "large":"P"
+        },
+        {
+            "type":"containment",
+            "small":"SZK",
+            "large":"CZK"
+        },
+        {
+            "type":"containment",
+            "small":"CZK",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"P/poly"
+        },
+        {
+            "type":"containment",
+            "small":"P/poly",
+            "large":"BQP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/poly",
+            "large":"BQP/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/qpoly",
+            "large":"PP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QCPH",
+            "large":"QPH"
+        },
+        {
+            "type":"containment",
+            "small":"QPH",
+            "large":"R"
+        },
+        {
+            "type":"containment",
+            "small":"QCPH",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"QMA(2)",
+            "large":"QPH",
+            "citation_key":"qph_original"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA",
+            "large":"QCPH"
+        },
+        {
+            "type":"containment",
+            "small":"PH",
+            "large":"QCPH"
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"IP"
+        },
+        {
+            "type":"containment",
+            "small":"BPPPath",
+            "large":"PP"
+        },
+        {
+            "type":"equality",
+            "a":"MIP",
+            "b":"NEXP"
+        },
+        {
+            "type":"equality",
+            "a":"RE",
+            "b":"MIPStar"
+        },
+        {
+            "type":"equality",
+            "a":"PostBQP",
+            "b":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"BQP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"EQP"
+        },
+        {
+            "type":"containment",
+            "small":"LWPP",
+            "large":"AWPP"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"LWPP"
+        },
+        {
+            "type":"containment",
+            "small":"TC1",
+            "large":"CL"
+        },
+        {
+            "type":"containment",
+            "small":"CL",
+            "large":"ZPP"
+        },
+        {
+            "type":"containment",
+            "small":"BPPPath",
+            "large":"PH",
+            "citation_key":"treshold_computation_and_cryptographic_security"
+        },
+        {
+            "type":"containment",
+            "small":"QMA1",
+            "large":"QMA"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA",
+            "large":"QMA1"
+        },
+        {
+            "type":"containment",
+            "small":"AH",
+            "large":"ALL"
+        },
+        {
+            "type":"containment",
+            "small":"RE",
+            "large":"AH"
+        },
+        {
+            "type":"equality",
+            "a":"SBQP",
+            "b":"A0PP"
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"SBP"
+        },
+        {
+            "type":"containment",
+            "small":"SBP",
+            "large":"AM"
+        },
+        {
+            "type":"containment",
+            "small":"SBP",
+            "large":"BPPPath"
+        },
+        {
+            "type":"containment",
+            "small":"PP/poly",
+            "large":"ALL"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"PP/poly"
+        }
+    ]
+}
