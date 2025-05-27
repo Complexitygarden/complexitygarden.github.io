@@ -33,8 +33,8 @@ async function initializeVisualization() {
         console.log('Network processor initialized');
 
         // Select default classes
-        // const defaultClasses = ["P", "PSPACE", "BPP", "NP", "BQP"];
-        const defaultClasses = ["P", "PostBQP", "BQP"];
+        const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
+        // const defaultClasses = ["P", "PostBQP", "BQP"];
         defaultClasses.forEach(className => {
             networkProcessor.selectClass(className);
         });
