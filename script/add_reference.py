@@ -11,7 +11,7 @@ import bibtexparser
 #
 #    if (response.status_code != 200):
 #        return ["Failed to fetch information, Status:" + str(response.status_code)]
-#    
+#   
 #
 #    soup = BeautifulSoup(response.text, 'html.parser')
 #
@@ -104,6 +104,7 @@ try:
     headers = {"accept":"application/x-bibtex"}
     response = requests.get("http://dx.doi.org/10.1145/800157.805047", headers=headers)
     print(response.text)
+    print("test")
 except:
     print("error")
 
