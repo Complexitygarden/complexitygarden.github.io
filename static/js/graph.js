@@ -145,8 +145,10 @@ function draw_graph(){
 
     // Initializing positions
     data.nodes.forEach(node => {
-        node.x = node.savedX * window.innerWidth || Math.random() * window.innerWidth;
-        node.y = node.savedY * window.innerHeight || Math.random() * window.innerHeight;
+        node.x = (Number.isFinite(node.savedX) ? node.savedX * window.innerWidth
+                                               : Math.random() * window.innerWidth);
+        node.y = (Number.isFinite(node.savedY) ? node.savedY * window.innerHeight
+                                               : Math.random() * window.innerHeight);
         if (window.gravityEnabled){
             if (node.name in data.root_nodes){
                 node.y = -5000;
@@ -352,32 +354,57 @@ function draw_graph(){
             .style("height", "100%")
             .style("pointer-events", "none")
             .each(function(d) {
-                try {
-                    // Create a temporary div to measure the rendered KaTeX
-                    const tempDiv = document.createElement('div');
-                    tempDiv.style.position = 'absolute';
-                    tempDiv.style.visibility = 'hidden';
-                    tempDiv.style.fontSize = `${fontSize}px`;
-                    document.body.appendChild(tempDiv);
-                    
-                    // Render KaTeX in the temporary div
-                    renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
-                    
-                    // Get the width of the rendered content
-                    const textWidth = tempDiv.offsetWidth;
-                    document.body.removeChild(tempDiv);
-                    
-                    // Render in the actual node
-                    renderKaTeX(d.latex_name, this, window.katexOptions);
-                    
-                    // If text is too wide, reduce font size and re-render
-                    if (textWidth > radius * 1.5) {
-                        this.style.fontSize = `${fontSize * 0.7}px`;
-                        renderKaTeX(d.latex_name, this, window.katexOptions);
+                if (typeof isSafari !== "undefined" && isSafari) {
+                    console.log("Safari")
+                    // Render KaTeX as SVG and inject into the node
+                    try {
+                        // Remove any existing content
+                        this.innerHTML = "";
+                        // Render KaTeX to SVG string
+                        const svg = katex.renderToString(d.latex_name, {
+                            ...window.katexOptions,
+                            output: "svg",
+                            throwOnError: false
+                        });
+                        // Insert SVG string as DOM
+                        this.innerHTML = svg;
+                        // Optionally, adjust SVG size to fit the node
+                        const svgElem = this.querySelector("svg");
+                        if (svgElem) {
+                            svgElem.setAttribute("width", `${radius * 1.8}`);
+                            svgElem.setAttribute("height", `${fontSize * 1.8}`);
+                            svgElem.style.display = "block";
+                            svgElem.style.margin = "auto";
+                        }
+                    } catch (e) {
+                        console.error('KaTeX SVG rendering error:', e);
+                        this.textContent = d.latex_name;
                     }
-                } catch (e) {
-                    console.error('KaTeX rendering error:', e);
-                    this.textContent = d.latex_name;
+                } else {
+                    // Non-Safari: Render KaTeX as before
+                    console.log("Not safari")
+                    try {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.style.position = 'absolute';
+                        tempDiv.style.visibility = 'hidden';
+                        tempDiv.style.fontSize = `${fontSize}px`;
+                        document.body.appendChild(tempDiv);
+
+                        renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
+
+                        const textWidth = tempDiv.offsetWidth;
+                        document.body.removeChild(tempDiv);
+
+                        renderKaTeX(d.latex_name, this, window.katexOptions);
+
+                        if (textWidth > radius * 1.5) {
+                            this.style.fontSize = `${fontSize * 0.7}px`;
+                            renderKaTeX(d.latex_name, this, window.katexOptions);
+                        }
+                    } catch (e) {
+                        console.error('KaTeX rendering error:', e);
+                        this.textContent = d.latex_name;
+                    }
                 }
             });
 
@@ -709,6 +736,7 @@ function draw_graph(){
     }
 
     function tickActions() {
+    if (typeof updatePinnedTooltips !== "function") return; // no-op until ready
         node.attr('transform', d => `translate(${d.x},${d.y})`);
         // Update both the hover area and visible line
         link.selectAll("polyline").attr("points", function(d) {

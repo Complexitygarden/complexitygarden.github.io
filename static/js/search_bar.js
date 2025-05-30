@@ -166,7 +166,7 @@ function search_vals(query) {
             //     isSelected: isSelected
             // });
 
-            const infoIcon = `<button class="info-icon" data-class="${d.id}" onclick="open_side_window({name: '${d.id}'})">i</button>`;
+            const infoIcon = `<button class="info-icon" data-class="${d.id}" onclick="open_side_window({id: '${d.id}'})">i</button>`;
             const checkbox = `<input type="checkbox" id="${d.id}" ${isSelected ? 'checked' : ''} onchange="handleClassSelection(this)">`;
             const label = `<label class="container"><span class="latex-name">${d.latex_name}</span>${checkbox}<span class="checkmark"></span></label>`;
             searchResults.innerHTML += `<li>${infoIcon}${label}</li>`;

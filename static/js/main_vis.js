@@ -5,6 +5,8 @@ var vis_type = 'graph';
 var gravity = true;
 var id_visualisation_div = "#visualisation_div";
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 // SVG and zoom setup
 var vis_svg;
 var zoom;

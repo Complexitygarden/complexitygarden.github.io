@@ -21,7 +21,7 @@ MAX_SEARCH_OUTPUT = 100
 # CLASS_LIST, class_dict = list_all_classes('./proc_classes.json')
 class_json_loc = './classes.json'
 theorem_json_loc = './theorems.json'
-# default_classes = ["P", "PSPACE", "BPP", "NP"] # Classes we visualize on a first load
+default_classes = ["P", "PSPACE", "BPP", "NP"] # Classes we visualize on a first load
 
 
 # Dictionary to store network instances and their last access times
