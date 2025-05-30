@@ -339,48 +339,77 @@ function draw_graph(){
             .attr("stroke-width", 3);
     
         // Adding a label on the circle
-        nodeGroups.append('foreignObject')
-            .attr("x", -radius)
-            .attr("y", -fontSize)
-            .attr("width", radius * 2)
-            .attr("height", fontSize * 2)
-            .append("xhtml:div")
-            .style("text-align", "center")
-            .style("color", "#fff")
-            .style("font-size", `${fontSize}px`)
-            .style("display", "flex")
-            .style("justify-content", "center")
-            .style("align-items", "center")
-            .style("height", "100%")
-            .style("pointer-events", "none")
-            .each(function(d) {
-                if (typeof isSafari !== "undefined" && isSafari) {
-                    console.log("Safari")
-                    // Render KaTeX as SVG and inject into the node
-                    try {
-                        // Remove any existing content
-                        this.innerHTML = "";
-                        // Render KaTeX to SVG string
-                        const svg = katex.renderToString(d.latex_name, {
-                            ...window.katexOptions,
-                            output: "svg",
-                            throwOnError: false
-                        });
-                        // Insert SVG string as DOM
-                        this.innerHTML = svg;
-                        // Optionally, adjust SVG size to fit the node
-                        const svgElem = this.querySelector("svg");
-                        if (svgElem) {
-                            svgElem.setAttribute("width", `${radius * 1.8}`);
-                            svgElem.setAttribute("height", `${fontSize * 1.8}`);
-                            svgElem.style.display = "block";
-                            svgElem.style.margin = "auto";
-                        }
-                    } catch (e) {
-                        console.error('KaTeX SVG rendering error:', e);
-                        this.textContent = d.latex_name;
+        if (typeof isSafari !== "undefined" && isSafari) {
+            // Safari: Use native SVG text elements instead of foreignObject
+            console.log("Safari - using native SVG text");
+            
+            nodeGroups.each(function(d) {
+                var group = d3.select(this);
+                
+                try {
+                    // Try to render with KaTeX first to get the rendered content
+                    var tempDiv = document.createElement('div');
+                    tempDiv.style.position = 'absolute';
+                    tempDiv.style.visibility = 'hidden';
+                    document.body.appendChild(tempDiv);
+                    
+                    // Render KaTeX to get the text content
+                    renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
+                    
+                    // Extract text content (this will be the fallback)
+                    var textContent = tempDiv.textContent || tempDiv.innerText || d.latex_name;
+                    document.body.removeChild(tempDiv);
+                    
+                    // Create SVG text element
+                    var textElement = group.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dominant-baseline", "middle")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .style("fill", "#fff")
+                        .style("font-size", `${fontSize}px`)
+                        .style("font-family", "KaTeX_Main, Times, serif")
+                        .style("pointer-events", "none")
+                        .text(textContent);
+                    
+                    // Check if text is too wide and adjust font size
+                    var bbox = textElement.node().getBBox();
+                    if (bbox.width > radius * 1.5) {
+                        textElement.style("font-size", `${fontSize * 0.7}px`);
                     }
-                } else {
+                    
+                } catch (e) {
+                    console.error('Safari text rendering error:', e);
+                    // Fallback to simple text
+                    group.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dominant-baseline", "middle")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .style("fill", "#fff")
+                        .style("font-size", `${fontSize}px`)
+                        .style("font-family", "serif")
+                        .style("pointer-events", "none")
+                        .text(d.latex_name);
+                }
+            });
+        } else {
+            // Non-Safari: Use foreignObject approach (existing Windows solution)
+            nodeGroups.append('foreignObject')
+                .attr("x", -radius)
+                .attr("y", -fontSize)
+                .attr("width", radius * 2)
+                .attr("height", fontSize * 2)
+                .append("xhtml:div")
+                .style("text-align", "center")
+                .style("color", "#fff")
+                .style("font-size", `${fontSize}px`)
+                .style("display", "flex")
+                .style("justify-content", "center")
+                .style("align-items", "center")
+                .style("height", "100%")
+                .style("pointer-events", "none")
+                .each(function(d) {
                     // Non-Safari: Render KaTeX as before
                     console.log("Not safari")
                     try {
@@ -405,8 +434,8 @@ function draw_graph(){
                         console.error('KaTeX rendering error:', e);
                         this.textContent = d.latex_name;
                     }
-                }
-            });
+                });
+        }
 
         // Add delete button
         nodeGroups.append("g")
