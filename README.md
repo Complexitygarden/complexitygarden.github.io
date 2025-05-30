@@ -2,9 +2,8 @@
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.
 
 ### How to run locally
-1. Install [flask](https://flask.palletsprojects.com/en/stable/) to your python instance
-2. Run app.py
-3. Open [http://127.0.0.1:5000](http://127.0.0.1:5000)
+1. python -m http.server 8000
+2. http://localhost:8000/templates/index.html
 
 ### How to add classes/theorems
 1. Classes may be added in the classes.json file. You must provide the identifier, a name and some information.

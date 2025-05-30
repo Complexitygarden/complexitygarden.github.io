@@ -1,188 +1,175 @@
 // Main javascript file which controls visualisation of the complexity classes
 
-// Key variables
-const body = $('body');
-const searchBar = $('#complexity_class_search_bar');
-var margin = 100; // Margin between the top of the screen Note: Change based on the top bar size
-var colorScale = d3.scaleLinear()
-    .range(["#63B3ED", "#2C5282"]);// Note: Going to add the ability to change the color scale
-var user_interaction = {
-        selected_class_a: null, // The class selected on the left
-        selected_class_b: null // The class selected on the right
-    }
+// Key variables for visualization coordination
+var vis_type = 'graph';
+var gravity = true;
 var id_visualisation_div = "#visualisation_div";
-var currentVisualization = 'graph';
 
-// Sizes of the divs
-var window_width = 200,
-    window_height = 200,
-    vis_width_ratio = 1,
-    right_width_ratio = 0,
-    min_width = 10,
-    vis_width = window.innerWidth,
-    vis_height = window.innerHeight,
-    right_width = 100,
-    right_height = 100,
-    center_x = vis_width / 2,
-    center_y = vis_height / 2;
+// SVG and zoom setup
+var vis_svg;
+var zoom;
 
-// Function to keep the session active by periodically accessing the network
-function keepSessionActive() {
-    fetch('/get_complexity_network')
-        .then(response => response.json())
-        .catch(error => console.error('Error keeping session active:', error));
-}
+// Initialize the visualization
+async function initializeVisualization() {
+    console.log('Initializing visualization...');
+    try {
+        // Initialize network processor
+        window.networkProcessor = new NetworkProcessor();
+        
+        // Load data files
+        console.log('Loading data files...');
+        const [classesData, theoremsData] = await Promise.all([
+            fetch('../classes.json').then(response => response.json()),
+            fetch('../theorems.json').then(response => response.json())
+        ]);
+        console.log('Data loaded:', { 
+            classesCount: Object.keys(classesData.class_list).length, 
+            theoremsCount: theoremsData.theorems.length 
+        });
 
-// Set up an interval to keep the session active every 30 seconds
-setInterval(keepSessionActive, 30000);
+        // Initialize network processor with data
+        console.log('Initializing network processor...');
+        await networkProcessor.initialize(classesData, theoremsData);
+        console.log('Network processor initialized');
 
-// Redrawing the divs based on the window size
-// Essentially an attempt at resizing the graph when the window is adjusted
-function redraw_divs(){
-    vis_width = window.innerWidth - margin;
-    vis_height = window.innerHeight - margin;
-    center_x = vis_width / 2;
-    center_y = vis_height / 2;
+        // Select default classes
+        // const defaultClasses = ["P", "PSPACE", "BPP", "NP", "BQP"];
+        const defaultClasses = ["P", "PostBQP", "BQP"];
+        defaultClasses.forEach(className => {
+            networkProcessor.selectClass(className);
+        });
+        console.log('Default classes selected:', defaultClasses);
 
-    d3.select(id_visualisation_div)
-        .style("width", vis_width + 'px')
-        .style("height", vis_height + 'px')
-        .attr("viewBox", "0 0 " + vis_width + " " + vis_height);
+        // Setup SVG and zoom
+        setupVisualization();
 
-    right_width = Math.max(Math.floor(right_width_ratio * window_width)-margin, min_width);
-    right_height = window_height-margin;
-    if (right_width == min_width){
-        right_height = 0;
+        // Create initial visualization
+        console.log('Creating initial visualization...');
+        create_visualisation();
+        console.log('Initial visualization created');
+    } catch (error) {
+        console.error('Error in initialization:', error);
     }
-
-    d3.select("#right_side")
-    .style("width", right_width + 'px')
-    .style("height", right_height + 'px');
-
-    // Changing the font and radius
-    try {
-        update_graph_values(vis_width, vis_height);
-    } catch {}
-    try {
-        update_sunburst_values(vis_width);
-    } catch {}
 }
 
-// Setting up resizing of the divs when the window is resized
-window.addEventListener('resize', redraw_divs);
+// Setup SVG and zoom
+function setupVisualization() {
+    // Clear any existing SVG
+    d3.select(id_visualisation_div).selectAll("*").remove();
 
-// Update the zoom definition
-var zoom = d3.zoom()
-    .on("zoom", function() {
-        vis_svg.attr("transform", d3.event.transform);
-    });
+    // Create zoom behavior
+    zoom = d3.zoom()
+        .on("zoom", function() {
+            vis_svg.attr("transform", d3.event.transform);
+        });
 
-// Update the SVG creation to ensure proper viewBox
-var vis_svg = d3.select(id_visualisation_div)
-    .append("svg")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("viewBox", "0 0 " + vis_width + " " + vis_height)
-    .classed("svg-content-responsive", true)
-    .call(zoom)
-    .append("g");
-
-// Add this after the vis_svg definition
-function logSVGBoundaries() {
-    var svgElement = d3.select("#visualisation_div svg");
-    var gElement = svgElement.select("g");
-    
-    // Get the SVG viewport dimensions
-    var svgRect = svgElement.node().getBoundingClientRect();
-    
-    // Get the actual content bounds (including all elements)
-    var gBounds = gElement.node().getBBox();
-    
-    // Get current transform
-    var transform = d3.zoomTransform(svgElement.node());
-    
-    console.log("SVG Viewport:", {
-        width: svgRect.width,
-        height: svgRect.height
-    });
-    
-    console.log("Content Bounds:", {
-        x: gBounds.x,
-        y: gBounds.y,
-        width: gBounds.width,
-        height: gBounds.height
-    });
-    
-    console.log("Current Transform:", {
-        x: transform.x,
-        y: transform.y,
-        scale: transform.k
-    });
-}
-
-// Call this every second
-// setInterval(logSVGBoundaries, 1000);
-
-// Controlling the type and style of visualisation
-function create_visualisation(){
-    // Clear the existing visualization
-    d3.select(id_visualisation_div).select("svg").remove();
-
-    // Create new SVG
+    // Create SVG
     vis_svg = d3.select(id_visualisation_div)
         .append("svg")
         .attr("width", "100%")
         .attr("height", "100%")
-        .attr("viewBox", "0 0 " + vis_width + " " + vis_height)
+        .attr("viewBox", "0 0 " + window.innerWidth + " " + window.innerHeight)
         .classed("svg-content-responsive", true)
         .call(zoom)
         .append("g");
+}
 
-    // Draw the selected visualization
-    if (currentVisualization === 'graph') {
+// Create visualization based on selected type
+function create_visualisation() {
+    console.log('Creating visualization of type:', vis_type);
+    if (vis_type === 'graph') {
         draw_graph();
-    } else if (currentVisualization === 'sunburst') {
+    } else if (vis_type === 'sunburst') {
         draw_sunburst();
     }
 }
 
-// Javascript file which creates a sidewindow
-function open_side_window(d, force_open = true) {
-    if (user_interaction.selected_class_a == d.name && !force_open){
-        return;
-    }
-    user_interaction.selected_class = d.name;
-
-    // Fetch the description from the server
-    fetch(`/get_class_description?class_name=${d.name}`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("class-description").textContent = data.description || "No description available";
-            document.getElementById("class-title").textContent = data.title || "No title available";
-            let class_information = data.information || "No information available";
-            let formatted_information = format_information(class_information);
-            document.getElementById("class-information").innerHTML = formatted_information;
-            // Open the right sidebar
-            if (force_open){
-                document.getElementById("openRightSidebarMenu").checked = true;
-            }
-            MathJax.typesetPromise();
-            
-            // Adjust the graph width
-            graph_width_ratio = 0.9;
-            right_width_ratio = 0.1;
-            redraw_divs();
-        })
-        .catch(error => {
-            console.error('Error fetching class description:', error);
-            document.getElementById("class-description").textContent = "Error loading description";
-        });
-
-    if(body.hasClass('search-active')){
-            body.removeClass('search-active');
-            searchBar.blur();
+// Toggle gravity
+function toggleGravity(checkbox) {
+    gravity = checkbox.checked;
+    if (vis_type === 'graph') {
+        create_visualisation();
     }
 }
+
+// Redraw visualization
+function redrawVisualization() {
+    create_visualisation();
+}
+
+// Open side window with class information
+function open_side_window(d) {
+    console.log('Opening side window for class:', d);
+    const classData = networkProcessor.getClass(d.id);
+    if (!classData) {
+        console.warn('No class data found for:', d.id);
+        return;
+    }
+
+    // Handle title with MathJax
+    const titleElement = document.getElementById('class-title');
+    titleElement.innerHTML = `$${classData.latex_name}$`;
+    MathJax.typeset([titleElement]);
+    
+    // Set description without math processing
+    document.getElementById('class-description').textContent = classData.description || 'No description available';
+    
+    // Format class information
+    let info = '';
+    // Add information from classes.json
+    if (classData.information) {
+        info += '<br><strong>Information:</strong><br>';
+        // Process LaTeX parts in the information text
+        const processedInfo = classData.information.replace(/\\mathsf\{[^}]+\}/g, match => `$${match}$`);
+        info += format_information(processedInfo) + '<br>';
+    }
+    
+    // Create Relationships section with side-by-side layout
+    info += '<br><div style="text-align: center;"><strong>Tightest Relationships:</strong></div><br>';
+    info += '<div style="display: flex; justify-content: center; gap: 20px;">';
+    
+    // Left side - Contains
+    info += '<div style="width: 45%;">';
+    info += '<strong>⊂</strong><br>';
+    if (classData.contains && classData.contains.size > 0) {
+        classData.contains.forEach(c => {
+            const targetClass = networkProcessor.getClass(c);
+            if (targetClass) {
+                info += `- $${targetClass.latex_name}$<br>`;
+            }
+        });
+    } else {
+        info += 'None<br>';
+    }
+    info += '</div>';
+    
+    // Right side - Within
+    info += '<div style="width: 45%;">';
+    info += '<strong>⊃</strong><br>';
+    if (classData.within && classData.within.size > 0) {
+        classData.within.forEach(c => {
+            const targetClass = networkProcessor.getClass(c);
+            if (targetClass) {
+                info += `- $${targetClass.latex_name}$<br>`;
+            }
+        });
+    } else {
+        info += 'None<br>';
+    }
+    info += '</div>';
+    
+    info += '</div>';
+    
+    const infoElement = document.getElementById('class-information');
+    infoElement.innerHTML = info;
+    MathJax.typeset([infoElement]);
+
+    // Open the sidebar
+    document.getElementById('openRightSidebarMenu').checked = true;
+}
+
+// Initialize visualization when the page loads
+document.addEventListener('DOMContentLoaded', initializeVisualization);
 
 // Add after other initialization code
 function initializeVisualizationControls() {
@@ -190,7 +177,7 @@ function initializeVisualizationControls() {
     const visTypeSelect = document.getElementById('vis-type-select');
     if (visTypeSelect) {
         visTypeSelect.addEventListener('change', function(e) {
-            currentVisualization = e.target.value;
+            vis_type = e.target.value;
             create_visualisation();
         });
     }

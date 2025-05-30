@@ -1,3 +1,6 @@
+// Add debounce timer at the top of the file
+let lastSelectTopResultTime = 0;
+
 $(document).ready(function(){
     const body = $('body');
     const searchBar = $('#complexity_class_search_bar');
@@ -6,6 +9,7 @@ $(document).ready(function(){
     // Show dropdown and overlay when focusing on search
     searchBar.on('focus', function() {
         body.addClass('search-active');
+        search_vals(''); // Show all classes initially
     });
     
     // Hide dropdown and overlay when clicking outside
@@ -39,8 +43,11 @@ $(document).ready(function(){
         }
 
         // Clicking enter when searching will select the top search result
-        if (event.key === 'Enter'){
-            if(body.hasClass('search-active')){
+        if (event.key === 'Enter' && body.hasClass('search-active')){
+            event.preventDefault(); // Prevent form submission
+            const now = Date.now();
+            if (now - lastSelectTopResultTime > 500) { // Only call if more than 500ms since last call
+                lastSelectTopResultTime = now;
                 select_top_search_result();
             }
         }
@@ -57,32 +64,194 @@ $(document).ready(function(){
     });
     
     // Initialize the listed classes
-    search_vals("");
+    // search_vals("");
 });
 
-function search_vals(query){
-      $.get('/search_complexity_classes', {query: query}, function(data){
-         $('#complexity_class_search_results').empty();
-         data.forEach(function(d){
-            const infoIcon = '<button class="info-icon" data-class="' + d.name + '" onclick="open_side_window({name: \'' + d.name + '\'})">i</button>';
-            if (d.value){
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)" checked><span class="checkmark"></span></label></li>');
-            } else {
-               $('#complexity_class_search_results').append('<li>' + infoIcon + '<label class="container">' + d.latex_name + '<input type="checkbox" id="' + d.name +'" onchange="ajaxRequest(this)"><span class="checkmark"></span></label></li>');
+function search_vals(query) {
+    console.log('search_vals called with query:', query);
+    
+    if (!window.networkProcessor) {
+        console.error('NetworkProcessor not found on window object');
+        return;
+    }
+    
+    if (!window.networkProcessor.initialized) {
+        console.error('NetworkProcessor not initialized');
+        return;
+    }
+
+    const searchResults = document.getElementById('complexity_class_search_results');
+    if (!searchResults) {
+        console.error('Search results element not found');
+        return;
+    }
+    console.log('Found search results element:', searchResults);
+
+    try {
+        // Get all classes from network processor
+        const allClasses = window.networkProcessor.getAllClasses();
+        console.log('Retrieved all classes:', {
+            count: allClasses.length,
+            firstFew: allClasses.slice(0, 3),
+            classIds: allClasses.map(c => c.id)
+        });
+        
+        // Filter classes based on query
+        const filteredClasses = allClasses.filter(d => 
+            d.name.toLowerCase().includes(query.toLowerCase()) ||
+            d.latex_name.toLowerCase().includes(query.toLowerCase())
+        );
+
+        // Sort filtered classes based on multiple criteria
+        filteredClasses.sort((a, b) => {
+            const queryLower = query.toLowerCase();
+            const aNameLower = a.name.toLowerCase();
+            const bNameLower = b.name.toLowerCase();
+            const aLatexLower = a.latex_name.toLowerCase();
+            const bLatexLower = b.latex_name.toLowerCase();
+
+            // Calculate minimum distance for each class
+            const getMinDistance = (text) => {
+                const nameIndex = text.indexOf(queryLower);
+                const latexIndex = text.indexOf(queryLower);
+                if (nameIndex === -1 && latexIndex === -1) return Infinity;
+                if (nameIndex === -1) return latexIndex;
+                if (latexIndex === -1) return nameIndex;
+                return Math.min(nameIndex, latexIndex);
+            };
+
+            const aDistance = getMinDistance(aNameLower + aLatexLower);
+            const bDistance = getMinDistance(bNameLower + bLatexLower);
+
+            // First sort by distance
+            if (aDistance !== bDistance) {
+                return aDistance - bDistance;
             }
-         });
-         MathJax.typesetPromise();
-      });
+
+            // If distances are equal, sort by which text appears first
+            const aFirstIndex = Math.min(
+                aNameLower.indexOf(queryLower) === -1 ? Infinity : aNameLower.indexOf(queryLower),
+                aLatexLower.indexOf(queryLower) === -1 ? Infinity : aLatexLower.indexOf(queryLower)
+            );
+            const bFirstIndex = Math.min(
+                bNameLower.indexOf(queryLower) === -1 ? Infinity : bNameLower.indexOf(queryLower),
+                bLatexLower.indexOf(queryLower) === -1 ? Infinity : bLatexLower.indexOf(queryLower)
+            );
+
+            if (aFirstIndex !== bFirstIndex) {
+                return aFirstIndex - bFirstIndex;
+            }
+
+            // If both distance and position are equal, sort alphabetically
+            return a.name.localeCompare(b.name);
+        });
+
+        console.log('Filtered and sorted classes:', {
+            count: filteredClasses.length,
+            query: query,
+            firstFew: filteredClasses.slice(0, 3),
+            classIds: filteredClasses.map(c => c.id)
+        });
+
+        // Clear previous results
+        searchResults.innerHTML = '';
+        console.log('Cleared previous search results');
+
+        // Add filtered classes to results
+        filteredClasses.forEach(d => {
+            const isSelected = window.networkProcessor.isClassSelected(d.id);
+            // console.log(`Processing class ${d.id}:`, {
+            //     name: d.name,
+            //     latex_name: d.latex_name,
+            //     isSelected: isSelected
+            // });
+
+            const infoIcon = `<button class="info-icon" data-class="${d.id}" onclick="open_side_window({id: '${d.id}'})">i</button>`;
+            const checkbox = `<input type="checkbox" id="${d.id}" ${isSelected ? 'checked' : ''} onchange="handleClassSelection(this)">`;
+            const label = `<label class="container"><span class="latex-name">${d.latex_name}</span>${checkbox}<span class="checkmark"></span></label>`;
+            searchResults.innerHTML += `<li>${infoIcon}${label}</li>`;
+        });
+        console.log('Added filtered classes to search results');
+
+        // Render LaTeX using the utility function
+        searchResults.querySelectorAll('.latex-name').forEach(element => {
+            renderKaTeX(element.textContent, element);
+        });
+    } catch (error) {
+        console.error('Error in search_vals:', error);
+        console.error('Error stack:', error.stack);
+        searchResults.innerHTML = '<li class="search-error">Error loading classes</li>';
+    }
 }
 
-function select_top_search_result(){
-    // Selecting/Deselecting the top search result
-    var top_result = $('#complexity_class_search_results li:first-child');
-    if (top_result.length) {
-        var checkbox = top_result.find('input[type="checkbox"]');
-        // Switching the checkbox
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        ajaxRequest(checkbox[0]);
+function handleClassSelection(checkbox) {
+    console.log('handleClassSelection called with checkbox:', {
+        id: checkbox.id,
+        checked: checkbox.checked
+    });
+
+    if (!window.networkProcessor) {
+        console.error('NetworkProcessor not found on window object');
+        return;
+    }
+    
+    if (!window.networkProcessor.initialized) {
+        console.error('NetworkProcessor not initialized');
+        return;
+    }
+
+    const className = checkbox.id;
+    console.log('Processing class selection:', {
+        className: className,
+        currentState: checkbox.checked ? 'selected' : 'deselected'
+    });
+
+    if (checkbox.checked) {
+        console.log(`Selecting class: ${className}`);
+        window.networkProcessor.selectClass(className);
+    } else {
+        console.log(`Deselecting class: ${className}`);
+        window.networkProcessor.deselectClass(className);
+    }
+
+    console.log('Selected classes after update:', 
+        Array.from(window.networkProcessor.getSelectedClasses()));
+    
+    console.log('Calling create_visualisation');
+    create_visualisation();
+}
+
+function select_top_search_result() {
+    console.log('select_top_search_result called');
+    
+    const searchResults = document.getElementById('complexity_class_search_results');
+    if (!searchResults) {
+        console.error('Search results element not found');
+        return;
+    }
+    console.log('Found search results element:', searchResults);
+
+    const firstResult = searchResults.querySelector('li:first-child');
+    console.log('First result element:', firstResult);
+
+    if (firstResult) {
+        const checkbox = firstResult.querySelector('input[type="checkbox"]');
+        console.log('Found checkbox:', checkbox);
+
+        if (checkbox) {
+            console.log('Current checkbox state:', checkbox.checked);
+            checkbox.checked = !checkbox.checked;
+            console.log('New checkbox state:', checkbox.checked);
+            
+            // Create and dispatch a change event to trigger handleClassSelection
+            const event = new Event('change', { bubbles: true });
+            checkbox.dispatchEvent(event);
+            console.log('Dispatched change event');
+        } else {
+            console.error('No checkbox found in first result');
+        }
+    } else {
+        console.error('No search results found');
     }
 }
 
@@ -105,11 +274,25 @@ function deselect_all() {
 }
 
 function all_class_request(select) {
-    $.get('/all_class_request', {select: select}, function(data) {
-        if (data.success) {
-            create_visualisation();
+    if (!window.networkProcessor || !window.networkProcessor.initialized) {
+        console.error('NetworkProcessor not initialized');
+        return;
+    }
+
+    // Get all classes from the search results
+    const allClasses = window.networkProcessor.getAllClasses();
+    
+    // Update each class's selection state
+    allClasses.forEach(classData => {
+        if (select) {
+            window.networkProcessor.selectClass(classData.id);
+        } else {
+            window.networkProcessor.deselectClass(classData.id);
         }
     });
+
+    // Update the visualization
+    create_visualisation();
 }
 
 function select_class_list(class_list, select){
