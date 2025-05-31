@@ -375,6 +375,11 @@ function draw_graph(){
                                 .attr('height', fontSize)
                                 .style('display', 'block')
                                 .style('margin', '0 auto');
+                            
+                            // Make all text elements white
+                            insertedSvg.selectAll('*')
+                                .style('fill', '#fff')
+                                .style('color', '#fff');
                         } else {
                             throw new Error('MathJax SVG generation failed');
                         }
