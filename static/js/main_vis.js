@@ -5,6 +5,8 @@ var vis_type = 'graph';
 var gravity = true;
 var id_visualisation_div = "#visualisation_div";
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
 // SVG and zoom setup
 var vis_svg;
 var zoom;
@@ -24,7 +26,8 @@ async function initializeVisualization() {
         ]);
         console.log('Data loaded:', { 
             classesCount: Object.keys(classesData.class_list).length, 
-            theoremsCount: theoremsData.theorems.length 
+            theoremsCount: theoremsData.theorems.length ,
+            classes: classesData.class_list
         });
 
         // Initialize network processor with data
@@ -33,8 +36,8 @@ async function initializeVisualization() {
         console.log('Network processor initialized');
 
         // Select default classes
-        // const defaultClasses = ["P", "PSPACE", "BPP", "NP", "BQP"];
-        const defaultClasses = ["P", "PostBQP", "BQP"];
+        const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
+        // const defaultClasses = ["P", "PostBQP", "BQP"];
         defaultClasses.forEach(className => {
             networkProcessor.selectClass(className);
         });
@@ -120,45 +123,9 @@ function open_side_window(d) {
     if (classData.information) {
         info += '<br><strong>Information:</strong><br>';
         // Process LaTeX parts in the information text
-        const processedInfo = classData.information.replace(/\\mathsf\{[^}]+\}/g, match => `$${match}$`);
+        const processedInfo = classData.information;
         info += format_information(processedInfo) + '<br>';
     }
-    
-    // Create Relationships section with side-by-side layout
-    info += '<br><div style="text-align: center;"><strong>Tightest Relationships:</strong></div><br>';
-    info += '<div style="display: flex; justify-content: center; gap: 20px;">';
-    
-    // Left side - Contains
-    info += '<div style="width: 45%;">';
-    info += '<strong>⊂</strong><br>';
-    if (classData.contains && classData.contains.size > 0) {
-        classData.contains.forEach(c => {
-            const targetClass = networkProcessor.getClass(c);
-            if (targetClass) {
-                info += `- $${targetClass.latex_name}$<br>`;
-            }
-        });
-    } else {
-        info += 'None<br>';
-    }
-    info += '</div>';
-    
-    // Right side - Within
-    info += '<div style="width: 45%;">';
-    info += '<strong>⊃</strong><br>';
-    if (classData.within && classData.within.size > 0) {
-        classData.within.forEach(c => {
-            const targetClass = networkProcessor.getClass(c);
-            if (targetClass) {
-                info += `- $${targetClass.latex_name}$<br>`;
-            }
-        });
-    } else {
-        info += 'None<br>';
-    }
-    info += '</div>';
-    
-    info += '</div>';
     
     const infoElement = document.getElementById('class-information');
     infoElement.innerHTML = info;

@@ -382,6 +382,16 @@
             "type":"containment",
             "small":"PP",
             "large":"PP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"CequalsP"
+        },
+        {
+            "type":"containment",
+            "small":"CequalsP",
+            "large":"PP"
         }
     ]
 }

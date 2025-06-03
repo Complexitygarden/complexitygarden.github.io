@@ -339,49 +339,111 @@ function draw_graph(){
             .attr("stroke-width", 3);
     
         // Adding a label on the circle
-        nodeGroups.append('foreignObject')
-            .attr("x", -radius)
-            .attr("y", -fontSize)
-            .attr("width", radius * 2)
-            .attr("height", fontSize * 2)
-            .append("xhtml:div")
-            .style("text-align", "center")
-            .style("color", "#fff")
-            .style("font-size", `${fontSize}px`)
-            .style("display", "flex")
-            .style("justify-content", "center")
-            .style("align-items", "center")
-            .style("height", "100%")
-            .style("pointer-events", "none")
-            .each(function(d) {
+        if (typeof isSafari !== "undefined" && isSafari) {
+            // Safari: Use MathJax with SVG output
+            console.log("Safari - using MathJax SVG");
+            
+            nodeGroups.each(function(d) {
+                var group = d3.select(this);
+                
                 try {
-                    // Create a temporary div to measure the rendered KaTeX
-                    const tempDiv = document.createElement('div');
-                    tempDiv.style.position = 'absolute';
-                    tempDiv.style.visibility = 'hidden';
-                    tempDiv.style.fontSize = `${fontSize}px`;
-                    document.body.appendChild(tempDiv);
-                    
-                    // Render KaTeX in the temporary div
-                    renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
-                    
-                    // Get the width of the rendered content
-                    const textWidth = tempDiv.offsetWidth;
-                    document.body.removeChild(tempDiv);
-                    
-                    // Render in the actual node
-                    renderKaTeX(d.latex_name, this, window.katexOptions);
-                    
-                    // If text is too wide, reduce font size and re-render
-                    if (textWidth > radius * 1.5) {
-                        this.style.fontSize = `${fontSize * 0.7}px`;
-                        renderKaTeX(d.latex_name, this, window.katexOptions);
+                    // Check if MathJax is available
+                    if (typeof MathJax !== 'undefined' && MathJax.tex2svg) {
+                        // Use MathJax to convert LaTeX to SVG
+                        var mathSvg = MathJax.tex2svg(d.latex_name, {display: false});
+                        var svgElement = mathSvg.querySelector('svg');
+                        
+                        if (svgElement) {
+                            // Get the SVG content as string
+                            var svgString = svgElement.outerHTML;
+                            
+                            // Create a foreignObject to hold the SVG
+                            var foreignObj = group.append('foreignObject')
+                                .attr('x', -radius)
+                                .attr('y', -fontSize/2)
+                                .attr('width', radius * 2)
+                                .attr('height', fontSize)
+                                .style('overflow', 'visible');
+                            
+                            // Insert the SVG
+                            foreignObj.node().innerHTML = svgString;
+                            
+                            // Scale the SVG to fit
+                            var insertedSvg = foreignObj.select('svg');
+                            insertedSvg
+                                .attr('width', radius * 1.8)
+                                .attr('height', fontSize)
+                                .style('display', 'block')
+                                .style('margin', '0 auto');
+                            
+                            // Make all text elements white
+                            insertedSvg.selectAll('*')
+                                .style('fill', '#fff')
+                                .style('color', '#fff');
+                        } else {
+                            throw new Error('MathJax SVG generation failed');
+                        }
+                    } else {
+                        throw new Error('MathJax not available');
                     }
                 } catch (e) {
-                    console.error('KaTeX rendering error:', e);
-                    this.textContent = d.latex_name;
+                    console.error('MathJax rendering error:', e);
+                    // Fallback to simple text
+                    group.append("text")
+                        .attr("text-anchor", "middle")
+                        .attr("dominant-baseline", "middle")
+                        .attr("x", 0)
+                        .attr("y", 0)
+                        .style("fill", "#fff")
+                        .style("font-size", `${fontSize}px`)
+                        .style("font-family", "serif")
+                        .style("pointer-events", "none")
+                        .text(d.latex_name);
                 }
             });
+        } else {
+            // Non-Safari: Use foreignObject approach (existing Windows solution)
+            nodeGroups.append('foreignObject')
+                .attr("x", -radius)
+                .attr("y", -fontSize)
+                .attr("width", radius * 2)
+                .attr("height", fontSize * 2)
+                .append("xhtml:div")
+                .style("text-align", "center")
+                .style("color", "#fff")
+                .style("font-size", `${fontSize}px`)
+                .style("display", "flex")
+                .style("justify-content", "center")
+                .style("align-items", "center")
+                .style("height", "100%")
+                .style("pointer-events", "none")
+                .each(function(d) {
+                    // Non-Safari: Render KaTeX as before
+                    console.log("Not safari")
+                    try {
+                        const tempDiv = document.createElement('div');
+                        tempDiv.style.position = 'absolute';
+                        tempDiv.style.visibility = 'hidden';
+                        tempDiv.style.fontSize = `${fontSize}px`;
+                        document.body.appendChild(tempDiv);
+
+                        renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
+
+                        const textWidth = tempDiv.offsetWidth;
+                        document.body.removeChild(tempDiv);
+
+                        renderKaTeX(d.latex_name, this, window.katexOptions);
+
+                        if (textWidth > radius * 1.5) {
+                            this.style.fontSize = `${fontSize * 0.7}px`;
+                            renderKaTeX(d.latex_name, this, window.katexOptions);
+                        }
+                    } catch (e) {
+                        console.error('KaTeX rendering error:', e);
+                        this.textContent = d.latex_name;
+                    }
+                });
+        }
 
         // Add delete button
         nodeGroups.append("g")
@@ -1009,3 +1071,206 @@ function draw_graph(){
     
     graph_drawn = 1;
 }
+
+// Option 2: Manual LaTeX Symbol Mapping (Medium-High probability ~70%)
+// This approach maps common LaTeX commands to Unicode mathematical symbols
+/*
+function latexToUnicode(latex) {
+    const mapping = {
+        '\\mathcal{P}': '𝒫',
+        '\\mathcal{N}': '𝒩', 
+        '\\mathcal{L}': '𝒵',
+        '\\text{P}': 'P',
+        '\\text{NP}': 'NP',
+        '\\text{PSPACE}': 'PSPACE',
+        '\\text{EXP}': 'EXP',
+        '\\text{BPP}': 'BPP',
+        '\\text{RP}': 'RP',
+        '\\text{co-NP}': 'co-NP',
+        '\\subseteq': '⊆',
+        '\\subset': '⊂', 
+        '\\cap': '∩',
+        '\\cup': '∪',
+        '\\in': '∈',
+        '\\notin': '∉',
+        '\\leq': '≤',
+        '\\geq': '≥',
+        '\\neq': '≠',
+        '\\infty': '∞',
+        '\\log': 'log',
+        '\\sum': '∑',
+        '\\prod': '∏',
+        '\\int': '∫',
+        '\\partial': '∂',
+        '\\nabla': '∇',
+        '\\alpha': 'α', '\\beta': 'β', '\\gamma': 'γ', '\\delta': 'δ',
+        '\\epsilon': 'ε', '\\zeta': 'ζ', '\\eta': 'η', '\\theta': 'θ',
+        '\\lambda': 'λ', '\\mu': 'μ', '\\nu': 'ν', '\\pi': 'π',
+        '\\rho': 'ρ', '\\sigma': 'σ', '\\tau': 'τ', '\\phi': 'φ',
+        '\\chi': 'χ', '\\psi': 'ψ', '\\omega': 'ω'
+    };
+    
+    let result = latex;
+    // Sort by length (longest first) to avoid partial replacements
+    const sortedKeys = Object.keys(mapping).sort((a, b) => b.length - a.length);
+    
+    for (const latexCmd of sortedKeys) {
+        result = result.replace(new RegExp(latexCmd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), mapping[latexCmd]);
+    }
+    
+    // Remove remaining braces and backslashes for unsupported commands
+    result = result.replace(/[{}\\]/g, '');
+    
+    return result;
+}
+
+// Usage in Safari section (replace the fallback text):
+var unicodeText = latexToUnicode(d.latex_name);
+group.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .attr("x", 0)
+    .attr("y", 0)
+    .style("fill", "#fff")
+    .style("font-size", `${fontSize}px`)
+    .style("font-family", "STIXGeneral, 'Times New Roman', serif")
+    .style("pointer-events", "none")
+    .text(unicodeText);
+*/
+
+// Option 3: Canvas-based Rendering with Image Conversion (Medium probability ~60%)
+// This renders LaTeX to canvas, then converts to image data URL for SVG
+/*
+function renderLatexToImage(latex, fontSize, callback) {
+    // Create temporary canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = radius * 4;
+    canvas.height = fontSize * 2;
+    
+    // Try to render with KaTeX to canvas (if supported)
+    try {
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.visibility = 'hidden';
+        tempDiv.style.fontSize = `${fontSize}px`;
+        tempDiv.style.color = 'white';
+        tempDiv.style.background = 'transparent';
+        document.body.appendChild(tempDiv);
+        
+        renderKaTeX(latex, tempDiv, window.katexOptions);
+        
+        // Use html2canvas or similar to convert to canvas
+        html2canvas(tempDiv, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true
+        }).then(function(renderedCanvas) {
+            document.body.removeChild(tempDiv);
+            const dataURL = renderedCanvas.toDataURL('image/png');
+            callback(dataURL);
+        }).catch(function(error) {
+            document.body.removeChild(tempDiv);
+            // Fallback to text rendering on canvas
+            ctx.fillStyle = 'white';
+            ctx.font = `${fontSize}px serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(latex, canvas.width/2, canvas.height/2);
+            callback(canvas.toDataURL('image/png'));
+        });
+        
+    } catch (e) {
+        // Direct canvas text fallback
+        ctx.fillStyle = 'white';
+        ctx.font = `${fontSize}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(latex, canvas.width/2, canvas.height/2);
+        callback(canvas.toDataURL('image/png'));
+    }
+}
+
+// Usage in Safari section:
+renderLatexToImage(d.latex_name, fontSize, function(dataURL) {
+    group.append('image')
+        .attr('x', -radius)
+        .attr('y', -fontSize)
+        .attr('width', radius * 2)
+        .attr('height', fontSize * 2)
+        .attr('href', dataURL)
+        .style('pointer-events', 'none');
+});
+*/
+
+// Option 4: Server-side LaTeX to SVG Conversion (Lower probability ~40% but most robust)
+// This sends LaTeX to server for conversion, caches results
+/*
+const latexCache = new Map();
+
+function renderLatexServerSide(latex, callback) {
+    // Check cache first
+    if (latexCache.has(latex)) {
+        callback(latexCache.get(latex));
+        return;
+    }
+    
+    // Send request to server endpoint
+    fetch('/api/latex-to-svg', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ latex: latex })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.svg) {
+            // Cache the result
+            latexCache.set(latex, data.svg);
+            callback(data.svg);
+        } else {
+            throw new Error(data.error || 'Server conversion failed');
+        }
+    })
+    .catch(error => {
+        console.error('Server LaTeX conversion error:', error);
+        // Fallback to plain text
+        callback(`<text fill="white" text-anchor="middle" dominant-baseline="middle">${latex}</text>`);
+    });
+}
+
+// Usage in Safari section:
+renderLatexServerSide(d.latex_name, function(svgContent) {
+    var foreignObj = group.append('foreignObject')
+        .attr('x', -radius)
+        .attr('y', -fontSize/2)
+        .attr('width', radius * 2)
+        .attr('height', fontSize)
+        .style('overflow', 'visible');
+    
+    foreignObj.node().innerHTML = svgContent;
+});
+
+// Server endpoint would look like (Python/Flask example):
+// @app.route('/api/latex-to-svg', methods=['POST'])
+// def latex_to_svg():
+//     try:
+//         latex = request.json['latex']
+//         # Use matplotlib or similar to convert LaTeX to SVG
+//         import matplotlib.pyplot as plt
+//         import io
+//         
+//         fig, ax = plt.subplots(figsize=(2, 0.5))
+//         ax.text(0.5, 0.5, f'${latex}$', transform=ax.transAxes, 
+//                 ha='center', va='center', fontsize=14, color='white')
+//         ax.axis('off')
+//         
+//         svg_buffer = io.StringIO()
+//         plt.savefig(svg_buffer, format='svg', transparent=True, bbox_inches='tight')
+//         plt.close()
+//         
+//         return {'success': True, 'svg': svg_buffer.getvalue()}
+//     except Exception as e:
+//         return {'success': False, 'error': str(e)}
+*/

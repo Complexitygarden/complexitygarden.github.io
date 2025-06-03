@@ -331,6 +331,12 @@
             "latex_name":"\\mathsf{PP/poly}",
             "description":"PP with polynomial advice",
             "information":"test PP/poly"
+        },
+        "CequalsP":{
+            "name":"CequalsP",
+            "latex_name":"\\mathsf{C_{=}P}",
+            "description":"Exact-Counting Polynomial-Time",
+            "information":"The class of decision problems solvable by an $\\mathsf{NP}$ machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'"
         }
     }
 }
