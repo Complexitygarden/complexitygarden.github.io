@@ -13,46 +13,77 @@ var zoom;
 
 // Initialize the visualization
 async function initializeVisualization() {
-    console.log('Initializing visualization...');
     try {
         // Initialize network processor
         window.networkProcessor = new NetworkProcessor();
         
         // Load data files
-        console.log('Loading data files...');
         const [classesData, theoremsData] = await Promise.all([
             fetch('../classes.json').then(response => response.json()),
             fetch('../theorems.json').then(response => response.json())
         ]);
-        console.log('Data loaded:', { 
-            classesCount: Object.keys(classesData.class_list).length, 
-            theoremsCount: theoremsData.theorems.length ,
-            classes: classesData.class_list
-        });
 
         // Initialize network processor with data
-        console.log('Initializing network processor...');
         await networkProcessor.initialize(classesData, theoremsData);
-        console.log('Network processor initialized');
 
-        // Select default classes
-        const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
-        // const defaultClasses = ["P", "PostBQP", "BQP"];
-        defaultClasses.forEach(className => {
-            networkProcessor.selectClass(className);
-        });
-        console.log('Default classes selected:', defaultClasses);
+        // Check for shared configuration first
+        const urlParams = new URLSearchParams(window.location.search);
+        const configParam = urlParams.get('config');
         
-        // Track the initial setup
-        trackVisualizationChange("Initial Load", `Default classes selected: ${defaultClasses.join(", ")}`);
+        if (configParam) {
+            const sharedClasses = decodeSharedConfiguration(configParam);
+            if (sharedClasses && Array.isArray(sharedClasses)) {
+                // Clear any existing history since we're loading a shared config
+                if (window.graphHistory) {
+                    window.graphHistory = [];
+                    window.currentHistoryIndex = -1;
+                }
+                
+                // Select the shared classes
+                let validClasses = 0;
+                sharedClasses.forEach(className => {
+                    networkProcessor.selectClass(className);
+                    
+                    // Check if the class is actually selected instead of relying on return value
+                    if (networkProcessor.isClassSelected(className)) {
+                        validClasses++;
+                    }
+                });
+                
+                if (validClasses > 0) {
+                    // Track the configuration load AFTER clearing history
+                    if (typeof trackVisualizationChange === 'function') {
+                        trackVisualizationChange("Shared Configuration Loaded", `Started from shared link with ${validClasses} classes: ${sharedClasses.filter(c => networkProcessor.isClassSelected(c)).join(", ")}`);
+                    } else {
+                        // Defer the call until the function is available
+                        setTimeout(() => {
+                            if (typeof trackVisualizationChange === 'function') {
+                                trackVisualizationChange("Shared Configuration Loaded", `Started from shared link with ${validClasses} classes: ${sharedClasses.filter(c => networkProcessor.isClassSelected(c)).join(", ")}`);
+                            }
+                        }, 100);
+                    }
+                    
+                    // Clean up URL to remove the config parameter
+                    const newURL = window.location.origin + window.location.pathname;
+                    window.history.replaceState({}, document.title, newURL);
+                } else {
+                    // Fall back to default classes if no shared classes were valid
+                    selectDefaultClasses();
+                }
+            } else {
+                // Fall back to default classes if shared config is invalid
+                selectDefaultClasses();
+            }
+        } else {
+            // No shared configuration, use default classes
+            selectDefaultClasses();
+        }
 
         // Setup SVG and zoom
         setupVisualization();
 
         // Create initial visualization
-        console.log('Creating initial visualization...');
         create_visualisation();
-        console.log('Initial visualization created');
     } catch (error) {
         console.error('Error in initialization:', error);
     }
@@ -82,7 +113,6 @@ function setupVisualization() {
 
 // Create visualization based on selected type
 function create_visualisation() {
-    console.log('Creating visualization of type:', vis_type);
     if (vis_type === 'graph') {
         draw_graph();
     } else if (vis_type === 'sunburst') {
@@ -105,10 +135,8 @@ function redrawVisualization() {
 
 // Open side window with class information
 function open_side_window(d) {
-    console.log('Opening side window for class:', d);
     const classData = networkProcessor.getClass(d.id);
     if (!classData) {
-        console.warn('No class data found for:', d.id);
         return;
     }
 
@@ -157,3 +185,36 @@ function initializeVisualizationControls() {
 
 // Call initialization when the window loads
 window.addEventListener('load', initializeVisualizationControls);
+
+// Helper function to decode shared configuration
+function decodeSharedConfiguration(encodedConfig) {
+    try {
+        const jsonString = atob(encodedConfig);
+        const classes = JSON.parse(jsonString);
+        return classes;
+    } catch (error) {
+        return null;
+    }
+}
+
+// Helper function to select default classes
+function selectDefaultClasses() {
+    const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
+    const actuallySelected = [];
+    defaultClasses.forEach(className => {
+        if (networkProcessor.selectClass(className)) {
+            actuallySelected.push(className);
+        }
+    });
+    
+    // Track the initial setup
+    if (typeof trackVisualizationChange === 'function') {
+        trackVisualizationChange("Initial Load", `Default classes selected: ${actuallySelected.join(", ")}`);
+    } else {
+        setTimeout(() => {
+            if (typeof trackVisualizationChange === 'function') {
+                trackVisualizationChange("Initial Load", `Default classes selected: ${actuallySelected.join(", ")}`);
+            }
+        }, 100);
+    }
+}
