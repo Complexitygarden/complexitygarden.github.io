@@ -42,6 +42,9 @@ async function initializeVisualization() {
             networkProcessor.selectClass(className);
         });
         console.log('Default classes selected:', defaultClasses);
+        
+        // Track the initial setup
+        trackVisualizationChange("Initial Load", `Default classes selected: ${defaultClasses.join(", ")}`);
 
         // Setup SVG and zoom
         setupVisualization();
@@ -144,8 +147,10 @@ function initializeVisualizationControls() {
     const visTypeSelect = document.getElementById('vis-type-select');
     if (visTypeSelect) {
         visTypeSelect.addEventListener('change', function(e) {
+            const oldType = vis_type;
             vis_type = e.target.value;
             create_visualisation();
+            trackSettingsChange("Visualization Type", `Changed from ${oldType} to ${vis_type}`);
         });
     }
 }

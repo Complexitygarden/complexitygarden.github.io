@@ -806,15 +806,8 @@ class NetworkProcessor {
 
         // console.log('\nFinal between classes:', Array.from(betweenClasses));
 
-        // Add these classes to the trimmed network
+        // Only return classes that are not already selected
         const newClasses = Array.from(betweenClasses).filter(c => !this.selectedClasses.has(c));
-        if (newClasses.length > 0) {
-            // Add new classes to selected classes
-            newClasses.forEach(c => this.selectClass(c));
-            // Update the trimmed network
-            this.getTrimmedNetworkJson();
-        }
-
         return newClasses;
     }
 
@@ -876,7 +869,8 @@ class NetworkProcessor {
             connected.add(equal);
         }
 
-        return Array.from(connected);
+        // Only return classes that are not already selected
+        return Array.from(connected).filter(c => !this.selectedClasses.has(c));
     }
 
     hasIndirectPath(source, target, avoidNode = null) {

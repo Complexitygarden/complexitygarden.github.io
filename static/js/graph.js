@@ -601,6 +601,10 @@ function draw_graph(){
                     var svgHeight = contentHeightPx / transform.k;
                     var svgWidth = contentWidthPx / transform.k;
 
+                    // Ensure minimum height
+                    var minHeight = tooltipHeight; // Use our desired minimum height
+                    svgHeight = Math.max(svgHeight, minHeight);
+
                     tooltipGroup.select("rect")
                         .attr("height", svgHeight)
                         .attr("width", svgWidth);
@@ -819,6 +823,9 @@ function draw_graph(){
     function delete_node(class_obj) {
         var className = class_obj.name;
         console.log("Deleting node " + className);
+        
+        // Track the deletion in history
+        trackVisualizationChange("Class Deleted", `Deleted complexity class: ${className}`);
         
         // Close any open tooltip for this node
         var nodeToDelete = nodeGroups.filter(d => d.name === className);
@@ -1047,6 +1054,8 @@ function draw_graph(){
                 draw_graph();
                 console.log("Successfully expanded");
                 console.log(classes);
+                // Track the edge expansion
+                trackVisualizationChange("Edge Expanded", `Expanded edge from ${sourceClass} to ${targetClass}, added ${classes.length} classes: ${classes.join(", ")}`);
             } else {
                 console.log("No new classes to add");
             }
@@ -1063,6 +1072,8 @@ function draw_graph(){
                 draw_graph();
                 console.log("Successfully expanded");
                 console.log(classes);
+                // Track the node expansion
+                trackVisualizationChange("Node Expanded", `Expanded node ${sourceClass}, added ${classes.length} classes: ${classes.join(", ")}`);
             } else {
                 console.log("No new classes to add");
             }

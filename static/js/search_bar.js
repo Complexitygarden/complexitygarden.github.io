@@ -209,9 +209,11 @@ function handleClassSelection(checkbox) {
     if (checkbox.checked) {
         console.log(`Selecting class: ${className}`);
         window.networkProcessor.selectClass(className);
+        trackClassSelection(className + " (Selected)");
     } else {
         console.log(`Deselecting class: ${className}`);
         window.networkProcessor.deselectClass(className);
+        trackClassSelection(className + " (Deselected)");
     }
 
     console.log('Selected classes after update:', 
@@ -262,6 +264,7 @@ function select_all() {
         }
     });
     all_class_request(true);
+    trackVisualizationChange("Select All", "Selected all visible complexity classes");
 }
 
 function deselect_all() {
@@ -271,6 +274,7 @@ function deselect_all() {
         }
     });
     all_class_request(false);
+    trackVisualizationChange("Deselect All", "Deselected all complexity classes");
 }
 
 function all_class_request(select) {
