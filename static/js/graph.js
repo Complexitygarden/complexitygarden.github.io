@@ -824,9 +824,6 @@ function draw_graph(){
         var className = class_obj.name;
         console.log("Deleting node " + className);
         
-        // Track the deletion in history
-        trackVisualizationChange("Class Deleted", `Deleted complexity class: ${className}`);
-        
         // Close any open tooltip for this node
         var nodeToDelete = nodeGroups.filter(d => d.name === className);
         if (!nodeToDelete.empty()) {
@@ -948,6 +945,9 @@ function draw_graph(){
         // Remove the class from the network processor
         networkProcessor.deselectClass(className);
         console.log("Deselected class from networkProcessor:", className);
+
+        // Track the deletion in history
+        trackVisualizationChange("Class Deleted", `Deleted complexity class: ${className}`);
         
         // Delete all current edges
         delete_all_edges();
