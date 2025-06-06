@@ -1,5 +1,7 @@
 // Main javascript file which controls visualisation of the complexity classes
 
+console.log("Testing if the new version is working.")
+
 // Key variables for visualization coordination
 var vis_type = 'graph';
 var gravity = true;
