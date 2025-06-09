@@ -54,7 +54,7 @@
             "name": "NP",
             "latex_name": "\\mathsf{NP}",
             "description": "Non-deterministic Polynomial Time",
-            "information": "test NP"
+            "information": "The class of decision problems for which 'yes' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'yes' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'no' instance, then the verifier rejects for all proofs. </li></ul>"
         },
         "SZK": {
             "name": "SZK",
