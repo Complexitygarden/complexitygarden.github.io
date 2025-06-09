@@ -48,7 +48,7 @@
             "name": "BQP",
             "latex_name": "\\mathsf{BQP}",
             "description": "Bounded-Error Quantum Polynomial Time",
-            "information": "test BQP"
+            "information": "The class of decision problems solvable in polynomial time by a quantum Turing machine. Specifically: <br><br><ul> <li>On 'yes' instances, the verifier accepts with probability at least 2/3. </li> <li> On 'no' instances, the verifier rejects with probability at least 2/3."
         },
         "NP": {
             "name": "NP",
@@ -60,7 +60,7 @@
             "name": "SZK",
             "latex_name": "\\mathsf{SZK}",
             "description": "Statistical Zero-Knowledge",
-            "information": "test SZK"
+            "information": "The class of decision problems for which a 'yes' instance can be verified by a statistical zero knowledge proof protocol."
         },
         "BPP": {
             "name": "BPP",
