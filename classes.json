@@ -234,7 +234,7 @@
             "name":"BQP/poly",
             "latex_name":"\\mathsf{BQP/poly}",
             "description":"BQP with polynomial advice",
-            "information":"The class of decision problems solvable by a polynomial-time quantum Turing machine with a polynomial-size advice string."
+            "information":"The class of decision problems solvable by a $\\mathsf{BQP}$ machine with a polynomial-size advice string with probability at least $2/3$, even if the advice is bad."
         },
         "BQP/qpoly":{
             "name":"BQP/qpoly",
@@ -337,6 +337,12 @@
             "latex_name":"\\mathsf{C_{=}P}",
             "description":"Exact-Counting Polynomial-Time",
             "information":"The class of decision problems solvable by an $\\mathsf{NP}$ machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'"
+        },
+        "BQP/mpoly":{
+            "name":"BQP/mpoly",
+            "latex_name":"\\mathsf{BQP/mpoly}",
+            "description":"BQP with polynomial merlin-like advice",
+            "information":"The class of decision problems solvable by a $\\mathsf{BQP}$ machine with a polynomial-size advice string with probability at least $2/3$ when the advice is good."
         }
     }
 }

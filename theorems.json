@@ -234,7 +234,17 @@
         {
             "type":"containment",
             "small":"BQP/poly",
+            "large":"BQP/mpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/mpoly",
             "large":"BQP/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP",
+            "large":"BQP/poly"
         },
         {
             "type":"containment",
