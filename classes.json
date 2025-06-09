@@ -36,7 +36,7 @@
             "name": "PDQP",
             "latex_name": "\\mathsf{PDQP}",
             "description": "Polynomial Dynamical Quantum Polynomial Time",
-            "information": "test PDQP"
+            "information": "Generalization of $\\mathsf{BQP}$ where the machine is allowed to perform measurements without collapsing the wavefunction. Defined in [ABFL16]. <br> $\\mathsf{PDQP}$ may perform unordered search faster than $\\mathsf{BQP}$ and contains $\\mathsf{SZK}$."
         },
         "P": {
             "name": "P",

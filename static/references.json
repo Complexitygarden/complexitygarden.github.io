@@ -1,85 +1,80 @@
 {
-    "references":[
+    "references": [
         {
-            "identifier":"Aar04b",
-            "citation_key":"v001a001",
-            "entry_type":"article",
-
-            "fields":{
-                "author":"Aaronson, Scott",
-                "title":"Limitations of Quantum Advice and One-Way Communication",
-                "year":"2005",
-                "pages":"1--28",
-                "doi":"10.4086/toc.2005.v001a001",
-                "publisher":"Theory of Computing",
-                "journal":"Theory of Computing",
-                "volume":"1",
-                "number":"1",
-                "url":"https://theoryofcomputing.org/articles/v001a001"
+            "identifier": "Aar04b",
+            "citation_key": "v001a001",
+            "entry_type": "article",
+            "fields": {
+                "author": "Aaronson, Scott",
+                "title": "Limitations of Quantum Advice and One-Way Communication",
+                "year": "2005",
+                "pages": "1--28",
+                "doi": "10.4086/toc.2005.v001a001",
+                "publisher": "Theory of Computing",
+                "journal": "Theory of Computing",
+                "volume": "1",
+                "number": "1",
+                "url": "https://theoryofcomputing.org/articles/v001a001"
             }
         },
         {
-            "identifier":"Edm65",
-            "citation_key":"Edmonds_1965",
-            "entry_type":"article",
-
-            "fields":{
-                "author":"Edmonds, Jack",
-                "title":"Paths, Trees, and Flowers",
-                "year":"1965",
-                "pages":"449--467",
-                "doi":"10.4153/CJM-1965-045-4",
-                "journal":"Canadian Journal of Mathematics",
-                "volume":"17"
+            "identifier": "Edm65",
+            "citation_key": "Edmonds_1965",
+            "entry_type": "article",
+            "fields": {
+                "author": "Edmonds, Jack",
+                "title": "Paths, Trees, and Flowers",
+                "year": "1965",
+                "pages": "449--467",
+                "doi": "10.4153/CJM-1965-045-4",
+                "journal": "Canadian Journal of Mathematics",
+                "volume": "17"
             }
         },
         {
-            "identifier":"GSSSY18",
-            "citation_key":"qph_original",
-            "entry_type":"InProceedings",
-
-            "fields":{
-                "author":"Gharibian, Sevag and Santha, Miklos and Sikora, Jamie and Sundaram, Aarthi and Yirka, Justin",
-                "title":"Quantum Generalizations of the Polynomial Hierarchy with Applications to QMA(2)",
-                "year":"2018",
-                "pages":"58:1--58:16",
-                "doi":"10.4230/LIPIcs.MFCS.2018.58",
-                "booktitle":"43rd International Symposium on Mathematical Foundations of Computer Science (MFCS 2018)",
-                "volume":"117",
-                "editor":"Potapov, Igor and Spirakis, Paul and Worrell, James",
-                "publisher":"Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik",
-                "address":"Dagstuhl, Germany",
-                "url":"https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.MFCS.2018.58"
+            "identifier": "GSSSY18",
+            "citation_key": "qph_original",
+            "entry_type": "InProceedings",
+            "fields": {
+                "author": "Gharibian, Sevag and Santha, Miklos and Sikora, Jamie and Sundaram, Aarthi and Yirka, Justin",
+                "title": "Quantum Generalizations of the Polynomial Hierarchy with Applications to QMA(2)",
+                "year": "2018",
+                "pages": "58:1--58:16",
+                "doi": "10.4230/LIPIcs.MFCS.2018.58",
+                "booktitle": "43rd International Symposium on Mathematical Foundations of Computer Science (MFCS 2018)",
+                "volume": "117",
+                "editor": "Potapov, Igor and Spirakis, Paul and Worrell, James",
+                "publisher": "Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik",
+                "address": "Dagstuhl, Germany",
+                "url": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.MFCS.2018.58"
             }
         },
         {
-            "identifier":"HHT97",
-            "citation_key":"treshold_computation_and_cryptographic_security",
-            "entry_type":"article",
-
-            "fields":{
-                "author":"Han, Yenjo and Hemaspaandra, Lane A. and Thierauf, Thomas",
-                "title":"Threshold Computation and Cryptographic Security",
-                "year":"1997",
-                "pages":"59--78",
-                "doi":"10.1137/S0097539792240467",
-                "journal":"SIAM Journal on Computing",
-                "volume":"26",
-                "number":"1",
-                "url":"https://doi.org/10.1137/S0097539792240467"
+            "identifier": "HHT97",
+            "citation_key": "treshold_computation_and_cryptographic_security",
+            "entry_type": "article",
+            "fields": {
+                "author": "Han, Yenjo and Hemaspaandra, Lane A. and Thierauf, Thomas",
+                "title": "Threshold Computation and Cryptographic Security",
+                "year": "1997",
+                "pages": "59--78",
+                "doi": "10.1137/S0097539792240467",
+                "journal": "SIAM Journal on Computing",
+                "volume": "26",
+                "number": "1",
+                "url": "https://doi.org/10.1137/S0097539792240467"
             }
         },
         {
-            "identifier":"Bab85",
-            "citation_key":"trading_group_theory_for_randomness",
-            "entry_type":"inproceedings",
-
-            "fields":{
-                "author":"Babai, László",
-                "title":"Trading group theory for randomness",
-                "year":"1985",
-                "booktitle":"Symposium on the Theory of Computing",
-                "url":"https://api.semanticscholar.org/CorpusID:17981195"
+            "identifier": "Bab85",
+            "citation_key": "trading_group_theory_for_randomness",
+            "entry_type": "inproceedings",
+            "fields": {
+                "author": "Babai, László",
+                "title": "Trading group theory for randomness",
+                "year": "1985",
+                "booktitle": "Symposium on the Theory of Computing",
+                "url": "https://api.semanticscholar.org/CorpusID:17981195"
             }
         },
         {
@@ -100,7 +95,24 @@
                 "month": "oct",
                 "pages": "865-877"
             }
+        },
+        {
+            "identifier": "ABFL16",
+            "citation_key": "Aaronson_2016",
+            "entry_type": "inproceedings",
+            "fields": {
+                "series": "ITCS’16",
+                "title": "The Space “Just Above” BQP",
+                "url": "http://dx.doi.org/10.1145/2840728.2840739",
+                "DOI": "10.1145/2840728.2840739",
+                "booktitle": "Proceedings of the 2016 ACM Conference on Innovations in Theoretical Computer Science",
+                "publisher": "ACM",
+                "author": "Aaronson, Scott and Bouland, Adam and Fitzsimons, Joseph and Lee, Mitchell",
+                "year": "2016",
+                "month": "jan",
+                "pages": "271-280",
+                "collection": "ITCS’16"
+            }
         }
-
     ]
 }
