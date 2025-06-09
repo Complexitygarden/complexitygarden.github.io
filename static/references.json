@@ -81,6 +81,25 @@
                 "booktitle":"Symposium on the Theory of Computing",
                 "url":"https://api.semanticscholar.org/CorpusID:17981195"
             }
+        },
+        {
+            "identifier": "Tod91",
+            "citation_key": "Toda_1991",
+            "entry_type": "article",
+            "fields": {
+                "title": "PP is as Hard as the Polynomial-Time Hierarchy",
+                "volume": "20",
+                "ISSN": "1095-7111",
+                "url": "http://dx.doi.org/10.1137/0220053",
+                "DOI": "10.1137/0220053",
+                "number": "5",
+                "journal": "SIAM Journal on Computing",
+                "publisher": "Society for Industrial & Applied Mathematics (SIAM)",
+                "author": "Toda, Seinosuke",
+                "year": "1991",
+                "month": "oct",
+                "pages": "865-877"
+            }
         }
 
     ]

@@ -158,7 +158,7 @@
         },
         {
             "type":"containment",
-            "small":"PP",
+            "small":"PsharpP",
             "large":"CH"
         },
         {
@@ -402,6 +402,16 @@
             "type":"containment",
             "small":"CequalsP",
             "large":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"PsharpP"
+        },
+        {
+            "type":"containment",
+            "small":"PH",
+            "large":"PsharpP"
         }
     ]
 }
