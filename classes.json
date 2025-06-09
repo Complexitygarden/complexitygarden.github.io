@@ -12,25 +12,25 @@
             "latex_name": "\\mathsf{NONE}",
             "bottom": true,
             "description": "The class which does not contain any languages. It is the opposite of ALL.",
-            "information": "test NONE"
+            "information": "The 'empty set' of complexity theory, NONE contains no languages but is not equal to the complement of ALL since coALL=ALL."
         },
         "PP": {
             "name": "PP",
             "latex_name": "\\mathsf{PP}",
             "description": "Probabilistic Polynomial Time",
-            "information": "test PP"
+            "information": "The class of decision problems solvable by an NP machine such that <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
         },
         "QMA": {
             "name": "QMA",
             "latex_name": "\\mathsf{QMA}",
             "description": "Quantum Merlin-Arthur",
-            "information": "test QMA"
+            "information": "The class of decision problems such that 'yes' instances can be verified efficiently. That is: <br> <ul> <li>If the answer is 'yes', then there exists a quantum state such that the verifier accepts with probability at least 2/3</li> <li>If the answer is 'no', then for all quantum states the verifier rejects with probability at least 2/3.</li></ul>"
         },
         "QCMA": {
             "name": "QCMA",
             "latex_name": "\\mathsf{QCMA}",
             "description": "Quantum Classical Merlin-Arthur",
-            "information": "test QCMA"
+            "information": "The class of decision problems for which a 'yes' answer can be efficiently verified by a family of uniform quantum circuits with access to a classical proof. Concretely: <br> <ul> <li>For all 'yes' instances, there exists a poly(|x|) size classical proof such that the verifier accepts with probability at least 2/3</li> <li> For a 'no' instance, for all such classical proofs the verifier rejects with probability at least 2/3.</li></ul>"
         },
         "PDQP": {
             "name": "PDQP",
