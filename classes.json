@@ -60,31 +60,31 @@
             "name": "SZK",
             "latex_name": "\\mathsf{SZK}",
             "description": "Statistical Zero-Knowledge",
-            "information": "The class of decision problems for which a 'yes' instance can be verified by a statistical zero knowledge proof protocol."
+            "information": "The class of decision problems for which a 'yes' instance can be verified by a statistical zero knowledge proof protocol. This is an interactive protocol in which we have a probabilistic polynomia-time verifier and a prover with unbounded resources. Through exchanging messages with the prover, the verifier must be convinced of a 'yes' instance without learning anything about the proof."
         },
         "BPP": {
             "name": "BPP",
             "latex_name": "\\mathsf{BPP}",
             "description": "Bounded-Error Probabilistic Polynomial Time",
-            "information": "test BPP"
+            "information": "The class of decision problems solvable by a nondeterministic Turing machine such that <br><br> <ul><li>If we are given a 'yes' instance, then the probability that we accpet is at least 2/3. </li><li> If we are given a 'no' instance, then we reject with probability at least 2/3.</li></ul>"
         },
         "PSPACE": {
             "name": "PSPACE",
             "latex_name": "\\mathsf{PSPACE}",
             "description": "Polynomial Space",
-            "information": "test PSPACE"
+            "information": "The class of decision problems solvable by a Turing machine with polynomial space."
         },
         "EXP": {
             "name": "EXP",
             "latex_name": "\\mathsf{EXP}",
             "description": "Exponential Time",
-            "information": "test EXP"
+            "information": "The class of decision problems solvable by a Turing machine in exponential time. Specifically, solvable in time $O(2^{p(n)})$ for any polynomial p."
         },
         "DQP":{
             "name": "DQP",
             "latex_name": "\\mathsf{DQP}",
             "description": "Dynamical Quantum Polynomial-Time",
-            "information": "text DQP"
+            "information": "test DQP"
         },
         "L": {
             "name": "L",
