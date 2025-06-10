@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const cached_html = sessionStorage.getItem("references_html");
+    const cached_html = false;//sessionStorage.getItem("references_html");
     const references_div = document.getElementById("references-list");
 
 
@@ -17,6 +17,10 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             const references_array = data.references;
+            console.log(references_array);
+            //Sort references alphabetically by identifier
+            references_array.sort((a, b) => a.identifier.localeCompare(b.identifier));
+            console.log(references_array);
             //Load each reference into the page
 
 
@@ -27,22 +31,50 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
                 const author = format_author(element.fields.author);
-                const title   = element.fields.title ?? "";
-                //Change all these to this so that if an element is missing it doesnt look weird with the floating commas later on
-                const journal = element.fields.journal ? element.fields.journal + "," : "";
-                const volume  = element.fields.volume  ?  "vol. " + element.fields.volume + ",": "";
-                const number  = element.fields.number ?? "";
-                const pages   = element.fields.pages ?? "";
-                const year    = element.fields.year ?? "";
-                const doi     = element.fields.doi ?? "";
-                const url     = element.fields.url ?? "";
-
+                const title = element.fields.title ?? "";
+                
+                // Build the citation parts conditionally
+                let citation_parts = [];
+                
+                // Add journal if present
+                if (element.fields.journal) {
+                    citation_parts.push(element.fields.journal);
+                }
+                
+                // Add volume if present
+                if (element.fields.volume) {
+                    citation_parts.push(`vol. ${element.fields.volume}`);
+                }
+                
+                // Add number if present
+                if (element.fields.number) {
+                    citation_parts.push(`no. ${element.fields.number}`);
+                }
+                
+                // Add pages if present
+                if (element.fields.pages) {
+                    citation_parts.push(`pp. ${element.fields.pages}`);
+                }
+                
+                // Add year if present
+                if (element.fields.year) {
+                    citation_parts.push(element.fields.year);
+                }
+                
+                // Join citation parts with commas
+                const citation_info = citation_parts.length > 0 ? citation_parts.join(', ') : '';
+                
+                // Add DOI if present
+                const doi_part = element.fields.doi ? `, doi:${element.fields.doi}` : '';
+                
+                // Add URL link if present
+                const url_part = element.fields.url ? ` <a href="${element.fields.url}" target="_blank" class="reference-url">[Link]</a>` : '';
 
                 //append <p> element to the references div
                 references_div.innerHTML += 
                 `
-                <p id="${identifier}"> 
-                    [${identifier}] ${author}, "<em>${title}</em>," ${journal} ${volume}, no. ${number}, pp. ${pages}, ${year}, doi:${doi}. 
+                <p id="${identifier}" style="margin-left: 2em;"> 
+                    [${identifier}] ${author}, "<em>${title}</em>"${citation_info ? ', ' + citation_info : ''}${doi_part}.${url_part}
                 </p>
                 `;
             });

@@ -1,7 +1,7 @@
 {
     "references": [
         {
-            "identifier": "Aar04b",
+            "identifier": "Aar04",
             "citation_key": "v001a001",
             "entry_type": "article",
             "fields": {
@@ -112,6 +112,36 @@
                 "month": "jan",
                 "pages": "271-280",
                 "collection": "ITCS’16"
+            }
+        },
+        {
+            "identifier": "Raz05",
+            "citation_key": "https://doi.org/10.48550/arxiv.quant-ph/0504075",
+            "entry_type": "misc",
+            "fields": {
+                "doi": "10.48550/ARXIV.QUANT-PH/0504075",
+                "url": "https://arxiv.org/abs/quant-ph/0504075",
+                "author": "Raz, Ran",
+                "keywords": "Quantum Physics (quant-ph), FOS: Physical sciences, FOS: Physical sciences",
+                "title": "Quantum Information and the PCP Theorem",
+                "publisher": "arXiv",
+                "year": "2005",
+                "copyright": "Assumed arXiv.org perpetual, non-exclusive license to distribute this article for submissions made before January 2004"
+            }
+        },
+        {
+            "identifier": "Aar18",
+            "citation_key": "https://doi.org/10.48550/arxiv.1805.08577",
+            "entry_type": "misc",
+            "fields": {
+                "doi": "10.48550/ARXIV.1805.08577",
+                "url": "https://arxiv.org/abs/1805.08577",
+                "author": "Aaronson, Scott",
+                "keywords": "Quantum Physics (quant-ph), Computational Complexity (cs.CC), FOS: Physical sciences, FOS: Physical sciences, FOS: Computer and information sciences, FOS: Computer and information sciences",
+                "title": "PDQP/qpoly = ALL",
+                "publisher": "arXiv",
+                "year": "2018",
+                "copyright": "arXiv.org perpetual, non-exclusive license"
             }
         }
     ]

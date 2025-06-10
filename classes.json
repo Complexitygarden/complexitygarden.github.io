@@ -5,14 +5,14 @@
             "latex_name": "\\mathsf{ALL}",
             "top": true,
             "description": "The class of all languages.",
-            "information": "ALL is the complexity class of all languages. "
+            "information": "$\\mathsf{ALL}$ is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to ALL, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
         },
         "NONE": {
             "name": "NONE",
             "latex_name": "\\mathsf{NONE}",
             "bottom": true,
-            "description": "The class which does not contain any languages. It is the opposite of ALL.",
-            "information": "The 'empty set' of complexity theory, NONE contains no languages but is not equal to the complement of ALL since coALL=ALL."
+            "description": "The class of no languages.",
+            "information": "The 'empty set' of complexity theory, $\\mathsf{NONE}$ contains no languages but is not equal to the complement of ALL since $\\mathsf{coALL}=\\mathsf{ALL}$."
         },
         "PP": {
             "name": "PP",
@@ -42,7 +42,7 @@
             "name": "P",
             "latex_name": "\\mathsf{P}",
             "description": "Polynomial Time",
-            "information": "P is the complexity class encompassing decision problems solveable in Polynomial time by a Turing machine. Defined in [Edm65], [Cob64], [Rab60], and other seminal early papers."
+            "information": "The class of decision problems solveable in polynomial time by a Turing machine. Defined in [Edm65], [Cob64], [Rab60], and other early seminal papers."
         },
         "BQP": {
             "name": "BQP",
@@ -96,7 +96,7 @@
             "name": "NL",
             "latex_name": "\\mathsf{NL}",
             "description": "Non-deterministic Logarithmic Space",
-            "information": "The Non-deterministic version of L."
+            "information": "The Non-deterministic version of $\\mathsf{L}$."
         },
         "MA":{
             "name": "MA",
@@ -114,7 +114,7 @@
             "name": "QMA(2)",
             "latex_name": "\\mathsf{QMA(2)}",
             "description": "Quantum Merlin-Arthur with two unentangled certificates.",
-            "information": "For k>=2, QMA(2)=QMA(k) where QMA(k) is the class with k unentangled certificates."
+            "information": "For $k\\geq 2$, $\\mathsf{QMA(2)}=\\mathsf{QMA(k)}$ where $\\mathsf{QMA(k)}$ is the class with $k$ unentangled certificates."
         },
         "NEXP":{
             "name": "NEXP",
@@ -174,13 +174,13 @@
             "name": "Sigma2",
             "latex_name": "\\mathsf{\\Sigma_{2}^{p}}",
             "description": "NP with an NP oracle",
-            "information": "Together with \\mathsf{\\Pi_{2}^{p}} comprises the second level of the polynomial hierarchy."
+            "information": "Together with $\\mathsf{\\Pi_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
         },
         "Pi2":{
             "name": "Pi2",
             "latex_name": "\\mathsf{\\Pi_{2}^{p}}",
             "description": "co-NP with an NP oracle",
-            "information": "Together with \\mathsf{\\Sigma_{2}^{p}} comprises the second level of the polynomial hierarchy."
+            "information": "Together with $\\mathsf{\\Sigma_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
         },
         "AC0":{
             "name":"AC0",
@@ -228,7 +228,7 @@
             "name":"P/poly",
             "latex_name":"\\mathsf{P/poly}",
             "description":"P with polynomial advice",
-            "information":"The class of decision problems solvable by a polynomial-time Turing machine with a polynomial-size advice string. Equals \\mathsf{BPP/poly}."
+            "information":"The class of decision problems solvable by a polynomial-time Turing machine with a polynomial-size advice string. Equals $\\mathsf{BPP/poly}$."
         },
         "BQP/poly":{
             "name":"BQP/poly",
@@ -246,13 +246,13 @@
             "name":"QCPH",
             "latex_name":"\\mathsf{QCPH}",
             "description":"Quantum-Classical Polynomial Hierarchy",
-            "information":"A generalization of \\mathsf{PH} where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
+            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
         },
         "QPH":{
             "name":"QPH",
             "latex_name":"\\mathsf{QPH}",
             "description":"Quantum Polynomial Hierarchy",
-            "information":"A generalization of \\mathsf{PH} where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
+            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
         },
         "IP":{
             "name":"IP",
@@ -282,18 +282,18 @@
             "name":"PostBQP",
             "latex_name":"\\mathsf{PostBQP}",
             "description":"PostBQP",
-            "information":"Equal to \\mathsf{PP}."
+            "information":"Equal to $\\mathsf{PP}$."
         },
         "EQP":{
             "name":"EQP",
             "latex_name":"\\mathsf{EQP}",
             "description":"Exact Quantum Polynomial Time",
-            "information":"Same as \\mathsf{BQP}, except we output the correct answer with probability 1."
+            "information":"Same as $\\mathsf{BQP}$, except we output the correct answer with probability 1."
         },
         "LWPP":{
             "name":"LWPP",
             "latex_name":"\\mathsf{LWPP}",
-            "description":"Length-Dependent Wide \\mathsf{PP}",
+            "description":"Length-Dependent Wide $\\mathsf{PP}$",
             "information":"test LWPP"
         },
         "CL":{
@@ -305,14 +305,14 @@
         "QMA1":{
             "name":"QMA1",
             "latex_name":"\\mathsf{QMA_{1}}",
-            "description":"One-sided \\mathsf{QMA}",
-            "information":"\\mathsf{QMA}, except for a \"yes\" instance, there exists a state which is accepted with probability 1. It has been shown that Quantum k-SAT is \\mathsf{QMA_{1}}\\text{-complete} for k\\geq 3."
+            "description":"One-sided $\\mathsf{QMA}$",
+            "information":"$\\mathsf{QMA}$, except for a \"yes\" instance, there exists a state which is accepted with probability 1. It has been shown that Quantum k-SAT is $\\mathsf{QMA_{1}}$-complete for $k\\geq 3.$"
         },
         "AH":{
             "name":"AH",
             "latex_name":"\\mathsf{AH}",
             "description":"Arithmetic Hierarchy",
-            "information":"Analog of \\mathsf{PH} in computability theory."
+            "information":"Analog of $\\mathsf{PH}$ in computability theory."
         },
         "SBQP":{
             "name":"SBQP",
