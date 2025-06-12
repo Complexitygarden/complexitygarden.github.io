@@ -213,7 +213,7 @@ function updateHistoryDisplay() {
                                 <div class="history-action">${entry.action}</div>
                             </div>
                             <button onclick="restoreHistoryState(${entry.id})" class="history-return-button" title="Return to this state">
-                                ↶
+                                <i class="fa fa-undo"></i>
                             </button>
                         </div>
                         <div class="history-details">${entry.details}</div>

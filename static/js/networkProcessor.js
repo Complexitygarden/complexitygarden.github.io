@@ -584,6 +584,8 @@ class NetworkProcessor {
         const nodes = [];
         const links = [];
 
+        var x_scale = (1 + (this.maxAvgLevel + 1) / 10)/3000;
+
         for (const className of processedClassList) {
             const classData = this.classes.get(className);
             if (!classData) continue;
@@ -597,8 +599,11 @@ class NetworkProcessor {
                 name: classData.name,
                 latex_name: classData.latex_name,
                 level: classData.level || 0,
-                savedX: classData.x / 2000,  // Normalize to 0-1 range
-                savedY: classData.y / 1000,  // Normalize to 0-1 range
+                savedX: classData.x *x_scale,  // Normalize to 0-1 range
+                // Scale vertical spacing dynamically: the more levels in the graph,
+                // the larger the savedY value so that levels appear further apart when rendered.
+                // We use a simple linear factor based on maxAvgLevel (computed in setLevels).
+                savedY: classData.y / 1000,
                 equal_classes: Array.from(classData.equals)
                     .filter(name => this.selectedClasses.has(name))
                     .map(name => this.classes.get(name))

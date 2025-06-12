@@ -5,6 +5,70 @@ $(document).ready(function(){
     const body = $('body');
     const searchBar = $('#complexity_class_search_bar');
     const searchContainer = $('.search-container');
+    const filterButton = $('.filter-button');
+    
+    function adjustPlaceholder(){
+        if(window.innerWidth < 600){
+            if(searchBar.attr('data-short')!=='1'){
+                searchBar.attr('data-short','1');
+                searchBar.attr('placeholder','Search');
+            }
+        } else {
+            if(searchBar.attr('data-short')==='1'){
+                searchBar.attr('data-short','0');
+                searchBar.attr('placeholder','Search complexity classes');
+            }
+        }
+    }
+    // Run on load
+    adjustPlaceholder();
+    // Run on resize
+    $(window).on('resize', adjustPlaceholder);
+    
+    /* Dynamically size the search input on very small screens to avoid
+       overlap with the icons. We subtract the filter-button width and
+       a fixed padding (30 px) from the viewport width. */
+    function resizeSearchInput(){
+        const viewport = window.innerWidth;
+
+        const isMobile = viewport < 600;
+        const isTablet = viewport >= 600 && viewport < 800;
+
+        const btnWidth = filterButton.outerWidth() || 60;
+
+        if (isMobile || isTablet){
+            // dynamic available width
+            var sidePadding = 300; // internal spacing within container
+            if (isMobile){
+                sidePadding = 200;
+            }
+            const available = viewport - sidePadding - btnWidth;
+            const newWidth = Math.max(available, 10);
+
+            searchBar.css({
+                'flex': '0 0 ' + newWidth + 'px',
+                'max-width': newWidth + 'px'
+            });
+
+            // ensure button height matches input height
+            const inputH = searchBar.outerHeight();
+            filterButton.css({
+                'height': inputH + 'px',
+                'width': inputH + 'px'
+            });
+
+            // center container by explicit width
+            searchContainer.css('width', (newWidth + btnWidth + 20) + 'px');
+        } else {
+            // desktop - reset overrides
+            searchBar.css({ 'flex':'', 'max-width':'', 'width':'' });
+            filterButton.css({ 'height':'', 'width':'' });
+            searchContainer.css('width','');
+        }
+    }
+
+    resizeSearchInput();
+    $(window).on('resize', resizeSearchInput);
     
     // Show dropdown and overlay when focusing on search
     searchBar.on('focus', function() {

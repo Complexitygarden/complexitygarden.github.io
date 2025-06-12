@@ -4,6 +4,7 @@
 // Key properties
 var graph_drawn = false,// Indicator whether the graph has been drawn
     click_timeout = null;// Timeout for click events - prevents counting double clicks as single clicks and double clicks simultaneously
+var nodeMenuDiv = null; // Currently open node context-menu element
 
 // Sizes
 // Note: In the future this should change to adjust for a device
@@ -38,7 +39,18 @@ function positionTooltip(tooltip, d) {
 
 // Updating the key variables about the graph based on the width
 function update_graph_values(width, height){
-    radius = width/10,
+    console.log("Updating graph values");
+    console.log("Width: " + width);
+    if (width < 600) {
+        console.log("Small screen");
+        radius = width / 3;
+    } else if (width < 800) {
+        console.log("Medium screen");
+        radius = width / 4;
+    } else {
+        console.log("Large screen");
+        radius = width / 8;
+    }
     strength = (-250)*radius,
     fontSize = radius/(2.5),
     node_distance = radius * 4,
@@ -72,6 +84,8 @@ document.addEventListener('keydown', function(event) {
                 .select(".equal-classes-symbol")
                 .text("+");
         }
+        // INSERT: also hide node context menu
+        hideNodeMenu();
     }
 });
 
@@ -258,8 +272,14 @@ function draw_graph(){
                 .style("stroke", "#2c5282")
                 .style("fill", "#2c5282");
         })
+        .on("click", function(d) {
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
+            showEdgeMenu(d, d3.event.pageX, d3.event.pageY);
+        })
         .on("dblclick", function(d) {
             // Get the source and target class names
+            hideNodeMenu();
             var sourceClass = d.source.name;
             var targetClass = d.target.name;
             
@@ -303,8 +323,14 @@ function draw_graph(){
                 .style("stroke", "#2c5282")
                 .attr("stroke-width", 2);
         })
+        .on("click", function(d) {
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
+            showEdgeMenu(d, d3.event.pageX, d3.event.pageY);
+        })
         .on("dblclick", function(d) {
             // Get the source and target class names
+            hideNodeMenu();
             var sourceClass = d.source.name;
             var targetClass = d.target.name;
             
@@ -418,8 +444,7 @@ function draw_graph(){
                 .style("height", "100%")
                 .style("pointer-events", "none")
                 .each(function(d) {
-                    // Non-Safari: Render KaTeX as before
-                    console.log("Not safari")
+                    // console.log("Not safari")
                     try {
                         const tempDiv = document.createElement('div');
                         tempDiv.style.position = 'absolute';
@@ -694,40 +719,16 @@ function draw_graph(){
                 }
             });
             
-        // Events which show complexity class descriptions
-        node.on("click", function(d){
-            // Clear any existing timeout
-            if (click_timeout) {
-                clearTimeout(click_timeout);
-            }
-            
-            // Set a new timeout
-            click_timeout = setTimeout(function() {
-                // Only execute click behavior if it wasn't part of a double-click
-                // d3.event.preventDefault();
-                // d3.event.stopPropagation();
-                // Opening the side window and showing a class description
-                open_side_window(d);
-                select_node_a = d;
-            }, 250); // 250ms delay
+        // === New single-click behaviour: show context menu ===
+        node.on("click", function(d) {
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
+            showNodeMenu(d, d3.event.pageX, d3.event.pageY);
         });
 
-        // node.on("mouseover", function(d){
-        //     open_side_window(d, false);
-        // });
-
-        // node.on("mouseout", function(d){
-        //     if (select_node_a !== d && select_node_a !== null){ 
-        //         open_side_window(select_node_a, false)
-        //     }
-        // });
-
         node.on("dblclick", function(d) {
-            // Clear the click timeout so the click handler won't fire
-            if (click_timeout) {
-                clearTimeout(click_timeout);
-                click_timeout = null;
-            }
+            // Ensure any open menu is hidden
+            hideNodeMenu();
             expand(d.name, null, false);
         });
     }
@@ -1081,207 +1082,101 @@ function draw_graph(){
     }
     
     graph_drawn = 1;
-}
 
-// Option 2: Manual LaTeX Symbol Mapping (Medium-High probability ~70%)
-// This approach maps common LaTeX commands to Unicode mathematical symbols
-/*
-function latexToUnicode(latex) {
-    const mapping = {
-        '\\mathcal{P}': '𝒫',
-        '\\mathcal{N}': '𝒩', 
-        '\\mathcal{L}': '𝒵',
-        '\\text{P}': 'P',
-        '\\text{NP}': 'NP',
-        '\\text{PSPACE}': 'PSPACE',
-        '\\text{EXP}': 'EXP',
-        '\\text{BPP}': 'BPP',
-        '\\text{RP}': 'RP',
-        '\\text{co-NP}': 'co-NP',
-        '\\subseteq': '⊆',
-        '\\subset': '⊂', 
-        '\\cap': '∩',
-        '\\cup': '∪',
-        '\\in': '∈',
-        '\\notin': '∉',
-        '\\leq': '≤',
-        '\\geq': '≥',
-        '\\neq': '≠',
-        '\\infty': '∞',
-        '\\log': 'log',
-        '\\sum': '∑',
-        '\\prod': '∏',
-        '\\int': '∫',
-        '\\partial': '∂',
-        '\\nabla': '∇',
-        '\\alpha': 'α', '\\beta': 'β', '\\gamma': 'γ', '\\delta': 'δ',
-        '\\epsilon': 'ε', '\\zeta': 'ζ', '\\eta': 'η', '\\theta': 'θ',
-        '\\lambda': 'λ', '\\mu': 'μ', '\\nu': 'ν', '\\pi': 'π',
-        '\\rho': 'ρ', '\\sigma': 'σ', '\\tau': 'τ', '\\phi': 'φ',
-        '\\chi': 'χ', '\\psi': 'ψ', '\\omega': 'ω'
+    // Make delete/expand utilities accessible to the context menu
+    window.expandNodeRef = function(className) {
+        expand(className, null, false);
     };
-    
-    let result = latex;
-    // Sort by length (longest first) to avoid partial replacements
-    const sortedKeys = Object.keys(mapping).sort((a, b) => b.length - a.length);
-    
-    for (const latexCmd of sortedKeys) {
-        result = result.replace(new RegExp(latexCmd.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'), mapping[latexCmd]);
-    }
-    
-    // Remove remaining braces and backslashes for unsupported commands
-    result = result.replace(/[{}\\]/g, '');
-    
-    return result;
+    window.deleteNodeRef = delete_node;
+    window.expandEdgeRef = function(sourceClass, targetClass) {
+         expand(sourceClass, targetClass, true);
+    };
 }
 
-// Usage in Safari section (replace the fallback text):
-var unicodeText = latexToUnicode(d.latex_name);
-group.append("text")
-    .attr("text-anchor", "middle")
-    .attr("dominant-baseline", "middle")
-    .attr("x", 0)
-    .attr("y", 0)
-    .style("fill", "#fff")
-    .style("font-size", `${fontSize}px`)
-    .style("font-family", "STIXGeneral, 'Times New Roman', serif")
-    .style("pointer-events", "none")
-    .text(unicodeText);
-*/
-
-// Option 3: Canvas-based Rendering with Image Conversion (Medium probability ~60%)
-// This renders LaTeX to canvas, then converts to image data URL for SVG
-/*
-function renderLatexToImage(latex, fontSize, callback) {
-    // Create temporary canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = radius * 4;
-    canvas.height = fontSize * 2;
-    
-    // Try to render with KaTeX to canvas (if supported)
-    try {
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.visibility = 'hidden';
-        tempDiv.style.fontSize = `${fontSize}px`;
-        tempDiv.style.color = 'white';
-        tempDiv.style.background = 'transparent';
-        document.body.appendChild(tempDiv);
-        
-        renderKaTeX(latex, tempDiv, window.katexOptions);
-        
-        // Use html2canvas or similar to convert to canvas
-        html2canvas(tempDiv, {
-            backgroundColor: null,
-            scale: 2,
-            useCORS: true
-        }).then(function(renderedCanvas) {
-            document.body.removeChild(tempDiv);
-            const dataURL = renderedCanvas.toDataURL('image/png');
-            callback(dataURL);
-        }).catch(function(error) {
-            document.body.removeChild(tempDiv);
-            // Fallback to text rendering on canvas
-            ctx.fillStyle = 'white';
-            ctx.font = `${fontSize}px serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(latex, canvas.width/2, canvas.height/2);
-            callback(canvas.toDataURL('image/png'));
-        });
-        
-    } catch (e) {
-        // Direct canvas text fallback
-        ctx.fillStyle = 'white';
-        ctx.font = `${fontSize}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(latex, canvas.width/2, canvas.height/2);
-        callback(canvas.toDataURL('image/png'));
+// ===== Helper functions for node context menu =====
+function hideNodeMenu() {
+    if (nodeMenuDiv) {
+        nodeMenuDiv.remove();
+        nodeMenuDiv = null;
     }
 }
 
-// Usage in Safari section:
-renderLatexToImage(d.latex_name, fontSize, function(dataURL) {
-    group.append('image')
-        .attr('x', -radius)
-        .attr('y', -fontSize)
-        .attr('width', radius * 2)
-        .attr('height', fontSize * 2)
-        .attr('href', dataURL)
-        .style('pointer-events', 'none');
-});
-*/
+function showNodeMenu(d, pageX, pageY) {
+    // Close any existing menu first
+    hideNodeMenu();
 
-// Option 4: Server-side LaTeX to SVG Conversion (Lower probability ~40% but most robust)
-// This sends LaTeX to server for conversion, caches results
-/*
-const latexCache = new Map();
+    // Build a simple HTML dropdown anchored to the click position
+    nodeMenuDiv = d3.select("body").append("div")
+        .attr("class", "node-context-menu")
+        .style("position", "absolute")
+        .style("left", pageX + "px")
+        .style("top", pageY + "px")
+        .style("background", "#ffffff")
+        .style("border", "1px solid #ccc")
+        .style("border-radius", "4px")
+        .style("box-shadow", "0 2px 8px rgba(0,0,0,0.15)")
+        .style("padding", "4px 0")
+        .style("z-index", "10000");
 
-function renderLatexServerSide(latex, callback) {
-    // Check cache first
-    if (latexCache.has(latex)) {
-        callback(latexCache.get(latex));
-        return;
-    }
-    
-    // Send request to server endpoint
-    fetch('/api/latex-to-svg', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ latex: latex })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.svg) {
-            // Cache the result
-            latexCache.set(latex, data.svg);
-            callback(data.svg);
-        } else {
-            throw new Error(data.error || 'Server conversion failed');
-        }
-    })
-    .catch(error => {
-        console.error('Server LaTeX conversion error:', error);
-        // Fallback to plain text
-        callback(`<text fill="white" text-anchor="middle" dominant-baseline="middle">${latex}</text>`);
+    var options = [
+        { label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } },
+        { label: "Expand",      action: function() { hideNodeMenu(); if (window.expandNodeRef) { window.expandNodeRef(d.name); } } },
+        { label: "Delete",      action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } }
+    ];
+
+    options.forEach(function(opt) {
+        nodeMenuDiv.append("div")
+            .style("padding", "6px 16px")
+            .style("cursor", "pointer")
+            .style("font-family", "Arial, sans-serif")
+            .text(opt.label)
+            .on("mouseover", function() { d3.select(this).style("background", "#f0f0f0"); })
+            .on("mouseout", function() { d3.select(this).style("background", "transparent"); })
+            .on("click", opt.action);
     });
+
+    // Prevent clicks inside the menu from bubbling up and closing it immediately
+    nodeMenuDiv.on("click", function() { d3.event.stopPropagation(); });
 }
 
-// Usage in Safari section:
-renderLatexServerSide(d.latex_name, function(svgContent) {
-    var foreignObj = group.append('foreignObject')
-        .attr('x', -radius)
-        .attr('y', -fontSize/2)
-        .attr('width', radius * 2)
-        .attr('height', fontSize)
-        .style('overflow', 'visible');
-    
-    foreignObj.node().innerHTML = svgContent;
+// Close the menu when clicking anywhere else on the page
+document.addEventListener("click", function(evt) {
+    if (nodeMenuDiv && nodeMenuDiv.node() && !nodeMenuDiv.node().contains(evt.target)) {
+        hideNodeMenu();
+    }
 });
 
-// Server endpoint would look like (Python/Flask example):
-// @app.route('/api/latex-to-svg', methods=['POST'])
-// def latex_to_svg():
-//     try:
-//         latex = request.json['latex']
-//         # Use matplotlib or similar to convert LaTeX to SVG
-//         import matplotlib.pyplot as plt
-//         import io
-//         
-//         fig, ax = plt.subplots(figsize=(2, 0.5))
-//         ax.text(0.5, 0.5, f'${latex}$', transform=ax.transAxes, 
-//                 ha='center', va='center', fontsize=14, color='white')
-//         ax.axis('off')
-//         
-//         svg_buffer = io.StringIO()
-//         plt.savefig(svg_buffer, format='svg', transparent=True, bbox_inches='tight')
-//         plt.close()
-//         
-//         return {'success': True, 'svg': svg_buffer.getvalue()}
-//     except Exception as e:
-//         return {'success': False, 'error': str(e)}
-*/
+// ===== Helper function for edge context menu =====
+function showEdgeMenu(linkData, pageX, pageY) {
+    hideNodeMenu();
+
+    nodeMenuDiv = d3.select("body").append("div")
+        .attr("class", "edge-context-menu")
+        .style("position", "absolute")
+        .style("left", pageX + "px")
+        .style("top", pageY + "px")
+        .style("background", "#ffffff")
+        .style("border", "1px solid #ccc")
+        .style("border-radius", "4px")
+        .style("box-shadow", "0 2px 8px rgba(0,0,0,0.15)")
+        .style("padding", "4px 0")
+        .style("z-index", "10000");
+
+    var options = [
+        { label: "Expand", action: function() { hideNodeMenu(); if (window.expandEdgeRef) { window.expandEdgeRef(linkData.source.name, linkData.target.name); } } }
+    ];
+
+    options.forEach(function(opt) {
+        nodeMenuDiv.append("div")
+            .style("padding", "6px 16px")
+            .style("cursor", "pointer")
+            .style("font-family", "Arial, sans-serif")
+            .text(opt.label)
+            .on("mouseover", function() { d3.select(this).style("background", "#f0f0f0"); })
+            .on("mouseout", function() { d3.select(this).style("background", "transparent"); })
+            .on("click", opt.action);
+    });
+
+    nodeMenuDiv.on("click", function() { d3.event.stopPropagation(); });
+}
+// ==================================================

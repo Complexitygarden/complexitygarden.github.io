@@ -61,8 +61,14 @@ var window_width = 200,
     center_x = vis_width / 2,
     center_y = vis_height / 2;
 
+function currentTopMargin() {
+    return window.innerWidth < 600 ? 140 : 100;
+}
+
 // Redrawing the divs based on the window size
 function redraw_divs() {
+    console.log("Redrawing divs");
+    margin = currentTopMargin();
     vis_width = window.innerWidth - margin;
     vis_height = window.innerHeight - margin;
     center_x = vis_width / 2;
@@ -85,6 +91,7 @@ function redraw_divs() {
 
     // Changing the font and radius
     try {
+        console.log("Updating graph values");
         update_graph_values(vis_width, vis_height);
     } catch {}
     try {

@@ -969,25 +969,21 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .history-return-button {
-    background-color: #3182CE;
-    color: white;
+    background-color: #2c5282;
+    color: #fff;
     border: none;
-    border-radius: 3px;
-    padding: 2px 6px;
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s ease;
-    margin-left: 8px;
-    min-width: 24px;
-    height: 20px;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
 }
 
 .history-return-button:hover {
-    background-color: #2C5282;
+    background-color: #1a365d;
 }
 
 .history-details {
@@ -1040,4 +1036,104 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 #history_menu_item > ul::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
+}
+
+/* ================= Mobile Style Adjustments ================= */
+@media (max-width: 600px) {
+    /* Bigger top bar */
+    .header {
+        height: 140px !important;
+    }
+    /* Ensure main area accounts for larger header */
+    .main {
+        height: calc(100% - 140px);
+        margin-top: 140px;
+    }
+    /* Search container wider */
+    .search-container {
+        width: auto;
+        padding: 0 10px;
+        box-sizing: content-box;
+        display: flex;
+        margin: 0 auto; /* center inside header */
+    }
+    /* Bigger search input */
+    .header input[type="text"] {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 22px;
+        max-width: calc(100% - 70px); /* leave space for filter button */
+        padding-left: 50px; /* room for search icon */
+    }
+    .search-icon {
+        left: 18px;
+        font-size: 20px;
+    }
+    .filter-button svg {
+        width: 20px;
+        height: 20px;
+    }
+    /* Bigger filter button */
+    .filter-button {
+        flex: 0 0 auto;
+        width: 60px; /* will be synchronized to input height via JS */
+        height: 60px;
+        position: relative;
+        z-index: 2;
+    }
+    /* Adjust left/right sidebar offset */
+    #leftSidebarMenu,
+    #rightSidebarMenu {
+        margin-top: 140px;
+    }
+    .leftSidebarIconToggle,
+    .rightSidebarIconToggle {
+        top: 59px;
+    }
+}
+
+/* Medium screens */
+@media (max-width: 800px) and (min-width: 600px) {
+    .search-container {
+        width: auto;
+        display: flex;
+        margin: 0 auto; /* centered */
+        padding: 0 10px;
+        box-sizing: content-box;
+    }
+    .header input[type="text"] {
+        height: 80px;
+        font-size: 28px;
+        padding-left: 60px;
+    }
+    .filter-button {
+        flex: 0 0 auto;
+        width: 80px; /* will be overwritten by JS for perfect match */
+        height: 80px;
+    }
+}
+
+/* Extra small tweaks */
+@media (max-width: 600px) {
+    .search-container {
+        width: calc(100% - 30px); /* leave small side padding */
+    }
+    .header input[type="text"] {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-size: 24px;
+    }
+    /* Ensure filter button remains clickable */
+    .filter-button {
+        position: relative;
+        z-index: 2;
+    }
+}
+/* ============================================================ */
+
+/* Header right placeholder for symmetry */
+.header::after {
+    content: "";
+    flex: 0 0 40px; /* roughly matches left icon (22px) + left offset (15px) */
+    height: 1px; /* no visual height */
 }
