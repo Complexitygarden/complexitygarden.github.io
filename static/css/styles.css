@@ -1088,3 +1088,32 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     flex: 0 0 40px; /* roughly matches left icon (22px) + left offset (15px) */
     height: 1px; /* no visual height */
 }
+
+/* ==================== Roadmap Page ==================== */
+.roadmap-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.checklist {
+    list-style: none;
+    padding: 0;
+}
+
+.checklist li {
+    margin: 12px 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}
+
+.checklist input[type="checkbox"] {
+    margin-right: 12px;
+    transform: scale(1.3);
+    cursor: default; /* non-interactive by design */
+}
+
+.checklist span {
+    flex: 1;
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "feature-class-descriptions",
+    "text": "Write class descriptions.",
+    "completed": false
+  },
+  {
+    "id": "feature-add-classes",
+    "text": "Add more complexity classes.",
+    "completed": false
+  },
+  {
+    "id": "feature-mobile-version",
+    "text": "Improve mobile version",
+    "completed": false
+  },
+  {
+    "id": "feature-export-latex",
+    "text": "Exporting to LaTeX",
+    "completed": false
+  },
+  {
+    "id": "feature-class-highlighting",
+    "text": "Complexiy Class highlighting",
+    "completed": false
+  },
+  {
+    "id": "feature-edge-highlighting",
+    "text": "Add more settings - colors, reverse order etc.",
+    "completed": false
+  },
+  {
+    "id": "feature-venn-diagram",
+    "text": "Venn Diagram Visualisation",
+    "completed": false
+  }
+]
