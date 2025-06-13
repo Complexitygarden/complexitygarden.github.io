@@ -135,6 +135,36 @@ function redrawVisualization() {
     create_visualisation();
 }
 
+function link_classes_information(information_text)
+{
+    const all_classes = networkProcessor.getAllClasses().map(c => c.id);
+    console.log("[IN LINK CLASSES] all classes: ", all_classes);
+    
+
+
+
+    //fix escaped characters bc we are going to turn this into regex
+    const escaped_class_names = all_classes.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    //this takes something like BQP?\poly and turns it into BQP\?\\poly (just in case, so that we don't get regex errors)
+    console.log("[IN LINK CLASSES] escaped classes: ", escaped_class_names);
+
+
+    //This matches $\\mathsf{CLASS_NAME}$
+    //Make sure to always use the dollar signs in the classes.json
+    const regex = new RegExp(`\\$\\\\mathsf\\{(${escaped_class_names.join('|')})\\}\\$`, 'g');
+    //joins the escaped class names into a single alternation group using "|"
+
+    return information_text.replace(regex, (match, p1) => {
+        const latex_wrapped = `$\\mathsf{${p1}}$`;
+        //console.log("Printing with no dollar signs.");
+        //role=button for accessibility i think?
+        return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${p1}'))">${latex_wrapped}</a>`;
+    });
+
+}
+
+
+
 // Open side window with class information
 function open_side_window(d) {
     const classData = networkProcessor.getClass(d.id);
@@ -156,7 +186,12 @@ function open_side_window(d) {
     if (classData.information) {
         info += '<br><strong>Information:</strong><br>';
         // Process LaTeX parts in the information text
-        const processedInfo = classData.information;
+        //processedInfo = classData.information.replace(/\\mathsf\{[^}]+\}/g, match => `$${match}$`);
+
+        //console.log("Linked_class_information: ",link_classes_information(processedInfo));
+
+        processedInfo = link_classes_information(classData.information);
+
         info += format_information(processedInfo) + '<br>';
     }
     

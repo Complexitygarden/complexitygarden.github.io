@@ -5,20 +5,20 @@
             "latex_name": "\\mathsf{ALL}",
             "top": true,
             "description": "The class of all languages.",
-            "information": "$\\mathsf{ALL}$ is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to ALL, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
+            "information": "$\\mathsf{ALL}$ is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to $\\mathsf{ALL}$, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
         },
         "NONE": {
             "name": "NONE",
             "latex_name": "\\mathsf{NONE}",
             "bottom": true,
             "description": "The class of no languages.",
-            "information": "The 'empty set' of complexity theory, $\\mathsf{NONE}$ contains no languages but is not equal to the complement of ALL since $\\mathsf{coALL}=\\mathsf{ALL}$."
+            "information": "The 'empty set' of complexity theory, $\\mathsf{NONE}$ contains no languages but is not equal to the complement of $\\mathsf{ALL}$ since $\\mathsf{coALL}$ $=$ $\\mathsf{ALL}$."
         },
         "PP": {
             "name": "PP",
             "latex_name": "\\mathsf{PP}",
             "description": "Probabilistic Polynomial Time",
-            "information": "The class of decision problems solvable by an NP machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
+            "information": "The class of decision problems solvable by an $\\mathsf{NP}$ machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
         },
         "QMA": {
             "name": "QMA",
@@ -102,7 +102,7 @@
             "name": "MA",
             "latex_name": "\\mathsf{MA}",
             "description": "Merlin-Arthur",
-            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP."
+            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of $\\mathsf{NP}$."
         },
         "AM": {
             "name": "AM",
