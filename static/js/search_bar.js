@@ -40,7 +40,7 @@ $(document).ready(function(){
             // dynamic available width
             var sidePadding = 300; // internal spacing within container
             if (isMobile){
-                sidePadding = 200;
+                sidePadding = 220;
             }
             const available = viewport - sidePadding - btnWidth;
             const newWidth = Math.max(available, 10);
