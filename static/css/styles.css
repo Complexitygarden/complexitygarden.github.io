@@ -98,9 +98,11 @@ body {
     height: 100%;
     position: fixed;
     left: 0;
-    width: 400px;
+    /* Responsive width: use 400px unless the viewport is narrower */
+    width: min(400px, 100vw);
     margin-top: 100px;
-    transform: translateX(-400px);
+    /* Move exactly its own width off-screen in the closed state */
+    transform: translateX(-100%);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
     background: #1a365d;
@@ -219,9 +221,11 @@ The code below is similar to that one above, but I am keeping both copies as we 
     height: 100%;
     position: fixed;
     right: 0;
-    width: 500px;
+    /* Responsive width: use 500px unless the viewport is narrower */
+    width: min(500px, 100vw);
     margin-top: 100px;
-    transform: translateX(500px);
+    /* Move exactly its own width off-screen in the closed state */
+    transform: translateX(100%);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
     background: #1a365d;

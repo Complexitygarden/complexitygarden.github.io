@@ -1119,9 +1119,9 @@ function showNodeMenu(d, pageX, pageY) {
         .style("z-index", "10000");
 
     var options = [
-        { label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } },
         { label: "Expand",      action: function() { hideNodeMenu(); if (window.expandNodeRef) { window.expandNodeRef(d.name); } } },
-        { label: "Delete",      action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } }
+        { label: "Remove",      action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } },
+        { label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } }
     ];
 
     options.forEach(function(opt) {
