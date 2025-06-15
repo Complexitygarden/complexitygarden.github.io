@@ -349,6 +349,12 @@
             "latex_name":"\\mathsf{P^{\\#P}}",
             "description":"P with #P oracle",
             "information":"The class of decision problems solvable by a $\\mathsf{P}$ machine with a #P oracle. Equals $\\mathsf{P^{\\mathsf{PP}}}$.<br>Contains $\\mathsf{PH}$ [Tod91]."
+        },
+        "coNP":{
+            "name":"coNP",
+            "latex_name":"\\mathsf{coNP}",
+            "description":"Complement of $\\mathsf{NP}$",
+            "information":"The class of decision problems for which 'no' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'no' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'yes' instance, then the verifier rejects for all proofs. </li></ul>"
         }
     }
 }

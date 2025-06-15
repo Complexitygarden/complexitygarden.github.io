@@ -412,6 +412,21 @@
             "type":"containment",
             "small":"PH",
             "large":"PsharpP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"coNP"
+        },
+        {
+            "type":"containment",
+            "small":"coNP",
+            "large":"Sigma2"
+        },
+        {
+            "type":"containment",
+            "small":"coNP",
+            "large":"Pi2"
         }
     ]
 }
