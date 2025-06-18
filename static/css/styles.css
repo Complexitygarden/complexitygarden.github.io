@@ -329,6 +329,21 @@ input[class="openRightSidebarMenu"] {
     top: 42px;
     right: 15px;
 }
+
+.shareIcon {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: absolute;
+    z-index: 99;
+    height: 18px;
+    width: 18px;
+    top: 40px;
+    right: 50px;
+    display: inline-block;
+    line-height: 0;
+}
+
 .i-circle {
     display: inline-block;
     position: relative;
@@ -1116,4 +1131,306 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .checklist span {
     flex: 1;
+}
+
+/* Hover enlarge effect for hamburger and info icons */
+.leftSidebarIconToggle:hover,
+.rightSidebarIconToggle:hover,
+.shareIcon:hover {
+    transform: scale(1.1);
+}
+
+/* ================= Mobile Search Bar Behaviour (<=600px) ================= */
+@media (max-width: 600px) {
+    /* --- Hide header icons when overlay open to avoid overlap --- */
+    body.mobile-search-open .leftSidebarIconToggle,
+    body.mobile-search-open .rightSidebarIconToggle,
+    body.mobile-search-open .shareIcon {
+        display: none !important;
+    }
+
+    /* --- Adjust top controls: Exit further right, Filter at far right --- */
+    body.mobile-search-open .filter-container {
+        right: 15px;
+        /* top: 15px; */
+    }
+    body.mobile-search-open .search-exit {
+        right: 65px; /* 15px gap + 40px filter width + 10px spacing */
+        top: 25px;
+    }
+
+    /* --- Hide info icon in list and move checkbox to left --- */
+    body.mobile-search-open .info-icon { display: none !important; }
+
+    body.mobile-search-open .search-dropdown .checkmark {
+        left: 5px;
+    }
+    /* Adjust padding so text does not overlap checkmark */
+    body.mobile-search-open .search-dropdown .container {
+        padding-left: 42px;   /* 25-30 px checkbox + 12 px gap */
+    }
+
+    /* Keep column layout; position filter button top-right */
+    body.mobile-search-open .search-icon { display: none !important; }
+
+    body.mobile-search-open .search-container {
+        flex-direction: column !important;
+        padding-top: 15px;
+    }
+
+    /* Position filter button top-right */
+    body.mobile-search-open .filter-container {
+        position: absolute;
+        /* top: 15px; */
+        /* right: 20px; */
+    }
+
+    body.mobile-search-open .filter-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    body.mobile-search-open .search-exit {
+        position: absolute;
+        /* top: 15px; */
+        right: 70px; /* leave space for filter button */
+    }
+
+    /* Scale hamburger and info icons up for uniform appearance */
+    body.mobile-search-collapsed .leftSidebarIconToggle,
+    body.mobile-search-collapsed .rightSidebarIconToggle {
+        transform: translate(-50%, -50%) scale(1.5) !important;
+        transform-origin: center center !important;
+        top: 55px !important; /* adjust for scale so bottoms align */
+    }
+
+    /* Uniform icon sizing */
+    body.mobile-search-collapsed .shareIcon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    /* body.mobile-search-collapsed .shareIcon, */
+    /* body.mobile-search-collapsed .rightSidebarIconToggle, */
+    body.mobile-search-collapsed .search-container {
+        width: 35px !important;
+        height: 35px !important;
+    }
+
+    body.mobile-search-collapsed .search-icon {
+        line-height: 22px !important;
+    }
+
+    /* Adjust search icon container for equispacing */
+    body.mobile-search-collapsed .search-container {
+        position: absolute !important;
+        left: 37.5% !important;
+        transform: translateX(-50%);
+        top: 32px !important;
+        width: auto !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+    }
+    /* Ensure icon itself has no extra offset */
+    body.mobile-search-collapsed .search-icon {
+        position: static !important;
+        left: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+
+    /* Explicit equispaced absolute positioning for 4 icons */
+    body.mobile-search-collapsed .leftSidebarIconToggle {
+        position: absolute !important;
+        left: 12.5% !important;
+        transform: translateX(-50%);
+        /* top: 42px; */
+    }
+    body.mobile-search-collapsed .shareIcon {
+        position: absolute !important;
+        left: 62.5% !important;
+        transform: translateX(-50%);
+        top: 32px;
+    }
+    body.mobile-search-collapsed .rightSidebarIconToggle {
+        position: absolute !important;
+        left: 87.5% !important;
+        transform: translateX(-50%);
+        /* top: 42px; */
+    }
+
+    /* make header icons evenly spaced */
+    body.mobile-search-collapsed .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 15px;
+    }
+    /* center the collapsed search icon */
+    body.mobile-search-collapsed .search-container {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+    }
+    body.mobile-search-collapsed .search-icon {
+        position: static;
+        transform: none;
+        font-size: 28px;
+        color: #ffffff !important;
+    }
+    /* Collapsed state: only search icon visible */
+    body.mobile-search-collapsed .search-container input[type="text"],
+    body.mobile-search-collapsed .search-container .filter-container {
+        display: none;
+    }
+    body.mobile-search-collapsed .search-container {
+        width: auto;
+    }
+    body.mobile-search-collapsed .search-icon {
+        pointer-events: auto;
+    }
+    body.mobile-search-collapsed .search-dropdown {
+        display: none !important;
+    }
+
+    /* Exit button hidden by default */
+    .search-exit {
+        display: none;
+    }
+
+    /* Open/fullscreen state */
+    body.mobile-search-open .search-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1000;
+        background: #ffffff;
+        flex-direction: column;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    body.mobile-search-open .search-container input[type="text"] {
+        flex: 0 0 auto;
+        width: 100%;
+        max-width: 100%;
+        height: 60px;
+        font-size: 24px;
+        padding-left: 50px; /* room for icon */
+        border: 2px solid #2c5282;
+        color: #2c5282;
+    }
+    body.mobile-search-open .search-icon {
+        left: 20px;
+        top: 30px;
+        transform: none;
+        font-size: 24px;
+        color: #2c5282;
+        pointer-events: none;
+    }
+    body.mobile-search-open .search-exit {
+        display: block;
+        position: absolute;
+        /* right: 15px; */
+        /* top: 15px; */
+        background: none;
+        border: none;
+        font-size: 48px;
+        color: #2c5282;
+        cursor: pointer;
+        z-index: 1001;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: background-color 0.2s ease;
+    }
+    body.mobile-search-open .search-exit:hover {
+        background-color: rgba(44, 82, 130, 0.1);
+    }
+    /* body.mobile-search-open .filter-container {
+        margin-top: 10px;
+    } */
+    body.mobile-search-open .filter-button {
+        width: 60px;
+        height: 60px;
+    }
+    body.mobile-search-open .search-dropdown {
+        position: relative;
+        top: 0 !important; /* override previous absolute 100% offset */
+        flex: 1 1 auto;
+        width: 100%;
+        max-height: none;
+        border: none;
+        border-top: 2px solid #2c5282;
+        margin-top: 10px;
+        z-index: 1000;
+        background: white;
+        overflow-y: auto;
+    }
+    body.mobile-search-open .search-dropdown li {
+        padding: 15px 10px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 18px;
+        color: #2c5282;
+    }
+    body.mobile-search-open .search-dropdown .container {
+        font-size: 18px;
+        color: #2c5282;
+    }
+    body.mobile-search-open .search-dropdown .latex-name {
+        color: #2c5282;
+        font-size: 18px;
+    }
+    /* Hide dark overlay when using full-screen white background */
+    body.mobile-search-open .overlay {
+        display: none !important;
+    }
+    
+    /* Disable other UI elements when mobile search is open */
+    body.mobile-search-open .leftSidebarIconToggle,
+    body.mobile-search-open .rightSidebarIconToggle,
+    body.mobile-search-open .shareIcon {
+        pointer-events: none;
+        opacity: 0.3;
+    }
+
+    /* ensure visibility of all text inside search results */
+    body.mobile-search-open .search-dropdown, 
+    body.mobile-search-open .search-dropdown * {
+        color: #2c5282 !important;
+    }
+
+    /* search icon visual size */
+    body.mobile-search-collapsed .search-icon i {
+        font-size: 34px !important;   /* glyph height/width */
+        line-height: 34px !important; /* vertical centring inside the 30-px box */
+        width: 34px;                  /* helpful for centring maths */
+        height: 34px;
+    }
+
+    /* Optional: if you need to nudge it down/up relative to the other icons */
+    body.mobile-search-collapsed .search-icon {
+        top: 42px;                    /* same baseline as share icon */
+        left: 50%;                    /* or keep the 37.5 % setup */
+        transform: translateX(-50%);
+    }
+
+    /* keep each row starting at the very left */
+    body.mobile-search-open .search-dropdown li {
+        padding-left: 0;
+    }
+}
+
+/* Hide mobile search exit button by default */
+.search-exit {
+    display: none;
 }

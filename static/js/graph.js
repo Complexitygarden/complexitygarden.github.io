@@ -1063,7 +1063,7 @@ function draw_graph(){
         } else {
             console.log("Expanding node " + sourceClass);
             // Get all connected classes
-            const classes = networkProcessor.getConnectedClasses(sourceClass);
+            const classes = networkProcessor.getConnectedClasses(sourceClass, true);
             if (classes && classes.length > 0) {
                 // Select the new classes
                 classes.forEach(className => {

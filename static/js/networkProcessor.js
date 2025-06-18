@@ -88,7 +88,8 @@ class NetworkProcessor {
             level: data.level || 0,
             x: 0,  // Initialize position
             y: 0,  // Initialize position
-            visible: false
+            visible: false,
+            coClass: data.coClass || null
         });
         this.classesIdentifiers.push(name);
         // console.log(`Class ${name} added successfully. Current class count: ${this.classes.size}`);
@@ -843,7 +844,7 @@ class NetworkProcessor {
         return paths;
     }
 
-    getConnectedClasses(className) {
+    getConnectedClasses(className, coClass = false) {
         if (!this.initialized) {
             // console.warn('NetworkProcessor not initialized');
             return [];
@@ -872,6 +873,13 @@ class NetworkProcessor {
         // Add equal classes
         for (const equal of classData.equals) {
             connected.add(equal);
+        }
+
+        // Add co-class
+        console.log(classData);
+        console.log(classData.coClass);
+        if (coClass && classData.coClass !== null) {
+            connected.add(classData.coClass);
         }
 
         // Only return classes that are not already selected

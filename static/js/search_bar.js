@@ -1,12 +1,113 @@
 // Add debounce timer at the top of the file
 let lastSelectTopResultTime = 0;
 
+// Add constant for mobile breakpoint
+const MOBILE_BREAKPOINT = 600;
+
 $(document).ready(function(){
     const body = $('body');
     const searchBar = $('#complexity_class_search_bar');
     const searchContainer = $('.search-container');
     const filterButton = $('.filter-button');
+    const searchDropdown = $('.search-dropdown');
     
+    // Elements used for mobile behaviour
+    const searchIcon = $('.search-icon');
+
+    // Create an exit / close button for the full-screen search on mobile
+    const exitButton = $('<button class="search-exit" aria-label="Close">&times;</button>');
+    // Append the button only once
+    if ($('.search-exit').length === 0){
+        $('.search-container').append(exitButton);
+    }
+
+    // Utility function to determine if we are in mobile view
+    function isMobileView(){
+        return window.innerWidth <= MOBILE_BREAKPOINT;
+    }
+
+    /* ============== Mobile search state management ============== */
+    function setMobileCollapsed(){
+        $('body').addClass('mobile-search-collapsed')
+                    .removeClass('mobile-search-open');
+        $('body').removeClass('search-active');
+        searchBar.val('');
+        searchBar.blur();
+    }
+
+    function openMobileSearch(){
+        $('body').removeClass('mobile-search-collapsed')
+                    .addClass('mobile-search-open search-active');
+
+        /* Clear any inline sizing that may have been added by resizeSearchInput */
+        searchContainer.attr('style','');
+        searchBar.attr('style','');
+        filterButton.attr('style','');
+
+        // Ensure full-screen dimensions if any inline styles remain
+        searchContainer.css({
+            'width': '100%',
+            'height': '100%'
+        });
+        searchBar.css({
+            'width': '100%',
+            'max-width': '100%',
+            'flex': '0 0 auto'
+        });
+
+        // Show all classes initially for easier selection
+        console.log('openMobileSearch: calling search_vals');
+        search_vals('');
+        
+        // Fallback: try again after a short delay if networkProcessor wasn't ready
+        setTimeout(function() {
+            console.log('openMobileSearch: fallback search_vals call');
+            search_vals('');
+        }, 100);
+        
+        searchBar.focus();
+    }
+
+    function closeMobileSearch(){
+        setMobileCollapsed();
+        // Re-apply responsive sizing
+        resizeSearchInput();
+    }
+
+    // Apply correct state on initial load and on resize
+    function applyMobileState(){
+        if (isMobileView()){
+            if (!$('body').hasClass('mobile-search-collapsed') && !$('body').hasClass('mobile-search-open')){
+                $('body').addClass('mobile-search-collapsed');
+            }
+            // Make search icon clickable on mobile
+            searchIcon.css('pointer-events','auto');
+        } else {
+            // Desktop view – ensure mobile classes are removed
+            $('body').removeClass('mobile-search-collapsed mobile-search-open');
+            $('body').removeClass('search-active');
+            searchIcon.css('pointer-events','none');
+        }
+    }
+
+    applyMobileState();
+    $(window).on('resize', applyMobileState);
+
+    /* ============== Event bindings ============== */
+    // Clicking the search icon opens the full-screen search on mobile
+    searchIcon.on('click', function(){
+        if (isMobileView() && $('body').hasClass('mobile-search-collapsed')){
+            openMobileSearch();
+        }
+    });
+
+    // Exit button closes the full-screen search on mobile
+    exitButton.on('click', function(){
+        if ($('body').hasClass('mobile-search-open')){
+            closeMobileSearch();
+        }
+    });
+
     function adjustPlaceholder(){
         if(window.innerWidth < 600){
             if(searchBar.attr('data-short')!=='1'){
@@ -78,6 +179,11 @@ $(document).ready(function(){
     
     // Hide dropdown and overlay when clicking outside
     $(document).on('click', function(event) {
+        // Skip automatic closing when the full-screen mobile search is open
+        if (body.hasClass('mobile-search-open')){
+            return;
+        }
+
         // If click is outside search container
         if (!searchContainer.is(event.target) && searchContainer.has(event.target).length === 0) {
             body.removeClass('search-active');
@@ -88,7 +194,10 @@ $(document).ready(function(){
     // Close search on escape key
     $(document).on('keydown', function(event) {
         if (event.key === 'Escape') {
-            if(body.hasClass('search-active')){
+            if(body.hasClass('mobile-search-open')){
+                // Always close mobile full-screen search on Escape
+                closeMobileSearch();
+            } else if(body.hasClass('search-active')){
                 var query = searchBar.val();
                 if (query.length > 0){
                     searchBar.val('');
@@ -129,6 +238,16 @@ $(document).ready(function(){
     
     // Initialize the listed classes
     // search_vals("");
+
+    function adjustDropdownWidth(){
+        const totalWidth = searchBar.outerWidth() + filterButton.outerWidth();
+        searchDropdown.css('width', totalWidth + 'px');
+    }
+
+    // Call once and on resize/focus
+    adjustDropdownWidth();
+    $(window).on('resize', adjustDropdownWidth);
+    searchBar.on('focus', adjustDropdownWidth);
 });
 
 function search_vals(query) {
@@ -140,7 +259,8 @@ function search_vals(query) {
     }
     
     if (!window.networkProcessor.initialized) {
-        console.error('NetworkProcessor not initialized');
+        console.warn('NetworkProcessor not initialized, will retry search_vals in 200ms');
+        setTimeout(() => search_vals(query), 200);
         return;
     }
 
@@ -154,11 +274,11 @@ function search_vals(query) {
     try {
         // Get all classes from network processor
         const allClasses = window.networkProcessor.getAllClasses();
-        console.log('Retrieved all classes:', {
-            count: allClasses.length,
-            firstFew: allClasses.slice(0, 3),
-            classIds: allClasses.map(c => c.id)
-        });
+        // console.log('Retrieved all classes:', {
+        //     count: allClasses.length,
+        //     firstFew: allClasses.slice(0, 3),
+        //     classIds: allClasses.map(c => c.id)
+        // });
         
         // Filter classes based on query
         const filteredClasses = allClasses.filter(d => 
@@ -210,12 +330,12 @@ function search_vals(query) {
             return a.name.localeCompare(b.name);
         });
 
-        console.log('Filtered and sorted classes:', {
-            count: filteredClasses.length,
-            query: query,
-            firstFew: filteredClasses.slice(0, 3),
-            classIds: filteredClasses.map(c => c.id)
-        });
+        // console.log('Filtered and sorted classes:', {
+        //     count: filteredClasses.length,
+        //     query: query,
+        //     firstFew: filteredClasses.slice(0, 3),
+        //     classIds: filteredClasses.map(c => c.id)
+        // });
 
         // Clear previous results
         searchResults.innerHTML = '';

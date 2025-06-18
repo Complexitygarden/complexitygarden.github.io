@@ -54,7 +54,8 @@
             "name": "NP",
             "latex_name": "\\mathsf{NP}",
             "description": "Non-deterministic Polynomial Time",
-            "information": "The class of decision problems for which 'yes' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'yes' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'no' instance, then the verifier rejects for all proofs. </li></ul>"
+            "information": "The class of decision problems for which 'yes' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'yes' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'no' instance, then the verifier rejects for all proofs. </li></ul>",
+            "coClass": "coNP"
         },
         "SZK": {
             "name": "SZK",
@@ -354,7 +355,8 @@
             "name":"coNP",
             "latex_name":"\\mathsf{coNP}",
             "description":"Complement of $\\mathsf{NP}$",
-            "information":"The class of decision problems for which 'no' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'no' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'yes' instance, then the verifier rejects for all proofs. </li></ul>"
+            "information":"The class of decision problems for which 'no' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'no' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'yes' instance, then the verifier rejects for all proofs. </li></ul>",
+            "coClass": "NP"
         }
     }
 }
