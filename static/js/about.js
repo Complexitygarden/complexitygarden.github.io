@@ -15,5 +15,16 @@ document.addEventListener('DOMContentLoaded', function() {
         aboutModal.onclick = function(e) {
             if (e.target === aboutModal) aboutModal.style.display = 'none';
         };
+
+        // Close About modal with ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Only act if modal is currently visible
+                const isVisible = aboutModal.style.display !== 'none';
+                if (isVisible) {
+                    aboutModal.style.display = 'none';
+                }
+            }
+        });
     }
 });

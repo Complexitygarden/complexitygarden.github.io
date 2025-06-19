@@ -248,6 +248,60 @@ $(document).ready(function(){
     adjustDropdownWidth();
     $(window).on('resize', adjustDropdownWidth);
     searchBar.on('focus', adjustDropdownWidth);
+
+    /* =====================
+       Auto-open search on typing
+       ===================== */
+    $(document).on('keydown', function(event) {
+        // Ignore if any modifier keys are pressed
+        if (event.ctrlKey || event.metaKey || event.altKey) {
+            return;
+        }
+
+        // Only trigger for single printable characters (letters / digits)
+        if (event.key.length !== 1 || !/[a-zA-Z0-9]/.test(event.key)) {
+            return;
+        }
+
+        // Ignore typing when about is open or we are already in the search bar
+        const aboutModal = document.getElementById('about-modal-overlay');
+        const aboutModalOpen = aboutModal && aboutModal.style.display !== 'none';
+
+        const active = document.activeElement;
+        const inputFocused = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable);
+
+        if (aboutModalOpen || inputFocused) {
+            return;
+        }
+
+        // If the search is already active, let the normal flow happen
+        if (body.hasClass('search-active')) {
+            return;
+        }
+
+        // Prevent default so the key doesn't get typed elsewhere
+        event.preventDefault();
+
+        const typedChar = event.key;
+
+        if (isMobileView()) {
+            // Open full-screen search on mobile
+            openMobileSearch();
+        } else {
+            // Activate desktop search overlay
+            body.addClass('search-active');
+        }
+
+        // Insert the typed character and focus the search bar
+        searchBar.val(typedChar);
+        searchBar.focus();
+
+        // Ensure dropdown width is correct and results are updated
+        if (typeof adjustDropdownWidth === 'function') {
+            adjustDropdownWidth();
+        }
+        search_vals(typedChar);
+    });
 });
 
 function search_vals(query) {
