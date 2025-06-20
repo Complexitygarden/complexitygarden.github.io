@@ -33,5 +33,15 @@
     "id": "feature-venn-diagram",
     "text": "Venn Diagram Visualisation",
     "completed": false
+  },
+  {
+    "id": "feature-oracle-classes",
+    "text": "Expand Oracle Class Queries with A^B Support",
+    "completed": false
+  },
+  {
+    "id": "feature-if-else-query",
+    "text": "If A is in B, then what follows?",
+    "completed": false
   }
 ]
