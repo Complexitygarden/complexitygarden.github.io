@@ -40,6 +40,11 @@
     "completed": false
   },
   {
+    "id": "feature-oracle-separation",
+    "text": "Add oracle separations",
+    "completed": false
+  },
+  {
     "id": "feature-if-else-query",
     "text": "If A is in B, then what follows?",
     "completed": false
