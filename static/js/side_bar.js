@@ -303,8 +303,9 @@ function toggleGravity(checkbox) {
         setTimeout(() => {
             simulation.alphaTarget(0);
         }, 20);
-        
-        // trackSettingsChange("Gravity", "Enabled");
+        // Uncheck forces checkbox if present
+        var forceChk = document.querySelector('input[onclick="toggleForces(this)"]');
+        if(forceChk) forceChk.checked = false;
     } else {
         // Fix all nodes in their current positions
         simulation.nodes().forEach(node => {
@@ -318,9 +319,20 @@ function toggleGravity(checkbox) {
         simulation.force("charge_force", null);
         simulation.force("center_force", null);
         simulation.alpha(1).restart();
-        // trackSettingsChange("Gravity", "Disabled");
     }
 }
+
+// Forces toggle - enables neighbour spring forces and disables gravity
+function toggleForces(cb){
+    window.forcesEnabled = cb.checked;
+    if(cb.checked){
+        window.gravityEnabled = false;
+        // Uncheck gravity checkbox if present
+        var gravChk = document.querySelector('input[onclick="toggleGravity(this)"]');
+        if(gravChk) gravChk.checked = false;
+    }
+    draw_graph();
+} 
 
 function redrawVisualization() {
     // Clear the existing visualization

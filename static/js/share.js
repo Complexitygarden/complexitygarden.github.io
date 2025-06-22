@@ -45,6 +45,32 @@ function generateShareableURL() {
     return shareURL;
 }
 
+// Function to update the browser address bar with the current configuration
+// If addToHistory is true, the change will create a new history entry (pushState). Otherwise, it
+// will simply replace the current entry (replaceState) so that the back-button behaviour remains intuitive.
+function updateURLWithConfig(addToHistory = false) {
+    try {
+        const encodedConfig = encodeConfiguration();
+        if (!encodedConfig) {
+            return; // Nothing to update
+        }
+
+        const baseURL = window.location.origin + window.location.pathname;
+        const newURL = `${baseURL}?config=${encodedConfig}`;
+
+        if (addToHistory) {
+            window.history.pushState({}, '', newURL);
+        } else {
+            window.history.replaceState({}, '', newURL);
+        }
+    } catch (error) {
+        console.error('Error updating URL with configuration:', error);
+    }
+}
+
+// Expose the helper globally so other modules (e.g. networkProcessor) can trigger URL updates.
+window.updateURLWithConfig = updateURLWithConfig;
+
 // Function to copy text to clipboard
 async function copyToClipboard(text) {
     try {

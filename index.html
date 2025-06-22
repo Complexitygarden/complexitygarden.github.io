@@ -105,6 +105,12 @@
                         </li>
                         <li class="leftSidebarMenuInner_sub_li">
                             <div class="settings-item">
+                                <span>Forces</span>
+                                <input type="checkbox" class="settings-checkbox" onclick="toggleForces(this)">
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
                                 <button onclick="redrawVisualization()" class="settings-button">Redraw</button>
                             </div>
                         </li>
@@ -123,6 +129,10 @@
                             </div>
                         </li>
                     </ul>
+                </li>
+                <!-- Export to LaTeX menu item -->
+                <li class="leftSidebarMenuInner_li">
+                    <a href="#" id="export-latex-link">Export to LaTeX (Experimental)</a>
                 </li>
                 <!-- References menu item -->
                 <li class="leftSidebarMenuInner_li">
@@ -186,14 +196,15 @@
         <!-- Load scripts in correct order -->
         <script src="../static/js/utils.js?v=1.001"></script>
         <script src="../static/js/display_references.js"></script>
-        <script src="../static/js/networkProcessor.js?v=1.004"></script>
+        <script src="../static/js/networkProcessor.js?v=1.005"></script>
         <script src="../static/js/visual_objects.js"></script>
-        <script src="../static/js/main_vis.js?v=1.003"></script>
+        <script src="../static/js/main_vis.js?v=1.004"></script>
         <script src="../static/js/graph.js?v=1.001"></script>
         <script src="../static/js/sunburst.js"></script>
         <script src="../static/js/search_bar.js"></script>
+        <script src="../static/js/latex.js"></script>
         <script src="../static/js/side_bar.js"></script>
         <script src="../static/js/about.js"></script>
-        <script src="../static/js/share.js"></script>
+        <script src="../static/js/share.js?v=1.001"></script>
     </body>
 </html>

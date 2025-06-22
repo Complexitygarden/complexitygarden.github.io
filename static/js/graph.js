@@ -5,6 +5,9 @@
 var graph_drawn = false,// Indicator whether the graph has been drawn
     click_timeout = null;// Timeout for click events - prevents counting double clicks as single clicks and double clicks simultaneously
 var nodeMenuDiv = null; // Currently open node context-menu element
+var rotationIntervals = []; // Holds d3.interval handlers for rotating equal-class labels
+var prevNodeNames = new Set(); // Track nodes that were already visualised to animate colour of newly added ones
+var pendingColorTransitions = []; // stores {sel, level} for nodes awaiting search close
 
 // Sizes
 // Note: In the future this should change to adjust for a device
@@ -20,6 +23,7 @@ var radius = 50,
 
 // User settings
 window.gravityEnabled = false; // Whether location is adjusted by gravity
+window.forcesEnabled = false; // New setting: spring forces to neighbours
 
 // Function to position tooltips - simplified
 function positionTooltip(tooltip, d) {
@@ -39,16 +43,16 @@ function positionTooltip(tooltip, d) {
 
 // Updating the key variables about the graph based on the width
 function update_graph_values(width, height){
-    console.log("Updating graph values");
-    console.log("Width: " + width);
+    // console.log("Updating graph values");
+    // console.log("Width: " + width);
     if (width < 600) {
-        console.log("Small screen");
+        // console.log("Small screen");
         radius = width / 3;
     } else if (width < 800) {
-        console.log("Medium screen");
+        // console.log("Medium screen");
         radius = width / 4;
     } else {
-        console.log("Large screen");
+        // console.log("Large screen");
         radius = width / 8;
     }
     strength = (-250)*radius,
@@ -109,6 +113,9 @@ function delete_old_graph(){
             simulation.force("collision", null);
         }
         
+        rotationIntervals.forEach(function(i){ i.stop(); });
+        rotationIntervals = [];
+        
         // Clear references
         node = null;
         link = null;
@@ -140,6 +147,9 @@ function draw_graph(){
     const data = networkProcessor.getTrimmedNetworkJson();
     console.log("Graph data:", data);
 
+    // Mark new nodes (not present in previous render)
+    data.nodes.forEach(n => { n.isNew = !prevNodeNames.has(n.name); });
+
     // Find the root node (node with only incoming edges) and top node (node with only outgoing edges)
     console.log(data);
     nodeCount = data.nodes.length;
@@ -163,7 +173,15 @@ function draw_graph(){
                                                : Math.random() * window.innerWidth);
         node.y = (Number.isFinite(node.savedY) ? node.savedY * window.innerHeight
                                                : Math.random() * window.innerHeight);
-        if (window.gravityEnabled){
+        if (window.forcesEnabled){
+            if (node.name in data.root_nodes || node.name in data.top_nodes){
+                node.fx = node.x;
+                node.fy = node.y;
+            } else {
+                node.fx = null;
+                node.fy = null;
+            }
+        } else if (window.gravityEnabled){
             if (node.name in data.root_nodes){
                 node.y = -5000;
                 node.fx = node.x;
@@ -173,8 +191,7 @@ function draw_graph(){
                 node.fx = node.x;
                 node.fy = node.y;
             }
-        }
-        if (window.gravityEnabled === false){
+        } else {
             node.fx = node.x;
             node.fy = node.y;
         }
@@ -189,7 +206,16 @@ function draw_graph(){
         .strength(1);
 
     // Setting the simulation
-    if (window.gravityEnabled){
+    if (window.forcesEnabled){
+        let repulsion = -Math.max(200, radius*10);
+        simulation
+            .force("charge_force", d3.forceManyBody().strength(repulsion))
+            .force("center_force", null)
+            .force("links", link_force)
+            .force("collision", d3.forceCollide().radius(radius * 2))
+            .alpha(1)
+            .restart();
+    } else if (window.gravityEnabled){
         // Setting the strength of the force based on the number of nodes
         let adjustedStrength = data.nodes.length <= 5 ? 5*strength : strength;
         simulation
@@ -208,11 +234,18 @@ function draw_graph(){
             .restart();  // Restart the simulation
     }
 
+    // Re-fix root and top nodes (important after forces set)
+    if (window.forcesEnabled){
+        simulation.nodes().forEach(function(n){
+            if (isRootOrTop(n.name)){
+                n.fx = n.x;
+                n.fy = n.y;
+            }
+        });
+    }
+
     // Adding tick actions
     simulation.on("tick", tickActions);
-
-    // Returning the label
-    function nodeLabel(d){return d.latex_name}
 
     // Layers - Created in their order from behind to the front
     layer1 = vis_svg.append("g");
@@ -360,10 +393,50 @@ function draw_graph(){
         // Adding the circle
         nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", d => colorScale(d.level))
+            .attr("fill", d => d.isNew ? "#a11f1f" : colorScale(d.level))
             .attr("stroke", "none")
-            .attr("stroke-width", 3);
+            .attr("stroke-width", 3)
+            .each(function(d){
+                if(d.isNew){
+                    var circleSel = d3.select(this);
+                    var body = document.body;
+                    var searchOpen = body.classList.contains('search-active') || body.classList.contains('mobile-search-open');
+                    if (searchOpen) {
+                        // defer transition until search closes
+                        pendingColorTransitions.push({sel: circleSel, level: d.level});
+                    } else {
+                        // wait for 1 second before starting the transition
+                        setTimeout(function() {
+                            circleSel.transition().duration(1500).attr('fill', colorScale(d.level));
+                        }, 1500);
+                    }
+                }
+            });
     
+        // REPLACE placeholder with visual (non-interactive) plus button indicator
+        nodeGroups.append("g")
+            .attr("class", "equal-classes-button")
+            .attr("transform", `translate(${-0.7*radius}, ${-0.7*radius})`)
+            .style("display", d => d.equal_classes && d.equal_classes.length > 0 ? "block" : "none")
+            .style("pointer-events", "none") // disable all interactions
+            .each(function() {
+                const g = d3.select(this);
+                // Background circle
+                g.append("circle")
+                    .attr("r", radius/6)
+                    .attr("fill", "#3182CE")
+                    .attr("stroke", "#fff")
+                    .attr("stroke-width", 1);
+                // Plus sign
+                g.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", "0.35em")
+                    .style("fill", "#fff")
+                    .style("font-size", `${radius/4}px`)
+                    .style("pointer-events", "none")
+                    .text("+");
+            });
+
         // Adding a label on the circle
         if (typeof isSafari !== "undefined" && isSafari) {
             // Safari: Use MathJax with SVG output
@@ -444,28 +517,40 @@ function draw_graph(){
                 .style("height", "100%")
                 .style("pointer-events", "none")
                 .each(function(d) {
-                    // console.log("Not safari")
-                    try {
-                        const tempDiv = document.createElement('div');
-                        tempDiv.style.position = 'absolute';
-                        tempDiv.style.visibility = 'hidden';
-                        tempDiv.style.fontSize = `${fontSize}px`;
-                        document.body.appendChild(tempDiv);
+                    // Helper: render KaTeX and fit width for the given latex string
+                    function renderLatexAndFit(targetEl, latexStr) {
+                        try {
+                            targetEl.innerHTML = ""; // clear previous
+                            targetEl.style.fontSize = `${fontSize}px`;
 
-                        renderKaTeX(d.latex_name, tempDiv, window.katexOptions);
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.position = 'absolute';
+                            tempDiv.style.visibility = 'hidden';
+                            tempDiv.style.fontSize = `${fontSize}px`;
+                            document.body.appendChild(tempDiv);
+                            renderKaTeX(latexStr, tempDiv, window.katexOptions);
+                            const textWidth = tempDiv.offsetWidth;
+                            document.body.removeChild(tempDiv);
 
-                        const textWidth = tempDiv.offsetWidth;
-                        document.body.removeChild(tempDiv);
+                            renderKaTeX(latexStr, targetEl, window.katexOptions);
 
-                        renderKaTeX(d.latex_name, this, window.katexOptions);
-
-                        if (textWidth > radius * 1.5) {
-                            this.style.fontSize = `${fontSize * 0.7}px`;
-                            renderKaTeX(d.latex_name, this, window.katexOptions);
+                            if (textWidth > radius * 1.5) {
+                                targetEl.style.fontSize = `${fontSize * 0.7}px`;
+                                renderKaTeX(latexStr, targetEl, window.katexOptions);
+                            }
+                        } catch (e) {
+                            console.error('KaTeX rendering error:', e);
+                            targetEl.textContent = latexStr;
                         }
-                    } catch (e) {
-                        console.error('KaTeX rendering error:', e);
-                        this.textContent = d.latex_name;
+                    }
+
+                    // INITIAL RENDER
+                    renderLatexAndFit(this, d.latex_name);
+
+                    // ADD: start rotating between equal classes (if any)
+                    if (d.equal_classes && d.equal_classes.length > 0) {
+                        // Pass helper into rotation closure
+                        setupLabelRotation(d3.select(this), [d].concat(d.equal_classes), renderLatexAndFit);
                     }
                 });
         }
@@ -496,29 +581,25 @@ function draw_graph(){
             .style("pointer-events", "none")
             .text("×");
 
-        // Add equal classes button (plus button)
-        nodeGroups.append("g")
-            .attr("class", "equal-classes-button")
-            .attr("data-node-id", d => d.name)
-            .attr("transform", `translate(${-0.7*radius}, ${-0.7*radius})`)
-            .style("display", d => d.equal_classes && d.equal_classes.length > 0 ? "block" : "none")
-            .style("cursor", "pointer")
-            .append("circle")
-            .attr("r", radius/6)
-            .attr("fill", "#3182CE")
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1);
-
-        // Add plus symbol to equal classes button
-        nodeGroups.select(".equal-classes-button")
-            .append("text")
-            .attr("class", "equal-classes-symbol")
-            .attr("text-anchor", "middle")
-            .attr("dy", "0.35em")
-            .style("fill", "#fff")
-            .style("font-size", `${radius/4}px`)
-            .style("pointer-events", "none")
-            .text("+");
+        // Helper: rotates the label among equal classes with fade-out / fade-in
+        function setupLabelRotation(labelSelection, classCycle, renderHelper) {
+            if (!classCycle || classCycle.length <= 1) return; // nothing to rotate
+            var idx = 0;
+            labelSelection.style("opacity", 1);
+            var interval = d3.interval(function() {
+                idx = (idx + 1) % classCycle.length;
+                var nextClass = classCycle[idx];
+                labelSelection.transition().duration(500).style("opacity", 0)
+                    .on("end", function() {
+                        // Use the provided render helper for proper sizing
+                        if (renderHelper) {
+                            renderHelper(this, nextClass.latex_name);
+                        }
+                        d3.select(this).transition().duration(500).style("opacity", 1);
+                    });
+            }, 3000); // rotate every 3 seconds
+            rotationIntervals.push(interval);
+        }
 
         // Function to show the equal classes tooltip - simplified
         function showEqualClassesTooltip(d, buttonElement) {
@@ -654,23 +735,8 @@ function draw_graph(){
             }
         }
         
-        // Update the updatePinnedTooltips function - simplified
-        updatePinnedTooltips = function() {
-            if (!nodeGroups) return;
-            
-            // Find all pinned buttons
-            var pinnedButtons = nodeGroups.filter(function(d) {
-                return d3.select(this).select(".equal-classes-button").classed("pinned");
-            });
-            
-            // Update each pinned tooltip
-            pinnedButtons.each(function(d) {
-                var tooltip = d3.select(`.equal-classes-tooltip[data-node-id="${d.name}"]`);
-                if (!tooltip.empty()) {
-                    positionTooltip(tooltip, d);
-                }
-            });
-        };
+        // Override updatePinnedTooltips to a safe no-op since equal-class buttons are now hidden
+        updatePinnedTooltips = function() { /* disabled with rotating label implementation */ };
         
         // Add the updatePinnedTooltips function to the zoom event
         var originalZoomHandler = zoom.on("zoom");
@@ -766,14 +832,19 @@ function draw_graph(){
     
     function drag_end(d) {
         if (!d3.event.active) simulation.alphaTarget(0);
-        if (!window.gravityEnabled) {
-            // If gravity is off, keep the node fixed at its new position
+        if (window.gravityEnabled) {
+            // gravity mode keeps nodes fixed when gravity disabled? already handled elsewhere
             d.fx = d.x;
             d.fy = d.y;
+        } else if (window.forcesEnabled) {
+            // let it float under forces
+            if (!isRootOrTop(d.name)){
+                d.fx = null;
+                d.fy = null;
+            }
         } else {
-            // If gravity is on, let it float freely
-            d.fx = null;
-            d.fy = null;
+            d.fx = d.x;
+            d.fy = d.y;
         }
     }
 
@@ -1082,6 +1153,15 @@ function draw_graph(){
     }
     
     graph_drawn = 1;
+    // Update set of previously visualised nodes
+    var body = document.body;
+    var searchOpenNow = body.classList.contains('search-active') || body.classList.contains('mobile-search-open');
+    if (searchOpenNow) {
+        // Only add nodes that were not freshly created (isNew false)
+        data.nodes.forEach(function(n){ if(!n.isNew){ prevNodeNames.add(n.name);} });
+    } else {
+        prevNodeNames = new Set(data.nodes.map(n => n.name));
+    }
 
     // Make delete/expand utilities accessible to the context menu
     window.expandNodeRef = function(className) {
@@ -1091,6 +1171,12 @@ function draw_graph(){
     window.expandEdgeRef = function(sourceClass, targetClass) {
          expand(sourceClass, targetClass, true);
     };
+
+    // Helper to check if node is root or top
+    function isRootOrTop(name){
+        return (Array.isArray(data.root_nodes) && data.root_nodes.includes(name)) ||
+               (Array.isArray(data.top_nodes)  && data.top_nodes.includes(name));
+    }
 }
 
 // ===== Helper functions for node context menu =====
@@ -1118,21 +1204,43 @@ function showNodeMenu(d, pageX, pageY) {
         .style("padding", "4px 0")
         .style("z-index", "10000");
 
+    // Build menu options dynamically
+    var hasEquals = d.equal_classes && d.equal_classes.length > 0;
     var options = [
-        { label: "Expand",      action: function() { hideNodeMenu(); if (window.expandNodeRef) { window.expandNodeRef(d.name); } } },
-        { label: "Remove",      action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } },
-        { label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } }
+        { type:"text", label: "Expand", action: function() { hideNodeMenu(); if (window.expandNodeRef) { window.expandNodeRef(d.name); } } },
+        { type:"text", label: "Remove", action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } }
     ];
 
+    // Main description entry
+    if (hasEquals) {
+        options.push({ type:"latex", latex: d.latex_name, suffix: ": Description", action: function() { hideNodeMenu(); open_side_window(d); } });
+        d.equal_classes.forEach(function(eq) {
+            options.push({ type:"latex", latex: eq.latex_name, suffix: ": Description", action: function() { hideNodeMenu(); open_side_window(eq); } });
+        });
+    } else {
+        options.push({ type:"text", label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } });
+    }
+
     options.forEach(function(opt) {
-        nodeMenuDiv.append("div")
+        var row = nodeMenuDiv.append("div")
             .style("padding", "6px 16px")
             .style("cursor", "pointer")
             .style("font-family", "Arial, sans-serif")
-            .text(opt.label)
             .on("mouseover", function() { d3.select(this).style("background", "#f0f0f0"); })
             .on("mouseout", function() { d3.select(this).style("background", "transparent"); })
             .on("click", opt.action);
+
+        if (opt.type === "latex") {
+            var holder = row.append("span").node();
+            try {
+                renderKaTeX(opt.latex, holder, window.katexOptions);
+            } catch(e) {
+                row.append("span").text(opt.latex);
+            }
+            row.append("span").text(opt.suffix);
+        } else {
+            row.text(opt.label);
+        }
     });
 
     // Prevent clicks inside the menu from bubbling up and closing it immediately
@@ -1180,3 +1288,24 @@ function showEdgeMenu(linkData, pageX, pageY) {
     nodeMenuDiv.on("click", function() { d3.event.stopPropagation(); });
 }
 // ==================================================
+
+// Observe changes to body class list to trigger pending transitions when search closes
+if (typeof MutationObserver !== 'undefined') {
+    var bodyObserver = new MutationObserver(function(mutations) {
+        mutations.forEach(function(m) {
+            if (m.attributeName === 'class') {
+                var body = document.body;
+                var searchOpen = body.classList.contains('search-active') || body.classList.contains('mobile-search-open');
+                if (!searchOpen && pendingColorTransitions.length > 0) {
+                    // Launch pending transitions
+                    pendingColorTransitions.forEach(function(item) {
+                        item.sel.transition().duration(1500).attr('fill', colorScale(item.level));
+                        prevNodeNames.add(item.sel.datum().name); // mark as visualised
+                    });
+                    pendingColorTransitions = [];
+                }
+            }
+        });
+    });
+    bodyObserver.observe(document.body, { attributes: true });
+}

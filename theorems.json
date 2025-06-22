@@ -427,6 +427,11 @@
             "type":"containment",
             "small":"coNP",
             "large":"Pi2"
+        },
+        {
+            "type":"containment",
+            "small":"coNP",
+            "large":"BPPPath"
         }
     ]
 }

@@ -378,6 +378,11 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle .i-circle 
     border-radius: 0;
 }
 
+/* Align the entire icon vertically when sidebar is open */
+input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle {
+    top: 38px;
+}
+
 input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle .i-circle::before {
     width: 22px;
     height: 3px;
@@ -1427,6 +1432,10 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     /* keep each row starting at the very left */
     body.mobile-search-open .search-dropdown li {
         padding-left: 0;
+    }
+
+    input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle {
+        top: 51px !important;
     }
 }
 

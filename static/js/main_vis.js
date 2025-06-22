@@ -65,9 +65,9 @@ async function initializeVisualization() {
                         }, 100);
                     }
                     
-                    // Clean up URL to remove the config parameter
-                    const newURL = window.location.origin + window.location.pathname;
-                    window.history.replaceState({}, document.title, newURL);
+                    // Keep config parameter in URL to allow bookmarking of the current configuration
+                    // const newURL = window.location.origin + window.location.pathname;
+                    // window.history.replaceState({}, document.title, newURL);
                 } else {
                     // Fall back to default classes if no shared classes were valid
                     selectDefaultClasses();
@@ -119,14 +119,6 @@ function create_visualisation() {
         draw_graph();
     } else if (vis_type === 'sunburst') {
         draw_sunburst();
-    }
-}
-
-// Toggle gravity
-function toggleGravity(checkbox) {
-    gravity = checkbox.checked;
-    if (vis_type === 'graph') {
-        create_visualisation();
     }
 }
 

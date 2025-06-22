@@ -1,5 +1,10 @@
 [
   {
+    "id": "feature-share-link",
+    "text": "Ability to share the current configuration by clicking the share button or copying the URL.",
+    "completed": true
+  },
+  {
     "id": "feature-class-descriptions",
     "text": "Write class descriptions.",
     "completed": false

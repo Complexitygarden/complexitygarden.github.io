@@ -56,12 +56,12 @@ $(document).ready(function(){
         });
 
         // Show all classes initially for easier selection
-        console.log('openMobileSearch: calling search_vals');
+        // console.log('openMobileSearch: calling search_vals');
         search_vals('');
         
         // Fallback: try again after a short delay if networkProcessor wasn't ready
         setTimeout(function() {
-            console.log('openMobileSearch: fallback search_vals call');
+            // console.log('openMobileSearch: fallback search_vals call');
             search_vals('');
         }, 100);
         
@@ -305,7 +305,7 @@ $(document).ready(function(){
 });
 
 function search_vals(query) {
-    console.log('search_vals called with query:', query);
+    // console.log('search_vals called with query:', query);
     
     if (!window.networkProcessor) {
         console.error('NetworkProcessor not found on window object');
@@ -323,7 +323,7 @@ function search_vals(query) {
         console.error('Search results element not found');
         return;
     }
-    console.log('Found search results element:', searchResults);
+    // console.log('Found search results element:', searchResults);
 
     try {
         // Get all classes from network processor
@@ -393,7 +393,7 @@ function search_vals(query) {
 
         // Clear previous results
         searchResults.innerHTML = '';
-        console.log('Cleared previous search results');
+        // console.log('Cleared previous search results');
 
         // Add filtered classes to results
         filteredClasses.forEach(d => {
@@ -462,36 +462,34 @@ function handleClassSelection(checkbox) {
 }
 
 function select_top_search_result() {
-    console.log('select_top_search_result called');
+    // console.log('select_top_search_result called');
     
     const searchResults = document.getElementById('complexity_class_search_results');
     if (!searchResults) {
         console.error('Search results element not found');
         return;
     }
-    console.log('Found search results element:', searchResults);
+    // console.log('Found search results element:', searchResults);
 
     const firstResult = searchResults.querySelector('li:first-child');
     console.log('First result element:', firstResult);
 
     if (firstResult) {
         const checkbox = firstResult.querySelector('input[type="checkbox"]');
-        console.log('Found checkbox:', checkbox);
+        // console.log('Found checkbox:', checkbox);
 
         if (checkbox) {
-            console.log('Current checkbox state:', checkbox.checked);
+            // console.log('Current checkbox state:', checkbox.checked);
             checkbox.checked = !checkbox.checked;
-            console.log('New checkbox state:', checkbox.checked);
+            // console.log('New checkbox state:', checkbox.checked);
             
             // Create and dispatch a change event to trigger handleClassSelection
             const event = new Event('change', { bubbles: true });
             checkbox.dispatchEvent(event);
-            console.log('Dispatched change event');
+            // console.log('Dispatched change event');
         } else {
             console.error('No checkbox found in first result');
         }
-    } else {
-        console.error('No search results found');
     }
 }
 
@@ -545,6 +543,7 @@ function select_class_list(class_list, select){
     });
 }
 
+// Deleting a class from the visualisation
 function delete_class(class_name){
     fetch(`/delete_class?class_name=${class_name.toUpperCase()}`)
         .then(response => response.json())
@@ -556,32 +555,3 @@ function delete_class(class_name){
             }
         });
 }
-
-function ajaxRequest(inp) {
-    console.log(inp);
-    var checked = document.getElementById(inp.id).checked;
-    console.log("Sending data to the server that the checkbox is", checked);
-    if (checked) {
-       checked = 1;
-    } else {
-       checked = 0;
-    }
- 
- 
-    // Use the XMLHttpRequest API
-    const xhttp = new XMLHttpRequest();
-    xhttp.onload = function() {
-      console.log("Result sent to server!");
-    }
-    xhttp.open("POST", "/searchresults", true);
-    xhttp.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    xhttp.onreadystatechange=function()
-    {
-      if(xhttp.readyState==4 && xhttp.status == 200)
-      {
-         // We changed the graph -> redrawing it
-        create_visualisation();
-      }
-    }
-    xhttp.send("name=" + inp.id + "&checked=" +checked);
-  }

@@ -212,6 +212,11 @@ class NetworkProcessor {
         }
         if (this.classes.has(name)) {
             this.selectedClasses.add(name);
+
+            // Update URL with the new selection so the state can be bookmarked
+            if (this.updateLocation && typeof window.updateURLWithConfig === 'function') {
+                window.updateURLWithConfig();
+            }
         } else {
             // console.warn('Class not found:', name);
         }
@@ -222,7 +227,12 @@ class NetworkProcessor {
             // console.warn('NetworkProcessor not initialized');
             return;
         }
-        this.selectedClasses.delete(name);
+        const existed = this.selectedClasses.delete(name);
+
+        // Only update the URL if something actually changed to avoid unnecessary history churn
+        if (existed && this.updateLocation && typeof window.updateURLWithConfig === 'function') {
+            window.updateURLWithConfig();
+        }
     }
 
     getSelectedClasses() {
@@ -585,7 +595,7 @@ class NetworkProcessor {
         const nodes = [];
         const links = [];
 
-        var x_scale = (1 + (this.maxAvgLevel + 1) / 10)/3000;
+        var x_scale = (1 + (this.maxAvgLevel + 1) / 25)/3000;
 
         for (const className of processedClassList) {
             const classData = this.classes.get(className);
