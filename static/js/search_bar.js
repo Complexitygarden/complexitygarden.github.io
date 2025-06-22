@@ -101,6 +101,27 @@ $(document).ready(function(){
         }
     });
 
+    /* ================= Filter dropdown toggle ================= */
+    filterButton.on('click', function(event){
+        event.stopPropagation();
+        const dropdown = $(this).siblings('.filter-dropdown');
+        // Toggle visibility explicitly (works on mobile where :hover has no effect)
+        if (dropdown.is(':visible')){
+            dropdown.hide();
+        } else {
+            // Close any other open dropdowns first
+            $('.filter-dropdown').hide();
+            dropdown.show();
+        }
+    });
+
+    // Hide the filter dropdown when clicking outside of it
+    $(document).on('click', function(event){
+        if (!$(event.target).closest('.filter-container').length){
+            $('.filter-dropdown').hide();
+        }
+    });
+
     // Exit button closes the full-screen search on mobile
     exitButton.on('click', function(){
         if ($('body').hasClass('mobile-search-open')){

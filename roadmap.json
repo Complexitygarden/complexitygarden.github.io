@@ -5,6 +5,16 @@
     "completed": true
   },
   {
+    "id": "feature-export-latex",
+    "text": "Exporting to LaTeX",
+    "completed": true
+  },
+  {
+    "id": "feature-mobile-version",
+    "text": "Improve mobile version",
+    "completed": true
+  },
+  {
     "id": "feature-class-descriptions",
     "text": "Write class descriptions.",
     "completed": false
@@ -12,16 +22,6 @@
   {
     "id": "feature-add-classes",
     "text": "Add more complexity classes.",
-    "completed": false
-  },
-  {
-    "id": "feature-mobile-version",
-    "text": "Improve mobile version",
-    "completed": false
-  },
-  {
-    "id": "feature-export-latex",
-    "text": "Exporting to LaTeX",
     "completed": false
   },
   {
