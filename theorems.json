@@ -437,6 +437,66 @@
             "type":"containment",
             "small":"coNP",
             "large":"BPPPath"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/poly",
+            "large":"QCMA/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA",
+            "large":"QCMA/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA/poly",
+            "large":"QCMA/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"BQP/qpoly",
+            "large":"QCMA/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"QCMA/qpoly",
+            "large":"QMA/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QMA",
+            "large":"QMA/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QMA/poly",
+            "large":"QMA/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"QMA/poly",
+            "large":"PP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"PP",
+            "large":"PP/poly"
+        },
+        {
+            "type":"containment",
+            "small":"QMA/qpoly",
+            "large":"PSPACE/poly"
+        },
+        {
+            "type":"containment",
+            "small":"PP/poly",
+            "large":"PSPACE/poly"
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE/poly",
+            "b":"BQPSPACE/qpoly"
         }
     ]
 }
