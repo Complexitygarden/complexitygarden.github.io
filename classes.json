@@ -363,7 +363,7 @@
             "description":"Complement of $\\mathsf{NP}$",
             "information":"The class of decision problems for which 'no' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'no' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'yes' instance, then the verifier rejects for all proofs. </li></ul>",
             "coClass": "NP"
-        }
+        },
         "QCMA/poly":{
             "name":"QCMA/poly",
             "latex_name":"\\mathsf{QCMA/poly}",
