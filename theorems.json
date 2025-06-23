@@ -494,6 +494,11 @@
             "large":"PSPACE/poly"
         },
         {
+            "type":"containment",
+            "small":"PSPACE",
+            "large":"PSPACE/poly"
+        },
+        {
             "type":"equality",
             "a":"PSPACE/poly",
             "b":"BQPSPACE/qpoly"
