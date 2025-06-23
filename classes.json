@@ -5,20 +5,20 @@
             "latex_name": "\\mathsf{ALL}",
             "top": true,
             "description": "The class of all languages.",
-            "information": "$\\mathsf{ALL}$ is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to $\\mathsf{ALL}$, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
+            "information": "ALL is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to ALL, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
         },
         "NONE": {
             "name": "NONE",
             "latex_name": "\\mathsf{NONE}",
             "bottom": true,
             "description": "The class of no languages.",
-            "information": "The 'empty set' of complexity theory, $\\mathsf{NONE}$ contains no languages but is not equal to the complement of $\\mathsf{ALL}$ since $\\mathsf{coALL}$ $=$ $\\mathsf{ALL}$."
+            "information": "The 'empty set' of complexity theory, NONE contains no languages but is not equal to the complement of ALL since $\\mathsf{coALL} = ALL$ ."
         },
         "PP": {
             "name": "PP",
             "latex_name": "\\mathsf{PP}",
             "description": "Probabilistic Polynomial Time",
-            "information": "The class of decision problems solvable by an $\\mathsf{NP}$ machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
+            "information": "The class of decision problems solvable by an NP machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
         },
         "QMA": {
             "name": "QMA",
@@ -36,7 +36,7 @@
             "name": "PDQP",
             "latex_name": "\\mathsf{PDQP}",
             "description": "Polynomial Dynamical Quantum Polynomial Time",
-            "information": "Generalization of $\\mathsf{BQP}$ where the machine is allowed to perform measurements without collapsing the wavefunction. Defined in [ABFL16]. <br> $\\mathsf{PDQP}$ may perform unordered search faster than $\\mathsf{BQP}$ and contains $\\mathsf{SZK}$."
+            "information": "Generalization of BQP where the machine is allowed to perform measurements without collapsing the wavefunction. Defined in [ABFL16]. <br> PDQP may perform unordered search faster than BQP and contains SZK."
         },
         "P": {
             "name": "P",
@@ -85,7 +85,7 @@
             "name": "DQP",
             "latex_name": "\\mathsf{DQP}",
             "description": "Dynamical Quantum Polynomial-Time",
-            "information": "test DQP"
+            "information": "The class of problems solvable by a quantum computer with access to a dynamical simulator. The simulator provides a sample from the probability distribution of all possible classical histories that (sequences of measurement outcomes) that could arise from running a given quantum circuit. Proposed to explore the power of hidden-variable quantum models."
         },
         "L": {
             "name": "L",
@@ -97,19 +97,19 @@
             "name": "NL",
             "latex_name": "\\mathsf{NL}",
             "description": "Non-deterministic Logarithmic Space",
-            "information": "The Non-deterministic version of $\\mathsf{L}$."
+            "information": "The Non-deterministic version of L."
         },
         "MA":{
             "name": "MA",
             "latex_name": "\\mathsf{MA}",
             "description": "Merlin-Arthur",
-            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of $\\mathsf{NP}$. Similar to $\\mathsf{AM}$, except Arthur does not send a question to Merlin and Merlin simply provides a \"proof\"."
+            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP. Similar to AM, except Arthur does not send a question to Merlin and Merlin simply provides a \"proof\"."
         },
         "AM": {
             "name": "AM",
             "latex_name": "\\mathsf{AM}",
             "description": "Arthur-Merlin",
-            "information": "Class of decision problems solvable by a Arthur-Merlin protocol. In this protocol, Arthur, a $\\mathsf{BPP}$ machine, generates a \"question\" which he sends to Merlin, an all-powerful being. Merlin sends back a response which Arthur uses to decide the answer. If the answer is 'yes', then Arthur accepts with probability at least 2/3. If the answer is 'no', then Arthur rejects with probability at least 2/3."
+            "information": "Class of decision problems solvable by a Arthur-Merlin protocol. In this protocol, Arthur, a BPP machine, generates a \"question\" which he sends to Merlin, an all-powerful being. Merlin sends back a response which Arthur uses to decide the answer. If the answer is 'yes', then Arthur accepts with probability at least 2/3. If the answer is 'no', then Arthur rejects with probability at least 2/3."
         },
         "QMA(2)": {
             "name": "QMA(2)",
@@ -121,7 +121,7 @@
             "name": "NEXP",
             "latex_name": "\\mathsf{NEXP}",
             "description": "Non-deterministic Exponential Time",
-            "information": "test NEXP"
+            "information": "The class of languages decidable by a non-deterministic Turing machine in time $2^{p(n)}$ for some polynomial p."
         },
         "RE":{
             "name": "RE",
@@ -133,91 +133,91 @@
             "name": "A0PP",
             "latex_name": "\\mathsf{A_{0}PP}",
             "description": "One-Sided Analog of AWPP",
-            "information": "test A0PP"
+            "information": "A class defined using the output of GapP functions with a one-sided gap: zero for 'no' instances and exponentially large for 'yes' instances."
         },
         "AWPP":{
             "name": "AWPP",
             "latex_name": "\\mathsf{AWPP}",
             "description": "Almost WPP",
-            "information": "test AWPP"
+            "information": "A class defined using the output of GapP functions with bounded acceptance probabilities."
         },
         "R":{
             "name": "R",
             "latex_name": "\\mathsf{R}",
             "description": "Recursive Languages",
-            "information": "test R"
+            "information": "The class of decision problems solvable by a Turing Machine. Defined in [Tur36] and [Chu41]."
         },
         "RP":{
             "name": "RP",
             "latex_name": "\\mathsf{RP}",
             "description": "Randomized Polynomial Time",
-            "information": "test RP"
+            "information": "The class of decision problems solvable by a probabilistic Turing machine in polynomial time such that if the answer is \"yes\", then the machine accepts with probability at least 1/2. If the answer is \"no\", the machine always rejects."
         },
         "ZPP":{
             "name": "ZPP",
             "latex_name": "\\mathsf{ZPP}",
             "description": "Zero-Error Probabilistic Polynomial Time",
-            "information": "test ZPP"
+            "information": "The class of decision problems solvable by a randomized algorithm that always gives the correct answer and runs in expected polynomial time. Guarantees zero error, unlike RP and BPP. "
         },
         "CH":{
             "name": "CH",
             "latex_name": "\\mathsf{CH}",
             "description": "Counting Hierarchy",
-            "information": "test CH"
+            "information": " The counting hierarchy is an analog of the polynomial hierarchy using PP instead of NP. The hierarchy is equivalent to a tower of PP oracles. For example $C_1H = PP$, $C_2H = PP^{PP}$, $C_3H = PP^{PP^{PP}}$ and so on. The class CH is the union over all of these."
         },
         "PH":{
             "name": "PH",
             "latex_name": "\\mathsf{PH}",
             "description": "Polynomial Hierarchy",
-            "information": "test PH"
+            "information": "A hierarchy of complexity classes that can be defined by applying a sequence of existential and universal quantifiers to a polynomial-time predicate. The hierarchy is equivalent to a tower of NP oracles with constant height - $NP^{NP^{NP^{...^{NP}}}}$. Includes coNP and levels like $\\mathsf{\\Sigma_{k}^{p}}$ and $\\mathsf{\\Pi_{k}^{p}}$."
         },
         "Sigma2":{
             "name": "Sigma2",
             "latex_name": "\\mathsf{\\Sigma_{2}^{p}}",
             "description": "NP with an NP oracle",
-            "information": "Together with $\\mathsf{\\Pi_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
+            "information": "Together with Pi2 comprises the second level of the polynomial hierarchy."
         },
         "Pi2":{
             "name": "Pi2",
             "latex_name": "\\mathsf{\\Pi_{2}^{p}}",
             "description": "co-NP with an NP oracle",
-            "information": "Together with $\\mathsf{\\Sigma_{2}^{p}}$ comprises the second level of the polynomial hierarchy."
+            "information": "Together with Sigma2 comprises the second level of the polynomial hierarchy."
         },
         "AC0":{
             "name":"AC0",
             "latex_name":"\\mathsf{AC^0}",
             "description":"The class of constant-depth, polynomial-size circuits with unbounded fan-in AND, OR, and NOT gates.",
-            "information":"test AC0"
+            "information":"The smallest class in the AC hierarchy. Consists of all families of circuits of constant depth and polynomial size, with unbounded fan-in AND, OR, and NOT gates. Integer addition and subtraction is computable in AC0, but multiplication is not."
         },
         "TC0":{
             "name":"TC0",
             "latex_name":"\\mathsf{TC^0}",
             "description":"The class of constant-depth, polynomial-size circuits with unbounded fan-in AND, OR, and MAJ (Majority) gates.",
-            "information":"test TC0"
+            "information":"The smallest class in the TC hierarchy. Consists of all families of circuits of constant depth polynomial size, with unbounded fan-in AND, OR, NOT, and MAJ (Majority) gates. Contains several problems like sorting n n-bit numbers, multiplying two n-bit integers, and integer division. Commonly used to model the computational complexity of bounded-depth neural networks. Strictly more powerful than AC0."
         },
         "NC0":{
             "name":"NC0",
             "latex_name":"\\mathsf{NC^0}",
             "description":"The class of constant-depth, polynomial-size circuits with binary AND, OR gates and unary NOT gates.",
-            "information":"test NC0"
+            "information":"The smallest class in the NC complexity class. Consists of all families of circuits of constant-depth, polynomial-size circuits with bounded fan-in AND, OR gates and NOT gates. Models extremely local computation."
         },
         "NC1":{
             "name":"NC1",
             "latex_name":"\\mathsf{NC^1}",
             "description":"The class of O(\\log (n)) depth, polynomial-size circuits with binary AND, OR gates and unary NOT gates.",
-            "information":"test NC1"
+            "information":"Like NC0, but allows depths O(logn) instead of constant depth. Can compute things like integer addition, balanced parenthesis checking, and regular expression matching."
         },
         "AC1":{
             "name":"AC1",
             "latex_name":"\\mathsf{AC^1}",
             "description":"The class of O(\\log (n)) depth, polynomial-size circuits with unbounded fan-in AND, OR, and NOT gates.",
-            "information":"test AC1"
+            "information":"Like AC0, but allows depths of O(logn) instead of constant depth."
         },
         "TC1":{
             "name":"TC1",
             "latex_name":"\\mathsf{TC^1}",
             "description":"The class of O(\\log (n)) depth, polynomial-size circuits with unbounded fan-in AND, OR, and MAJ (Majority) gates..",
-            "information":"test TC1"
+            "information":"Like TC0, but allows depths O(logn) instead of constant depth."
         },
         "CZK":{
             "name":"CZK",
@@ -235,7 +235,7 @@
             "name":"BQP/poly",
             "latex_name":"\\mathsf{BQP/poly}",
             "description":"BQP with polynomial advice",
-            "information":"The class of decision problems solvable by a $\\mathsf{BQP}$ machine with a polynomial-size advice string with probability at least $2/3$, even if the advice is bad."
+            "information":"The class of decision problems solvable by a BQP machine with a polynomial-size advice string with probability at least $2/3$, even if the advice is bad."
         },
         "BQP/qpoly":{
             "name":"BQP/qpoly",
@@ -247,19 +247,19 @@
             "name":"QCPH",
             "latex_name":"\\mathsf{QCPH}",
             "description":"Quantum-Classical Polynomial Hierarchy",
-            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
+            "information":"A generalization of PH where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
         },
         "QPH":{
             "name":"QPH",
             "latex_name":"\\mathsf{QPH}",
             "description":"Quantum Polynomial Hierarchy",
-            "information":"A generalization of $\\mathsf{PH}$ where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
+            "information":"A generalization of PH where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
         },
         "IP":{
             "name":"IP",
             "latex_name":"\\mathsf{IP}",
             "description":"Interactive Proof System",
-            "information":"test IP"
+            "information":"The class of problems solvable by an interactive proof system with a probabilistic polynomial time (BPP) verifier and an unbounded prover for a polynomial number of rounds. Equal to PSPACE [Sha92]."
         },
         "BPPPath":{
             "name":"BPPPath",
@@ -271,49 +271,49 @@
             "name":"MIP",
             "latex_name":"\\mathsf{MIP}",
             "description":"Multi-Prover Interactive Proof System",
-            "information":"test MIP"
+            "information":"Similar to IP, except there are multiple provers, and the verifier can exchange messages with many provers. The provers cannot communicate with one another. Equal to NEXP [BFL91]."
         },
         "MIPStar":{
             "name":"MIPStar",
             "latex_name":"\\mathsf{MIP^{*}}",
             "description":"MIP with Quantum Provers",
-            "information":"test MIP*"
+            "information":"MIP with Quantum provers. Similar to MIP, except the provers can share arbitrarily many entangled qubits. The verifier, and all messages between provers and verifiers are classical. Equal to RE."
         },
         "PostBQP":{
             "name":"PostBQP",
             "latex_name":"\\mathsf{PostBQP}",
             "description":"PostBQP",
-            "information":"Equal to $\\mathsf{PP}$."
+            "information":"Equal to PP."
         },
         "EQP":{
             "name":"EQP",
             "latex_name":"\\mathsf{EQP}",
             "description":"Exact Quantum Polynomial Time",
-            "information":"Same as $\\mathsf{BQP}$, except we output the correct answer with probability 1."
+            "information":"Same as BQP, except we output the correct answer with probability 1."
         },
         "LWPP":{
             "name":"LWPP",
             "latex_name":"\\mathsf{LWPP}",
             "description":"Length-Dependent Wide $\\mathsf{PP}$",
-            "information":"test LWPP"
+            "information":" A class defined using GapP functions where the gap depends only on input length."
         },
         "CL":{
             "name":"CL",
             "latex_name":"\\mathsf{CL}",
             "description":"Catalytic Logarithmic Space",
-            "information":"test CL"
+            "information":"A class that extends L by allowing a polynomial-sized tape called a catalytic tape. The tape can is read/write during computation but must be restored to its original state at the end of computation. The logarithmic space bound still applies to the primary (non-catalytic) work tape."
         },
         "QMA1":{
             "name":"QMA1",
             "latex_name":"\\mathsf{QMA_{1}}",
             "description":"One-sided $\\mathsf{QMA}$",
-            "information":"$\\mathsf{QMA}$, except for a \"yes\" instance, there exists a state which is accepted with probability 1. It has been shown that Quantum k-SAT is $\\mathsf{QMA_{1}}$-complete for $k\\geq 3.$"
+            "information":"QMA, except for a \"yes\" instance, there exists a state which is accepted with probability 1. It has been shown that Quantum k-SAT is $\\mathsf{QMA_{1}}$-complete for $k\\geq 3.$"
         },
         "AH":{
             "name":"AH",
             "latex_name":"\\mathsf{AH}",
             "description":"Arithmetic Hierarchy",
-            "information":"Analog of $\\mathsf{PH}$ in computability theory."
+            "information":"Analog of PH in computability theory."
         },
         "SBQP":{
             "name":"SBQP",
@@ -331,25 +331,25 @@
             "name":"PP/poly",
             "latex_name":"\\mathsf{PP/poly}",
             "description":"Nonuniform $\\mathsf{PP}$",
-            "information":"$\\mathsf{PP}$ with polynomial advice."
+            "information":"PP with polynomial advice."
         },
         "CequalsP":{
             "name":"CequalsP",
             "latex_name":"\\mathsf{C_{=}P}",
             "description":"Exact-Counting Polynomial-Time",
-            "information":"The class of decision problems solvable by an $\\mathsf{NP}$ machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'"
+            "information":"The class of decision problems solvable by an NP machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'"
         },
         "BQP/mpoly":{
             "name":"BQP/mpoly",
             "latex_name":"\\mathsf{BQP/mpoly}",
             "description":"BQP with polynomial merlin-like advice",
-            "information":"The class of decision problems solvable by a $\\mathsf{BQP}$ machine with a polynomial-size advice string with probability at least $2/3$ when the advice is good."
+            "information":"The class of decision problems solvable by a BQP machine with a polynomial-size advice string with probability at least $2/3$ when the advice is good."
         },
         "PsharpP":{
             "name":"PsharpP",
             "latex_name":"\\mathsf{P^{\\#P}}",
             "description":"P with #P oracle",
-            "information":"The class of decision problems solvable by a $\\mathsf{P}$ machine with a #P oracle. Equals $\\mathsf{P^{\\mathsf{PP}}}$.<br>Contains $\\mathsf{PH}$ [Tod91]."
+            "information":"The class of decision problems solvable by a P machine with a #P oracle. Equals $\\mathsf{P^{\\mathsf{PP}}}$.<br>Contains PH. [Tod91]."
         },
         "coNP":{
             "name":"coNP",

@@ -143,6 +143,44 @@
                 "year": "2018",
                 "copyright": "arXiv.org perpetual, non-exclusive license"
             }
+        },
+        {
+            "identifier": "BFL91",
+            "citation_key": "Babai_1991",
+            "entry_type": "article",
+            "fields": {
+                "title": "Non-deterministic exponential time has two-prover interactive protocols",
+                "volume": "1",
+                "ISSN": "1420-8954",
+                "url": "http://dx.doi.org/10.1007/BF01200056",
+                "DOI": "10.1007/bf01200056",
+                "number": "1",
+                "journal": "Computational Complexity",
+                "publisher": "Springer Science and Business Media LLC",
+                "author": "Babai, Laszlo and Fortnow, Lance and Lund, Carsten",
+                "year": "1991",
+                "month": "mar",
+                "pages": "3–40"
+            }
+        },
+        {
+            "identifier": "Sha92",
+            "citation_key": "Shamir_1992",
+            "entry_type": "article",
+            "fields": {
+                "title": "IP = PSPACE",
+                "volume": "39",
+                "ISSN": "1557-735X",
+                "url": "http://dx.doi.org/10.1145/146585.146609",
+                "DOI": "10.1145/146585.146609",
+                "number": "4",
+                "journal": "Journal of the ACM",
+                "publisher": "Association for Computing Machinery (ACM)",
+                "author": "Shamir, Adi",
+                "year": "1992",
+                "month": "oct",
+                "pages": "869–877"
+            }
         }
     ]
 }

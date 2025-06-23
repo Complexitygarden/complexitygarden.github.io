@@ -127,31 +127,58 @@ function redrawVisualization() {
     create_visualisation();
 }
 
+//should this function be in a new js file or is it alright here?
 function link_classes_information(information_text)
 {
-    const all_classes = networkProcessor.getAllClasses().map(c => c.id);
-    console.log("[IN LINK CLASSES] all classes: ", all_classes);
-    
+    const all_classes = networkProcessor.getAllClasses();
 
+    //sort longest to shortest, so that more complex names match first (like PDQP/qpoly matched before just PDQP)
+    const sorted_classes = all_classes.sort((a, b) => b.id.length - a.id.length);
 
 
     //fix escaped characters bc we are going to turn this into regex
-    const escaped_class_names = all_classes.map(name => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const escaped_class_names = sorted_classes.map(c => c.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     //this takes something like BQP?\poly and turns it into BQP\?\\poly (just in case, so that we don't get regex errors)
-    console.log("[IN LINK CLASSES] escaped classes: ", escaped_class_names);
 
 
     //This matches $\\mathsf{CLASS_NAME}$
     //Make sure to always use the dollar signs in the classes.json
-    const regex = new RegExp(`\\$\\\\mathsf\\{(${escaped_class_names.join('|')})\\}\\$`, 'g');
+    //const regex = new RegExp(`\\$\\\\mathsf\\{(${escaped_class_names.join('|')})\\}\\$`, 'g');
+
+    //this matches just classnames
+    const regex = new RegExp(`\\b(${escaped_class_names.join('|')})\\b`, 'g');
     //joins the escaped class names into a single alternation group using "|"
 
-    return information_text.replace(regex, (match, p1) => {
-        const latex_wrapped = `$\\mathsf{${p1}}$`;
-        //console.log("Printing with no dollar signs.");
-        //role=button for accessibility i think?
-        return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${p1}'))">${latex_wrapped}</a>`;
+    const segments = information_text.split(/(\$[^$]*\$)/);
+
+    const processed = segments.map(segment =>{
+        if (segment.startsWith('$') && segment.endsWith('$')) {
+            //inside math mode, don't add dollar signs
+            return segment.replace(regex, (match, class_id) => {
+                const classData = networkProcessor.getClass(class_id);
+                if (!classData) return match;
+                const latex = classData.latex_name || class_id;
+                
+                return `\\mathsf{${latex}}`;
+                //return `\\class{clickable-class}{${latex}}`;
+                //return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${class_id}'))">${latex}</a>`;
+            });
+
+        }
+
+        else {
+            //outside math mode, add dollar signs
+
+            return segment.replace(regex, (match, class_id) => {
+                const classData = networkProcessor.getClass(class_id);
+                if (!classData) return match;
+                const latex = classData.latex_name || class_id;
+                return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${class_id}'))">\$${latex}\$</a>`;
+            })
+        }
     });
+
+    return processed.join('');
 
 }
 
@@ -189,7 +216,19 @@ function open_side_window(d) {
     
     const infoElement = document.getElementById('class-information');
     infoElement.innerHTML = info;
-    MathJax.typeset([infoElement]);
+    MathJax.typesetPromise([infoElement]).then(() => {
+        //process clickable-elements
+        document.querySelectorAll('.clickable-class').forEach(el => {
+
+            el.onclick = () => {
+                const className = el.textContent.replace(/\s/g, '');
+                const classData = networkProcessor.getClass(className);
+                console.log("Class name: ", className);
+                console.log("Class data:", classData);
+                open_side_window(classData);
+            };
+        });
+    });
 
     // Open the sidebar
     document.getElementById('openRightSidebarMenu').checked = true;
