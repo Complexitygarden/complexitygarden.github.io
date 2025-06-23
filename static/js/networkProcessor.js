@@ -595,6 +595,9 @@ class NetworkProcessor {
         const nodes = [];
         const links = [];
 
+        // Double check if all links are to classes that are selected
+        const processedSet = new Set(processedClassList);
+
         var x_scale = (1 + (this.maxAvgLevel + 1) / 25)/3000;
 
         for (const className of processedClassList) {
@@ -604,7 +607,11 @@ class NetworkProcessor {
             // console.log(`\nProcessing final node ${className}:`);
             // console.log('- Trim contains:', Array.from(classData.trim_contains));
 
-            // Add node
+            // Build equal class list: any selected class that maps to this main class
+            const equalSelected = Object.keys(this.visualizedTrimmedNetwork)
+                .filter(cls => this.visualizedTrimmedNetwork[cls][0] === className && cls !== className && this.selectedClasses.has(cls))
+                .map(cls => this.classes.get(cls));
+
             nodes.push({
                 id: classData.id,
                 name: classData.name,
@@ -613,22 +620,20 @@ class NetworkProcessor {
                 savedX: classData.x *x_scale,  // Normalize to 0-1 range
                 // Scale vertical spacing dynamically: the more levels in the graph,
                 // the larger the savedY value so that levels appear further apart when rendered.
-                // We use a simple linear factor based on maxAvgLevel (computed in setLevels).
                 savedY: classData.y / 1000,
-                equal_classes: Array.from(classData.equals)
-                    .filter(name => this.selectedClasses.has(name))
-                    .map(name => this.classes.get(name))
+                equal_classes: equalSelected
             });
             // console.log(`Added node: ${className} at position (${classData.x}, ${classData.y})`);
 
             // Add links - from smaller to bigger classes
             for (const biggerClass of classData.trim_within) {
+                // Only create the link if the bigger class will also appear as a node
+                if (!processedSet.has(biggerClass)) continue;
                 links.push({
                     source: className,  // Smaller class
                     target: biggerClass,  // Bigger class
                     type: 'containment'
                 });
-                // console.log(`Added link: ${className} -> ${biggerClass} (smaller -> bigger)`);
             }
         }
 
