@@ -288,6 +288,11 @@
             "b":"IP"
         },
         {
+            "type":"equality",
+            "a":"QIP",
+            "b":"IP"
+        },
+        {
             "type":"containment",
             "small":"BPPPath",
             "large":"PP"
