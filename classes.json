@@ -394,10 +394,10 @@
             "description":"PSPACE with polynomial size advice",
             "information":""
         },
-        "BQP/qpoly":{
-            "name":"BQP/qpoly",
-            "latex_name":"\\mathsf{BQP/qpoly}",
-            "description":"BQP with polynomial quantum size advice",
+        "BQPSPACE/qpoly":{
+            "name":"BQPSPACE/qpoly",
+            "latex_name":"\\mathsf{BQPSPACE/qpoly}",
+            "description":"BQPSPACE with polynomial quantum size advice",
             "information":""
         },
     }
