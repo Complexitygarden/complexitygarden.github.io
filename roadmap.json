@@ -53,5 +53,10 @@
     "id": "feature-if-else-query",
     "text": "If A is in B, then what follows?",
     "completed": false
+  },
+  {
+    "id": "feature-query-complexity-measure",
+    "text": "Implemenet query complexity relation graph",
+    "completed": false
   }
 ]
