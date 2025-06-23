@@ -32,6 +32,12 @@
             "description": "Quantum Classical Merlin-Arthur",
             "information": "The class of decision problems for which a 'yes' answer can be efficiently verified by a family of uniform quantum circuits with access to a classical proof. Concretely: <br> <br> <ul> <li>For all 'yes' instances, there exists a poly(|x|) size classical proof such that the verifier accepts with probability at least 2/3</li> <li> For a 'no' instance, for all such classical proofs the verifier rejects with probability at least 2/3.</li></ul>"
         },
+        "QIP": {
+            "name": "QIP",
+            "latex_name": "\\mathsf{QIP}",
+            "description": "Quantum Interactive Proof",
+            "information": "The class QIP is the quantum computing analogue of the classical complexity class IP, <br> <br> <ul> <li></li></ul><br>For more check out: <a href='https://complexityzoo.net/Complexity_Zoo:Q#qip'>Complexity Zoo</a>"
+        },
         "PDQP": {
             "name": "PDQP",
             "latex_name": "\\mathsf{PDQP}",
