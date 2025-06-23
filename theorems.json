@@ -285,8 +285,12 @@
         {
             "type":"equality",
             "a":"PSPACE",
-            "b":"IP",
-            "c":"QIP"
+            "b":"IP"
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"QIP"
         },
         {
             "type":"containment",
