@@ -374,31 +374,31 @@
             "name":"QCMA/qpoly",
             "latex_name":"\\mathsf{QCMA/qpoly}",
             "description":"QCMA with polynomial size quantum advice",
-            "information":""
+            "information":"QCMA with polynomial size quantum advice"
         },
         "QMA/poly":{
             "name":"QMA/poly",
             "latex_name":"\\mathsf{QMA/poly}",
             "description":"QMA with polynomial size advice",
-            "information":""
+            "information":"QMA with polynomial size advice"
         },
         "QMA/qpoly":{
             "name":"QMA/qpoly",
             "latex_name":"\\mathsf{QMA/qpoly}",
             "description":"QMA with polynomial quantum size advice",
-            "information":""
+            "information":"QMA with polynomial quantum size advice"
         },
         "PSPACE/poly":{
             "name":"PSPACE/poly",
             "latex_name":"\\mathsf{PSPACE/poly}",
             "description":"PSPACE with polynomial size advice",
-            "information":""
+            "information":"PSPACE with polynomial size advice"
         },
         "BQPSPACE/qpoly":{
             "name":"BQPSPACE/qpoly",
             "latex_name":"\\mathsf{BQPSPACE/qpoly}",
             "description":"BQPSPACE with polynomial quantum size advice",
-            "information":""
+            "information":"BQPSPACE with polynomial quantum size advice"
         }
     }
 }
