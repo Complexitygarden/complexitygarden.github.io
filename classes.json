@@ -364,5 +364,41 @@
             "information":"The class of decision problems for which 'no' answers are efficiently verifiable. Specifically: <br><br> <ul> <li> There exists a proof for all 'no' instances such that the verifier accepts wih certainty. </li> <li>If an input is a 'yes' instance, then the verifier rejects for all proofs. </li></ul>",
             "coClass": "NP"
         }
+        "QCMA/poly":{
+            "name":"QCMA/poly",
+            "latex_name":"\\mathsf{QCMA/poly}",
+            "description":"QCMA with polynomial size advice",
+            "information":""
+        },
+        "QCMA/qpoly":{
+            "name":"QCMA/qpoly",
+            "latex_name":"\\mathsf{QCMA/qpoly}",
+            "description":"QCMA with polynomial size quantum advice",
+            "information":""
+        },
+        "QMA/poly":{
+            "name":"QMA/poly",
+            "latex_name":"\\mathsf{QMA/poly}",
+            "description":"QMA with polynomial size advice",
+            "information":""
+        },
+        "QMA/qpoly":{
+            "name":"QMA/qpoly",
+            "latex_name":"\\mathsf{QMA/qpoly}",
+            "description":"QMA with polynomial quantum size advice",
+            "information":""
+        },
+        "PSPACE/poly":{
+            "name":"PSPACE/poly",
+            "latex_name":"\\mathsf{PSPACE/poly}",
+            "description":"PSPACE with polynomial size advice",
+            "information":""
+        },
+        "BQP/qpoly":{
+            "name":"BQP/qpoly",
+            "latex_name":"\\mathsf{BQP/qpoly}",
+            "description":"BQP with polynomial quantum size advice",
+            "information":""
+        },
     }
 }
