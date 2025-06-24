@@ -272,13 +272,7 @@ function selectDefaultClasses() {
 const presetDefaultClassLists = [
     ["P", "PSPACE", "BQP", "NP"],
     ["P", "PSPACE", "BPP", "MA"],
-    ["NP", "coNP", "PH", "PSPACE"],
-    ["L", "NL", "P", "NP"],
-    ["BPP", "ZPP", "RP", "coRP"],
-    ["QMA", "QCMA", "MA", "PP"],
-    ["P", "NP", "BQP", "QMA"],
-    ["PSPACE", "EXP", "P", "NP"],
-    ["BPP", "MA", "AM", "PH"]
+    ["P", "NP", "BQP", "QMA"]
 ];
 
 // Pick one at random
