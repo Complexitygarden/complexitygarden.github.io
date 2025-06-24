@@ -268,18 +268,6 @@ function decodeSharedConfiguration(encodedConfig) {
 // Helper function to select default classes
 function selectDefaultClasses() {
     const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
-// Predefined combinations
-const presetDefaultClassLists = [
-    ["P", "PSPACE", "BQP", "NP"],
-    ["P", "PSPACE", "BPP", "MA"],
-    ["P", "NP", "BQP", "QMA"]
-];
-
-// Pick one at random
-const defaultClasses = presetDefaultClassLists[Math.floor(Math.random() * presetDefaultClassLists.length)];
-
-
-    
     const actuallySelected = [];
     defaultClasses.forEach(className => {
         if (networkProcessor.selectClass(className)) {
