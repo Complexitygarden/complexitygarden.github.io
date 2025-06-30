@@ -12,7 +12,7 @@
   {
     "id": "feature-mobile-version",
     "text": "Improve mobile version",
-    "completed": true
+    "completed": false
   },
   {
     "id": "feature-class-descriptions",

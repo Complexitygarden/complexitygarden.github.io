@@ -268,13 +268,22 @@ function decodeSharedConfiguration(encodedConfig) {
 // Helper function to select default classes
 function selectDefaultClasses() {
     const defaultClasses = ["P", "PSPACE", "BQP", "NP"];
+
+    // Temporarily disable URL updates while loading the default configuration
+    const previousUpdateSetting = networkProcessor.updateLocation;
+    networkProcessor.updateLocation = false;
+
     const actuallySelected = [];
     defaultClasses.forEach(className => {
-        if (networkProcessor.selectClass(className)) {
+        networkProcessor.selectClass(className);
+        if (networkProcessor.isClassSelected(className)) {
             actuallySelected.push(className);
         }
     });
-    
+
+    // Re-enable URL updates for future user interactions
+    networkProcessor.updateLocation = previousUpdateSetting;
+
     // Track the initial setup
     if (typeof trackVisualizationChange === 'function') {
         trackVisualizationChange("Initial Load", `Default classes selected: ${actuallySelected.join(", ")}`);

@@ -920,9 +920,9 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .creator-list li {
-    margin-bottom: 8px;
-    line-height: 1.4;
-    padding: 8px 12px;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    padding: 4px 12px;
 }
 
 .creator-list a {
