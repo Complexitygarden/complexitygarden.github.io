@@ -253,13 +253,13 @@
             "name":"QCPH",
             "latex_name":"\\mathsf{QCPH}",
             "description":"Quantum-Classical Polynomial Hierarchy",
-            "information":"A generalization of PH where the verifier is a classical circuit and the proofs are classical.\n Defined in [GSSSY18]."
+            "information":"The class of languages solvable by a constant number of alternating classical quantifiers followed by a quantum verifier.\n Defined in [GSSSY18]. "
         },
         "QPH":{
             "name":"QPH",
             "latex_name":"\\mathsf{QPH}",
             "description":"Quantum Polynomial Hierarchy",
-            "information":"A generalization of PH where the verifier is a quantum circuit and the proofs are quantum states.\n Defined in [GSSSY18]."
+            "information":"A generalization of PH where the verifier is a quantum circuit and the proofs are quantum states. More formally, the class of languages solvable by a constant number of alternating quantum quantifiers followed by a quantum verifier\n Defined in [GSSSY18]."
         },
         "IP":{
             "name":"IP",
