@@ -32,9 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
       // Close on ESC key
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape' && modal.style.display === 'flex') {
+          // Close only the modal and prevent other ESC handlers (e.g., search bar) from executing
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
           modal.style.display = 'none';
         }
-      });
+      }, true); // capture=true ensures we intercept before other listeners
     }
   });
 });
