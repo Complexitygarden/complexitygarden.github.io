@@ -14,6 +14,8 @@ class NetworkProcessor {
         this.rootNodes = [];
         this.topNodes = [];
         this.initialized = false;
+        this.prevSelectedClasses = new Set(); // Track previously visualised classes for incremental layout
+        this.prevMaxLevel = -1; // Track previous maximum level number
     }
 
     async initialize(classesData, theoremsData) {
@@ -89,7 +91,10 @@ class NetworkProcessor {
             x: 0,  // Initialize position
             y: 0,  // Initialize position
             visible: false,
-            coClass: data.coClass || null
+            coClass: data.coClass || null,
+            manual: false,     // User has moved this node manually
+            manualSavedX: null,
+            manualSavedY: null
         });
         this.classesIdentifiers.push(name);
         // console.log(`Class ${name} added successfully. Current class count: ${this.classes.size}`);
@@ -617,10 +622,8 @@ class NetworkProcessor {
                 name: classData.name,
                 latex_name: classData.latex_name,
                 level: classData.level || 0,
-                savedX: classData.x *x_scale,  // Normalize to 0-1 range
-                // Scale vertical spacing dynamically: the more levels in the graph,
-                // the larger the savedY value so that levels appear further apart when rendered.
-                savedY: classData.y / 1000,
+                savedX: classData.manual ? classData.manualSavedX : classData.x *x_scale,  // Use manual if available
+                savedY: classData.manual ? classData.manualSavedY : classData.y / 1000,
                 equal_classes: equalSelected
             });
             // console.log(`Added node: ${className} at position (${classData.x}, ${classData.y})`);
@@ -1082,11 +1085,21 @@ class NetworkProcessor {
     }
 
     setPositions() {
+        console.groupCollapsed('[NetworkProcessor] setPositions');
         // console.log('\n=== Setting Positions ===');
         if (this.selectedClasses.size === 0) {
             // console.log('No classes selected, skipping position setting');
+            console.groupEnd();
             return;
         }
+
+        // Capture starting positions for diff later
+        const initialPositions = [...this.selectedClasses].map(id => {
+            const c = this.classes.get(id);
+            return { id, x: c.x, y: c.y, manual: c.manual };
+        });
+        console.log('Selected classes count:', this.selectedClasses.size);
+        console.log('Initial positions snapshot:', initialPositions);
 
         // Get visible nodes and their levels
         const nodesPerLevel = {};
@@ -1124,10 +1137,13 @@ class NetworkProcessor {
 
             if (i === 0) {
                 // For the first level, just space nodes evenly
+                const movableCountLvl0 = currentNodes.filter(n=>!n.manual).length;
+                let mIdx = 0;
                 for (let idx = 0; idx < currentNodes.length; idx++) {
-                    currentNodes[idx].x = width * (idx + 1) / (currentNodes.length + 1);
-                    // console.log(`Set initial position for ${currentNodes[idx].id}: x = ${currentNodes[idx].x}`);
-                }
+                     if (currentNodes[idx].manual) continue; // keep manual X
+                     currentNodes[idx].x = width * (mIdx + 1) / (movableCountLvl0 > 0 ? movableCountLvl0 + 1 : currentNodes.length + 1);
+                     mIdx += 1;
+                 }
             } else {
                 // Calculate barycenter for each node
                 const nodePositions = [];
@@ -1142,8 +1158,7 @@ class NetworkProcessor {
                         barycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
                         // console.log(`Calculated barycenter for ${node.id} from ${connectedNodes.length} connected nodes: ${barycenter}`);
                     } else {
-                        // If no connections, place based on position in list
-                        barycenter = width * (nodePositions.length + 1) / (currentNodes.length + 1);
+                        barycenter = width * (nodePositions.length + 1) / (currentNodes.filter(n=>!n.manual).length + 1);
                         // console.log(`No connections for ${node.id}, using default position: ${barycenter}`);
                     }
                     nodePositions.push([node, barycenter]);
@@ -1153,10 +1168,14 @@ class NetworkProcessor {
                 nodePositions.sort((a, b) => a[1] - b[1]);
 
                 // Assign x positions while maintaining minimum spacing
-                const minSpacing = width / (currentNodes.length + 1);
+                const movableCount = currentNodes.filter(n=>!n.manual).length;
+                const minSpacing = width / (movableCount > 0 ? movableCount + 1 : currentNodes.length + 1);
+                let posCounter = 0;
                 for (let idx = 0; idx < nodePositions.length; idx++) {
-                    nodePositions[idx][0].x = minSpacing * (idx + 1);
-                    // console.log(`Set position for ${nodePositions[idx][0].id}: x = ${nodePositions[idx][0].x}`);
+                    // Skip manual nodes – their x stays as user set
+                    if (nodePositions[idx][0].manual) continue;
+                    nodePositions[idx][0].x = minSpacing * (posCounter + 1);
+                    posCounter += 1;
                 }
             }
         }
@@ -1181,11 +1200,14 @@ class NetworkProcessor {
                     node.trim_contains.has(n.id) || n.trim_within.has(node.id)
                 );
 
+                if (node.manual) {
+                    continue; // Preserve manual X
+                }
+
                 if (connectedNodes.length > 0) {
                     const bottomUpBarycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
                     // Average with current position
                     node.x = (node.x + bottomUpBarycenter) / 2;
-                    // console.log(`Averaged position for ${node.id}: x = ${node.x} (from ${connectedNodes.length} connected nodes)`);
                 }
             }
         }
@@ -1199,12 +1221,46 @@ class NetworkProcessor {
             for (const node of nodesPerLevel[level]) {
                 const oldX = node.x;
                 const oldY = node.y;
-                node.y = yPos;
-                node.x = node.x * 3;
+                if (!node.manual) {
+                    node.y = yPos;
+                } else {
+                    node.manualSavedY = yPos / 1000; // keep normalised copy in sync
+                }
+                if (!node.manual) {
+                    node.x = node.x * 3;
+                }
                 // console.log(`Position for ${node.id}: (${oldX}, ${oldY}) -> (${node.x}, ${node.y})`);
             }
         }
 
+        // === Post-processing: guarantee no horizontal overlaps within a level ===
+        const minGapPx = 120; // assume twice node diameter (~2*radius*1.2) – tweak if needed
+
+        Object.values(nodesPerLevel).forEach(levelArr => {
+            // Sort by x so we can scan left→right
+            levelArr.sort((a, b) => a.x - b.x);
+
+            for (let i = 1; i < levelArr.length; i++) {
+                const left = levelArr[i - 1];
+                const cur  = levelArr[i];
+                const diff = cur.x - left.x;
+
+                if (diff < minGapPx) {
+                    const shift = minGapPx - diff;
+                    cur.x += shift;
+                    if (cur.manual) {
+                        // Update normalised savedX too
+                        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
+                        cur.manualSavedX = (cur.x * x_scale);
+                    }
+                    // propagate shift to following nodes to maintain ordering
+                    for (let j = i + 1; j < levelArr.length; j++) {
+                        levelArr[j].x += shift;
+                    }
+                }
+            }
+        });
+        console.log('[OverlapCheck] horizontal de-clumping completed');
         // Verify positions were set
         // console.log('\n=== Verifying Positions ===');
         for (const className of this.selectedClasses) {
@@ -1213,6 +1269,97 @@ class NetworkProcessor {
                 // console.log(`${className}: level=${classData.level}, position=(${classData.x}, ${classData.y})`);
             }
         }
+
+        // === Incremental layout adjustment for newly added classes ===
+        try {
+            if (!this.prevSelectedClasses) {
+                this.prevSelectedClasses = new Set();
+            }
+
+            const hadPrevSelection = this.prevSelectedClasses.size > 0;
+
+            const newClasses = [...this.selectedClasses].filter(id => !this.prevSelectedClasses.has(id));
+            console.log('Detected new classes:', newClasses);
+            if (!hadPrevSelection) {
+                console.log('No previous selection detected; using baseline layout, skipping incremental adjustments.');
+            } else if (newClasses.length > 0) {
+                const levelSpacing = height * 0.5;
+                const prevMax = this.prevMaxLevel !== undefined ? this.prevMaxLevel : -1;
+                console.log('Previous max level', prevMax, 'Current max level', maxLevel);
+
+                if (maxLevel > prevMax) {
+                    console.log('New level detected – baseline placement handled vertical spacing, no additional shift.');
+                } else {
+                    // No new level – place new nodes on their existing level
+                    const minSpacing = width / 10;
+                    console.log('No new level. Positioning new classes on existing level with minSpacing', minSpacing);
+                    newClasses.forEach(id => {
+                        const cd = this.classes.get(id);
+                        if (!cd) return;
+                        const lvl = cd.level;
+                        console.log('Placing new class', id, 'on level', lvl);
+                        const others = (nodesPerLevel[lvl] || []).filter(n => n.id !== id);
+                        if (others.length > 0) {
+                            // Position vertically at average Y of peers
+                            cd.y = others.reduce((s, n) => s + n.y, 0) / others.length;
+                            // Choose an X near its neighbours / connections
+                            const connected = [
+                                ...Array.from(cd.trim_contains),
+                                ...Array.from(cd.trim_within)
+                            ].filter(t => this.selectedClasses.has(t)).map(t => this.classes.get(t));
+                            let candX;
+                            if (connected.length > 0) {
+                                candX = connected.reduce((s, n) => s + n.x, 0) / connected.length;
+                            } else {
+                                candX = others.reduce((s, n) => s + n.x, 0) / others.length;
+                            }
+                            // Avoid overlap by nudging rightwards until clear
+                            let offset = 0;
+                            let guard = 0;
+                            while (others.some(n => Math.abs((candX + offset) - n.x) < minSpacing) && guard < 10) {
+                                offset += minSpacing;
+                                guard += 1;
+                            }
+                            cd.x = candX + offset;
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            console.error('Incremental positioning error', e);
+        }
+        // === End incremental layout adjustment ===
+
+        // Preserve current state for the next incremental update
+        this.prevSelectedClasses = new Set(this.selectedClasses);
+        this.prevMaxLevel = maxLevel;
+
+        // Output final positions and diff
+        const finalPositions = [...this.selectedClasses].map(id => {
+            const c = this.classes.get(id);
+            return { id, x: c.x, y: c.y, manual: c.manual };
+        });
+        console.log('Final positions snapshot:', finalPositions);
+        const moved = finalPositions.filter(fp => {
+            const ip = initialPositions.find(i => i.id === fp.id);
+            return ip && (ip.x !== fp.x || ip.y !== fp.y);
+        });
+        console.log('Nodes moved during setPositions:', moved);
+        console.groupEnd();
+    }
+
+    // Allow graph component to persist manual (user-dragged) positions
+    setManualPosition(name, savedXNorm, savedYNorm) {
+        const cls = this.classes.get(name);
+        if (!cls) return;
+        // Store normalised coordinates (0-1) relative to viewport to keep them resolution-independent
+        cls.manual = true;
+        cls.manualSavedX = savedXNorm;
+        cls.manualSavedY = savedYNorm;
+        // Convert back to internal coordinate system for algorithms that rely on x/y
+        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
+        cls.x = savedXNorm / x_scale; // reverse mapping used in getTrimmedNetworkJson
+        cls.y = savedYNorm * 1000;    // reverse mapping used in getTrimmedNetworkJson
     }
 }
 

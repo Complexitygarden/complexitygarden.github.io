@@ -846,6 +846,18 @@ function draw_graph(){
             d.fx = d.x;
             d.fy = d.y;
         }
+
+        // Persist manual node position back to the NetworkProcessor so that later redraws respect user placement
+        if (window.networkProcessor && typeof window.networkProcessor.setManualPosition === 'function') {
+            try {
+                var savedXNorm = d.x / window.innerWidth;
+                var savedYNorm = d.y / window.innerHeight;
+                window.networkProcessor.setManualPosition(d.name, savedXNorm, savedYNorm);
+                console.log('[Graph] Persisted manual position for', d.name, {savedXNorm, savedYNorm});
+            } catch (e) {
+                console.error('Failed to persist manual position', e);
+            }
+        }
     }
 
     function tickActions() {
