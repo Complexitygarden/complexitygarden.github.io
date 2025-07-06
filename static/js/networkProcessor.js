@@ -1085,7 +1085,7 @@ class NetworkProcessor {
     }
 
     setPositions() {
-        console.groupCollapsed('[NetworkProcessor] setPositions');
+        // console.groupCollapsed('[NetworkProcessor] setPositions');
         // console.log('\n=== Setting Positions ===');
         if (this.selectedClasses.size === 0) {
             // console.log('No classes selected, skipping position setting');
@@ -1233,34 +1233,56 @@ class NetworkProcessor {
             }
         }
 
-        // === Post-processing: guarantee no horizontal overlaps within a level ===
-        const minGapPx = 120; // assume twice node diameter (~2*radius*1.2) – tweak if needed
+        // === Post-processing: guarantee no overlaps ===
+        console.log("Actually post processing")
+        const minGapPx = 200;
 
-        Object.values(nodesPerLevel).forEach(levelArr => {
-            // Sort by x so we can scan left→right
-            levelArr.sort((a, b) => a.x - b.x);
+        const allNodes = Array.from(this.selectedClasses).map(id => this.classes.get(id));
 
-            for (let i = 1; i < levelArr.length; i++) {
-                const left = levelArr[i - 1];
-                const cur  = levelArr[i];
-                const diff = cur.x - left.x;
-
-                if (diff < minGapPx) {
-                    const shift = minGapPx - diff;
-                    cur.x += shift;
-                    if (cur.manual) {
-                        // Update normalised savedX too
-                        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
-                        cur.manualSavedX = (cur.x * x_scale);
-                    }
-                    // propagate shift to following nodes to maintain ordering
-                    for (let j = i + 1; j < levelArr.length; j++) {
-                        levelArr[j].x += shift;
+        // Helper to compute overlaps list
+        function findOverlaps(list) {
+            const pairs = [];
+            for (let i = 0; i < list.length; i++) {
+                for (let j = i + 1; j < list.length; j++) {
+                    const a = list[i], b = list[j];
+                    if (Math.hypot(b.x - a.x, b.y - a.y) < minGapPx) {
+                        pairs.push([a.id, b.id]);
                     }
                 }
             }
-        });
-        console.log('[OverlapCheck] horizontal de-clumping completed');
+            return pairs;
+        }
+
+        console.groupCollapsed('[OverlapCheck] Starting overlap resolution');
+        const initialOverlaps = findOverlaps(allNodes);
+        console.log('Initial overlapping pairs (dist <', minGapPx, '):', initialOverlaps);
+
+        let overlapsResolved = 0;
+        for (let i = 0; i < allNodes.length; i++) {
+            for (let j = i + 1; j < allNodes.length; j++) {
+                const a = allNodes[i];
+                const b = allNodes[j];
+                const dx = b.x - a.x;
+                const dy = b.y - a.y;
+                const dist = Math.hypot(dx, dy);
+                if (dist < minGapPx) {
+                    const shift = minGapPx - dist;
+                    console.log(`Shifting ${b.id} by ${shift}px to resolve overlap with ${a.id}`);
+                    b.x += shift; // push to the right
+                    if (b.manual) {
+                        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
+                        b.manualSavedX = b.x * x_scale;
+                    }
+                    overlapsResolved++;
+                }
+            }
+        }
+
+        const remainingOverlaps = findOverlaps(allNodes);
+        console.log('Remaining overlapping pairs after resolution:', remainingOverlaps);
+        console.log(`Resolved ${overlapsResolved} overlaps (min gap ${minGapPx}px)`);
+        console.groupEnd();
+
         // Verify positions were set
         // console.log('\n=== Verifying Positions ===');
         for (const className of this.selectedClasses) {
@@ -1344,7 +1366,7 @@ class NetworkProcessor {
             const ip = initialPositions.find(i => i.id === fp.id);
             return ip && (ip.x !== fp.x || ip.y !== fp.y);
         });
-        console.log('Nodes moved during setPositions:', moved);
+        // console.log('Nodes moved during setPositions:', moved);
         console.groupEnd();
     }
 

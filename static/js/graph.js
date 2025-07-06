@@ -371,6 +371,12 @@ function draw_graph(){
         });
     }
 
+    // Calculate dynamic colour timing based on number of new nodes (capped at 4)
+    const newNodeCount = data.nodes.filter(n => n.isNew).length;
+    const colorFactor = Math.min(newNodeCount, 4);
+    const redHoldMs = 1000 * colorFactor;   // stay red
+    const fadeMs    = 1000 * colorFactor;   // fade duration
+
     function draw_nodes(){
         nodeGroups = node.append("g")
             .on("mouseover", function(d) {
@@ -403,12 +409,12 @@ function draw_graph(){
                     var searchOpen = body.classList.contains('search-active') || body.classList.contains('mobile-search-open');
                     if (searchOpen) {
                         // defer transition until search closes
-                        pendingColorTransitions.push({sel: circleSel, level: d.level});
+                        pendingColorTransitions.push({sel: circleSel, level: d.level, fade: fadeMs});
                     } else {
-                        // wait for 1 second before starting the transition
+                        // wait for calculated red hold before starting the fade
                         setTimeout(function() {
-                            circleSel.transition().duration(1500).attr('fill', colorScale(d.level));
-                        }, 1500);
+                            circleSel.transition().duration(fadeMs).attr('fill', colorScale(d.level));
+                        }, redHoldMs);
                     }
                 }
             });
@@ -853,7 +859,7 @@ function draw_graph(){
                 var savedXNorm = d.x / window.innerWidth;
                 var savedYNorm = d.y / window.innerHeight;
                 window.networkProcessor.setManualPosition(d.name, savedXNorm, savedYNorm);
-                console.log('[Graph] Persisted manual position for', d.name, {savedXNorm, savedYNorm});
+                // console.log('[Graph] Persisted manual position for', d.name, {savedXNorm, savedYNorm});
             } catch (e) {
                 console.error('Failed to persist manual position', e);
             }
@@ -1311,7 +1317,8 @@ if (typeof MutationObserver !== 'undefined') {
                 if (!searchOpen && pendingColorTransitions.length > 0) {
                     // Launch pending transitions
                     pendingColorTransitions.forEach(function(item) {
-                        item.sel.transition().duration(1500).attr('fill', colorScale(item.level));
+                        const dur = item.fade || 1500;
+                        item.sel.transition().duration(dur).attr('fill', colorScale(item.level));
                         prevNodeNames.add(item.sel.datum().name); // mark as visualised
                     });
                     pendingColorTransitions = [];
