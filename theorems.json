@@ -502,6 +502,31 @@
             "type":"equality",
             "a":"PSPACE/poly",
             "b":"BQPSPACE/qpoly"
+        },
+        {
+            "type":"containment",
+            "small":"QMA",
+            "large":"QAM"
+        },
+        {
+            "type":"containment",
+            "small":"QAM",
+            "large":"CH"
+        },
+        {
+            "type":"containment",
+            "small":"QIP[2]",
+            "large":"PSPACE"
+        },
+        {
+            "type":"containment",
+            "small":"QAM",
+            "large":"QIP[2]"
+        },
+        {
+            "type":"equality",
+            "a":"BQPSPACE",
+            "b":"PSPACE"
         }
     ]
 }

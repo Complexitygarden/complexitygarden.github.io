@@ -196,8 +196,9 @@ function open_side_window(d) {
     titleElement.innerHTML = `$${classData.latex_name}$`;
     MathJax.typeset([titleElement]);
     
-    // Set description without math processing
-    document.getElementById('class-description').textContent = classData.description || 'No description available';
+    // Set description with links and allow MathJax processing
+    const descElement = document.getElementById('class-description');
+    descElement.innerHTML = link_classes_information(classData.description) || 'No description available';
     
     // Format class information
     let info = '';
@@ -216,7 +217,8 @@ function open_side_window(d) {
     
     const infoElement = document.getElementById('class-information');
     infoElement.innerHTML = info;
-    MathJax.typesetPromise([infoElement]).then(() => {
+    // Typeset both description and information sections
+    MathJax.typesetPromise([descElement, infoElement]).then(() => {
         //process clickable-elements
         document.querySelectorAll('.clickable-class').forEach(el => {
 

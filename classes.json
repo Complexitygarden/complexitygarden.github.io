@@ -399,6 +399,24 @@
             "latex_name":"\\mathsf{BQPSPACE/qpoly}",
             "description":"BQPSPACE with polynomial quantum size advice",
             "information":"BQPSPACE with polynomial quantum size advice"
+        },
+        "QAM": {
+            "name":"QAM",
+            "latex_name":"\\mathsf{QAM}",
+            "description":"Quantum Arthur-Merlin",
+            "information":"A quantum version of the Arthur-Merlin protocol. Specifically, Arthur flips several coins, sends their results to Merlin, and Merlin responds with a quantum state. Arthur's verification protocol takes the coin flips and Merlin's quantum state as input."
+        },
+        "QIP[2]": {
+            "name":"QIP[2]",
+            "latex_name":"\\mathsf{QIP[2]}",
+            "description":"QIP with two messages.",
+            "information":"Quantum Interactive Proof system with two messages exchanged between the prover and the verifier."
+        },
+        "BQPSPACE":{
+            "name":"BQPSPACE",
+            "latex_name":"\\mathsf{BQPSPACE}",
+            "description":"Bounded-Error Quantum PSPACE.",
+            "information":"PSPACE, except the machine is a quantum Turing machine and the answer is correct with at least $2/3$ probability."
         }
     }
 }
