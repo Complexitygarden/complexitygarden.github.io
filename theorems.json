@@ -390,7 +390,7 @@
         },
         {
             "type":"containment",
-            "small":"PP/poly",
+            "small":"PSPACE/poly",
             "large":"ALL"
         },
         {
@@ -476,11 +476,6 @@
         {
             "type":"containment",
             "small":"QMA/poly",
-            "large":"PP/poly"
-        },
-        {
-            "type":"containment",
-            "small":"PP",
             "large":"PP/poly"
         },
         {
