@@ -522,6 +522,16 @@
             "type":"equality",
             "a":"BQPSPACE",
             "b":"PSPACE"
+        },
+        {
+            "type":"equality",
+            "a":"BQPCTC",
+            "b":"PSPACE"
+        },
+        {
+            "type":"equality",
+            "a":"PCTC",
+            "b":"PSPACE"
         }
     ]
 }

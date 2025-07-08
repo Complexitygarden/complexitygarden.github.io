@@ -181,6 +181,21 @@
                 "month": "oct",
                 "pages": "869–877"
             }
+        },
+        {
+            "identifier": "AW08",
+            "citation_key": "https://doi.org/10.48550/arxiv.0808.2669",
+            "entry_type": "article",
+            "fields": {
+                "doi": "10.48550/ARXIV.0808.2669",
+                "url": "https://arxiv.org/abs/0808.2669",
+                "author": "Aaronson, Scott and Watrous, John",
+                "keywords": "Quantum Physics (quant-ph), Computational Complexity (cs.CC), FOS: Physical sciences, FOS: Physical sciences, FOS: Computer and information sciences, FOS: Computer and information sciences",
+                "title": "Closed Timelike Curves Make Quantum and Classical Computing Equivalent",
+                "publisher": "arXiv",
+                "year": "2008",
+                "copyright": "arXiv.org perpetual, non-exclusive license"
+            }
         }
     ]
 }

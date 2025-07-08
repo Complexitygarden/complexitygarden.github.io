@@ -14,6 +14,10 @@ This repository contains the code for the complexity garden - a tool whose goal 
  - Quantum Circuit Classes
  - Catalytic Computation
  - NQP, coNQP, coC_{=}P
+ - QRG, SQG
+ - QSZK, PZK, Non-interactive versions
+ - YP, YPP, YQP
+ - NE(EEEEEE)
 
 ### Ideas:
 - Allowing for other graphs to be created - for communication complexity, cryptographic assumptions or relational complexity classes.
