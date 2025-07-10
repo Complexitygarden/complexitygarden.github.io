@@ -532,6 +532,31 @@
             "type":"equality",
             "a":"PCTC",
             "b":"PSPACE"
+        },
+        {
+            "type":"equality",
+            "a":"NQP",
+            "b":"coCequalsP"
+        },
+        {
+            "type":"containment",
+            "small":"EQP",
+            "large":"NQP"
+        },
+        {
+            "type":"containment",
+            "small":"NQP",
+            "large":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"NP",
+            "large":"NQP"
+        },
+        {
+            "type":"containment",
+            "small":"coNP",
+            "large":"CequalsP"
         }
     ]
 }

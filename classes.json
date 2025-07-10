@@ -343,7 +343,8 @@
             "name":"CequalsP",
             "latex_name":"\\mathsf{C_{=}P}",
             "description":"Exact-Counting Polynomial-Time",
-            "information":"The class of decision problems solvable by an NP machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'"
+            "information":"The class of decision problems solvable by an NP machine such that the number of accepting paths exactly equals the number of rejecting paths, if and only if the answer is 'yes.'",
+            "coClass":"coCequalsP"
         },
         "BQP/mpoly":{
             "name":"BQP/mpoly",
@@ -429,6 +430,19 @@
             "latex_name":"\\mathsf{P_{CTC}}",
             "description":"P with Closed Timelike Curves",
             "information":"P with access to CTC bits. It is equal to PSPACE [AW08]."
+        },
+        "coCequalsP":{
+            "name":"coCequalsP",
+            "latex_name":"\\mathsf{coC_{=}P}",
+            "description":"Complement of CequalsP",
+            "information":"The class of decision problems solvable by an NP machine such that the number of accepting paths is not equal to the number of rejecting paths, if and only if the answer is 'yes'. Equlas NQP [FGHP98].",
+            "coClass":"CequalsP"
+        },
+        "NQP":{
+            "name":"NQP",
+            "latex_name":"\\mathsf{NQP}",
+            "description":"Non-deterministic Quantum Polynomial-Time",
+            "information":"The class of decision problems solvable by a quantum Turing machine such that a particular accept state has a non-zero amplitude if and only if the answer is 'yes'. Equals coCequalsP [FGHP98]. Contrast with QMA."
         }
     }
 }

@@ -196,6 +196,21 @@
                 "year": "2008",
                 "copyright": "arXiv.org perpetual, non-exclusive license"
             }
+        },
+        {
+            "identifier": "FGHP98",
+            "citation_key": "https://doi.org/10.48550/arxiv.quant-ph/9812056",
+            "entry_type": "misc",
+            "fields": {
+                "doi": "10.48550/ARXIV.QUANT-PH/9812056",
+                "url": "https://arxiv.org/abs/quant-ph/9812056",
+                "author": "Fenner, Stephen and Green, Frederic and Homer, Steven and Pruim, Randall",
+                "keywords": "Quantum Physics (quant-ph), FOS: Physical sciences, FOS: Physical sciences",
+                "title": "Determining Acceptance Possibility for a Quantum Computation is Hard for the Polynomial Hierarchy",
+                "publisher": "arXiv",
+                "year": "1998",
+                "copyright": "Assumed arXiv.org perpetual, non-exclusive license to distribute this article for submissions made before January 2004"
+            }
         }
     ]
 }
