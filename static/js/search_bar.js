@@ -1,5 +1,7 @@
 // Add debounce timer at the top of the file
 let lastSelectTopResultTime = 0;
+// Index of the currently highlighted search result
+let currentSearchIndex = -1;
 
 // Add constant for mobile breakpoint
 const MOBILE_BREAKPOINT = 600;
@@ -236,13 +238,31 @@ $(document).ready(function(){
             $('#openRightSidebarMenu').prop('checked', false);
         }
 
-        // Clicking enter when searching will select the top search result
+        // Arrow key navigation within search results
+        if (body.hasClass('search-active')) {
+            if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+                event.preventDefault();
+
+                const itemsCount = $('#complexity_class_search_results li').length;
+                if (itemsCount === 0) return;
+
+                if (event.key === 'ArrowDown') {
+                    currentSearchIndex = (currentSearchIndex + 1) % itemsCount;
+                } else {
+                    currentSearchIndex = (currentSearchIndex - 1 + itemsCount) % itemsCount;
+                }
+
+                highlightSearchResult(currentSearchIndex);
+            }
+        }
+
+        // Clicking enter when searching will select the highlighted search result (or top if none)
         if (event.key === 'Enter' && body.hasClass('search-active')){
             event.preventDefault(); // Prevent form submission
             const now = Date.now();
-            if (now - lastSelectTopResultTime > 500) { // Only call if more than 500ms since last call
+            if (now - lastSelectTopResultTime > 500) { // debounce
                 lastSelectTopResultTime = now;
-                select_top_search_result();
+                select_search_result(currentSearchIndex);
             }
         }
     });
@@ -432,6 +452,10 @@ function search_vals(query) {
         });
         console.log('Added filtered classes to search results');
 
+        // Reset and highlight the first result by default
+        currentSearchIndex = filteredClasses.length > 0 ? 0 : -1;
+        highlightSearchResult(currentSearchIndex);
+
         // Render LaTeX using the utility function
         searchResults.querySelectorAll('.latex-name').forEach(element => {
             renderKaTeX(element.textContent, element);
@@ -575,4 +599,44 @@ function delete_class(class_name){
                 // Deleting the node from the graph
             }
         });
+}
+
+/* ======================================================
+   Helper to visually highlight the currently selected
+   <li> element inside the search results list.
+   ======================================================*/
+function highlightSearchResult(index) {
+    const listItems = $('#complexity_class_search_results li');
+    listItems.removeClass('search-selected');
+
+    if (index >= 0 && index < listItems.length) {
+        const item = listItems.eq(index);
+        item.addClass('search-selected');
+
+        // Ensure the highlighted item is visible in the scroll viewport
+        if (typeof item[0]?.scrollIntoView === 'function') {
+            item[0].scrollIntoView({ block: 'nearest' });
+        }
+    }
+}
+
+/* ======================================================
+   Toggle the checkbox of the search result at the given
+   index and trigger the same logic as a user click.
+   ======================================================*/
+function select_search_result(index) {
+    const listItems = $('#complexity_class_search_results li');
+    if (listItems.length === 0) return;
+
+    if (index < 0 || index >= listItems.length) {
+        index = 0; // Fallback to the first item
+    }
+
+    const targetItem = listItems.eq(index);
+    const checkbox = targetItem.find('input[type="checkbox"]')[0];
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        const changeEvent = new Event('change', { bubbles: true });
+        checkbox.dispatchEvent(changeEvent);
+    }
 }

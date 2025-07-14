@@ -648,6 +648,11 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     background-color: #edf2f7;
 }
 
+/* Highlight for keyboard navigation */
+.search-dropdown li.search-selected {
+    background-color: #cfe2ff; /* Light blue highlight */
+}
+
 /* Adjust container to maintain alignment */
 .search-dropdown .container {
     padding-left: 7px;
