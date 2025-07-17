@@ -334,6 +334,18 @@ function toggleForces(cb){
     draw_graph();
 } 
 
+// Phase for vertical ordering (1 = normal, -1 = inverted)
+window.phase = 1;
+
+// Toggle phase and redraw graph
+function switchPhase(){
+    window.phase = (window.phase === 1 ? -1 : 1);
+    if (typeof draw_graph === 'function') {
+        draw_graph();
+    }
+}
+window.switchPhase = switchPhase;
+
 function redrawVisualization() {
     // Clear the existing visualization
     vis_svg.selectAll("*").remove();

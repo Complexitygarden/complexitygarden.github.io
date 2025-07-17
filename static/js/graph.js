@@ -20,6 +20,8 @@ var radius = 50,
     node_distance = radius * 4,
     center_x = 50,
     center_y = 50;
+window.currentNodeRadius = radius;
+
 
 // User settings
 window.gravityEnabled = false; // Whether location is adjusted by gravity
@@ -55,6 +57,7 @@ function update_graph_values(width, height){
         // console.log("Large screen");
         radius = width / 8;
     }
+    window.currentNodeRadius = radius;
     strength = (-250)*radius,
     fontSize = radius/(2.5),
     node_distance = radius * 4,
@@ -173,6 +176,7 @@ function draw_graph(){
                                                : Math.random() * window.innerWidth);
         node.y = (Number.isFinite(node.savedY) ? node.savedY * window.innerHeight
                                                : Math.random() * window.innerHeight);
+        node.y = (window.phase === -1) ? ((-1)*node.y) : node.y;
         if (window.forcesEnabled){
             if (node.name in data.root_nodes || node.name in data.top_nodes){
                 node.fx = node.x;

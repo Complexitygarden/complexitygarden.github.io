@@ -595,6 +595,12 @@ class NetworkProcessor {
         // console.log('\n=== Setting Positions ===');
         this.setPositions();
 
+        const finalPositions = [...this.selectedClasses].map(id => {
+            const c = this.classes.get(id);
+            return { id, x: c.x, y: c.y, manual: c.manual, manualSavedX: c.manualSavedX, manualSavedY: c.manualSavedY };
+        });
+        console.log('Final final positions snapshot:', finalPositions);
+
         // Create nodes and links for the final network
         // console.log('\n=== Creating Final Network ===');
         const nodes = [];
@@ -1072,16 +1078,6 @@ class NetworkProcessor {
         }
 
         this.minLevel = 0;
-
-        // console.log('Levels set:', {
-        //     maxAvgLevel: this.maxAvgLevel,
-        //     maxMaxLevel: this.maxMaxLevel,
-        //     minLevel: this.minLevel,
-        //     levels: Object.keys(levels).map(level => ({
-        //         level: parseInt(level),
-        //         classes: levels[level].map(c => c.id)
-        //     }))
-        // });
     }
 
     setPositions() {
@@ -1092,6 +1088,7 @@ class NetworkProcessor {
             console.groupEnd();
             return;
         }
+
 
         // Capture starting positions for diff later
         const initialPositions = [...this.selectedClasses].map(id => {
@@ -1126,235 +1123,279 @@ class NetworkProcessor {
         const width = 1500;
         const height = 1000;
 
-        // console.log('Processing levels:', sortedLevels);
+        
+        const hadPrevSelection = this.prevSelectedClasses && this.prevSelectedClasses.size > 0;
 
-        // First pass: top to bottom
-        for (let i = 0; i < sortedLevels.length; i++) {
-            const currentLevel = parseInt(sortedLevels[i]);
-            const currentNodes = nodesPerLevel[currentLevel];
-            
-            // console.log(`\nProcessing level ${currentLevel} with ${currentNodes.length} nodes`);
+        const newClasses = [...this.selectedClasses].filter(id => !this.prevSelectedClasses.has(id));
 
-            if (i === 0) {
-                // For the first level, just space nodes evenly
-                const movableCountLvl0 = currentNodes.filter(n=>!n.manual).length;
-                let mIdx = 0;
-                for (let idx = 0; idx < currentNodes.length; idx++) {
-                     if (currentNodes[idx].manual) continue; // keep manual X
-                     currentNodes[idx].x = width * (mIdx + 1) / (movableCountLvl0 > 0 ? movableCountLvl0 + 1 : currentNodes.length + 1);
-                     mIdx += 1;
-                 }
-            } else {
-                // Calculate barycenter for each node
-                const nodePositions = [];
+
+        if (!hadPrevSelection || newClasses.length > 5) {
+            // First pass: top to bottom
+            for (let i = 0; i < sortedLevels.length; i++) {
+                const currentLevel = parseInt(sortedLevels[i]);
+                const currentNodes = nodesPerLevel[currentLevel];
+                
+                // console.log(`\nProcessing level ${currentLevel} with ${currentNodes.length} nodes`);
+
+                if (i === 0) {
+                    // For the first level, just space nodes evenly
+                    const movableCountLvl0 = currentNodes.filter(n=>!n.manual).length;
+                    let mIdx = 0;
+                    for (let idx = 0; idx < currentNodes.length; idx++) {
+                        if (currentNodes[idx].manual) continue; // keep manual X
+                        currentNodes[idx].x = width * (mIdx + 1) / (movableCountLvl0 > 0 ? movableCountLvl0 + 1 : currentNodes.length + 1);
+                        mIdx += 1;
+                    }
+                } else {
+                    // Calculate barycenter for each node
+                    const nodePositions = [];
+                    for (const node of currentNodes) {
+                        // Get nodes below this one that it's connected to
+                        const connectedNodes = Array.from(node.trim_contains)
+                            .filter(target => this.selectedClasses.has(target))
+                            .map(target => this.classes.get(target));
+
+                        let barycenter;
+                        if (connectedNodes.length > 0) {
+                            barycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
+                            // console.log(`Calculated barycenter for ${node.id} from ${connectedNodes.length} connected nodes: ${barycenter}`);
+                        } else {
+                            barycenter = width * (nodePositions.length + 1) / (currentNodes.filter(n=>!n.manual).length + 1);
+                            // console.log(`No connections for ${node.id}, using default position: ${barycenter}`);
+                        }
+                        nodePositions.push([node, barycenter]);
+                    }
+
+                    // Sort nodes by their barycenter
+                    nodePositions.sort((a, b) => a[1] - b[1]);
+
+                    // Assign x positions while maintaining minimum spacing
+                    const movableCount = currentNodes.filter(n=>!n.manual).length;
+                    const minSpacing = width / (movableCount > 0 ? movableCount + 1 : currentNodes.length + 1);
+                    let posCounter = 0;
+                    for (let idx = 0; idx < nodePositions.length; idx++) {
+                        // Skip manual nodes – their x stays as user set
+                        if (nodePositions[idx][0].manual) continue;
+                        nodePositions[idx][0].x = minSpacing * (posCounter + 1);
+                        posCounter += 1;
+                    }
+                }
+            }
+
+            // Second pass: bottom to top (averaging with first pass positions)
+            for (let i = sortedLevels.length - 1; i >= 0; i--) {
+                const currentLevel = parseInt(sortedLevels[i]);
+                const currentNodes = nodesPerLevel[currentLevel];
+
+                if (i === sortedLevels.length - 1) {
+                    continue; // Skip bottom level as it's already positioned
+                }
+
+                const nextLevel = parseInt(sortedLevels[i + 1]);
+                const nextNodes = nodesPerLevel[nextLevel];
+
+                // console.log(`\nAveraging positions for level ${currentLevel} with next level ${nextLevel}`);
+
+                // Calculate and average with bottom-up barycenter
                 for (const node of currentNodes) {
-                    // Get nodes below this one that it's connected to
-                    const connectedNodes = Array.from(node.trim_contains)
-                        .filter(target => this.selectedClasses.has(target))
-                        .map(target => this.classes.get(target));
+                    const connectedNodes = nextNodes.filter(n => 
+                        node.trim_contains.has(n.id) || n.trim_within.has(node.id)
+                    );
 
-                    let barycenter;
+                    if (node.manual) {
+                        continue; // Preserve manual X
+                    }
+
                     if (connectedNodes.length > 0) {
-                        barycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
-                        // console.log(`Calculated barycenter for ${node.id} from ${connectedNodes.length} connected nodes: ${barycenter}`);
-                    } else {
-                        barycenter = width * (nodePositions.length + 1) / (currentNodes.filter(n=>!n.manual).length + 1);
-                        // console.log(`No connections for ${node.id}, using default position: ${barycenter}`);
-                    }
-                    nodePositions.push([node, barycenter]);
-                }
-
-                // Sort nodes by their barycenter
-                nodePositions.sort((a, b) => a[1] - b[1]);
-
-                // Assign x positions while maintaining minimum spacing
-                const movableCount = currentNodes.filter(n=>!n.manual).length;
-                const minSpacing = width / (movableCount > 0 ? movableCount + 1 : currentNodes.length + 1);
-                let posCounter = 0;
-                for (let idx = 0; idx < nodePositions.length; idx++) {
-                    // Skip manual nodes – their x stays as user set
-                    if (nodePositions[idx][0].manual) continue;
-                    nodePositions[idx][0].x = minSpacing * (posCounter + 1);
-                    posCounter += 1;
-                }
-            }
-        }
-
-        // Second pass: bottom to top (averaging with first pass positions)
-        for (let i = sortedLevels.length - 1; i >= 0; i--) {
-            const currentLevel = parseInt(sortedLevels[i]);
-            const currentNodes = nodesPerLevel[currentLevel];
-
-            if (i === sortedLevels.length - 1) {
-                continue; // Skip bottom level as it's already positioned
-            }
-
-            const nextLevel = parseInt(sortedLevels[i + 1]);
-            const nextNodes = nodesPerLevel[nextLevel];
-
-            // console.log(`\nAveraging positions for level ${currentLevel} with next level ${nextLevel}`);
-
-            // Calculate and average with bottom-up barycenter
-            for (const node of currentNodes) {
-                const connectedNodes = nextNodes.filter(n => 
-                    node.trim_contains.has(n.id) || n.trim_within.has(node.id)
-                );
-
-                if (node.manual) {
-                    continue; // Preserve manual X
-                }
-
-                if (connectedNodes.length > 0) {
-                    const bottomUpBarycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
-                    // Average with current position
-                    node.x = (node.x + bottomUpBarycenter) / 2;
-                }
-            }
-        }
-
-        // Set y positions based on levels
-        for (const level in nodesPerLevel) {
-            const levelSpacing = height * 0.5;
-            const yPos = (maxLevel - parseInt(level)) * levelSpacing + levelSpacing / 2;
-            // console.log(`\nSetting y positions for level ${level}: y = ${yPos}`);
-
-            for (const node of nodesPerLevel[level]) {
-                const oldX = node.x;
-                const oldY = node.y;
-                if (!node.manual) {
-                    node.y = yPos;
-                } else {
-                    node.manualSavedY = yPos / 1000; // keep normalised copy in sync
-                }
-                if (!node.manual) {
-                    node.x = node.x * 3;
-                }
-                // console.log(`Position for ${node.id}: (${oldX}, ${oldY}) -> (${node.x}, ${node.y})`);
-            }
-        }
-
-        // === Post-processing: guarantee no overlaps ===
-        console.log("Actually post processing")
-        const minGapPx = 200;
-
-        const allNodes = Array.from(this.selectedClasses).map(id => this.classes.get(id));
-
-        // Helper to compute overlaps list
-        function findOverlaps(list) {
-            const pairs = [];
-            for (let i = 0; i < list.length; i++) {
-                for (let j = i + 1; j < list.length; j++) {
-                    const a = list[i], b = list[j];
-                    if (Math.hypot(b.x - a.x, b.y - a.y) < minGapPx) {
-                        pairs.push([a.id, b.id]);
+                        const bottomUpBarycenter = connectedNodes.reduce((sum, n) => sum + n.x, 0) / connectedNodes.length;
+                        // Average with current position
+                        node.x = (node.x + bottomUpBarycenter) / 2;
                     }
                 }
             }
-            return pairs;
-        }
 
-        console.groupCollapsed('[OverlapCheck] Starting overlap resolution');
-        const initialOverlaps = findOverlaps(allNodes);
-        console.log('Initial overlapping pairs (dist <', minGapPx, '):', initialOverlaps);
-
-        let overlapsResolved = 0;
-        for (let i = 0; i < allNodes.length; i++) {
-            for (let j = i + 1; j < allNodes.length; j++) {
-                const a = allNodes[i];
-                const b = allNodes[j];
-                const dx = b.x - a.x;
-                const dy = b.y - a.y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < minGapPx) {
-                    const shift = minGapPx - dist;
-                    console.log(`Shifting ${b.id} by ${shift}px to resolve overlap with ${a.id}`);
-                    b.x += shift; // push to the right
-                    if (b.manual) {
-                        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
-                        b.manualSavedX = b.x * x_scale;
-                    }
-                    overlapsResolved++;
-                }
-            }
-        }
-
-        const remainingOverlaps = findOverlaps(allNodes);
-        console.log('Remaining overlapping pairs after resolution:', remainingOverlaps);
-        console.log(`Resolved ${overlapsResolved} overlaps (min gap ${minGapPx}px)`);
-        console.groupEnd();
-
-        // Verify positions were set
-        // console.log('\n=== Verifying Positions ===');
-        for (const className of this.selectedClasses) {
-            const classData = this.classes.get(className);
-            if (classData) {
-                // console.log(`${className}: level=${classData.level}, position=(${classData.x}, ${classData.y})`);
-            }
-        }
-
-        // === Incremental layout adjustment for newly added classes ===
-        try {
-            if (!this.prevSelectedClasses) {
-                this.prevSelectedClasses = new Set();
-            }
-
-            const hadPrevSelection = this.prevSelectedClasses.size > 0;
-
-            const newClasses = [...this.selectedClasses].filter(id => !this.prevSelectedClasses.has(id));
-            console.log('Detected new classes:', newClasses);
-            if (!hadPrevSelection) {
-                console.log('No previous selection detected; using baseline layout, skipping incremental adjustments.');
-            } else if (newClasses.length > 0) {
+            // Set y positions based on levels
+            for (const level in nodesPerLevel) {
                 const levelSpacing = height * 0.5;
-                const prevMax = this.prevMaxLevel !== undefined ? this.prevMaxLevel : -1;
-                console.log('Previous max level', prevMax, 'Current max level', maxLevel);
+                const yPos = (maxLevel - parseInt(level)) * levelSpacing + levelSpacing / 2;
+                // console.log(`\nSetting y positions for level ${level}: y = ${yPos}`);
 
-                if (maxLevel > prevMax) {
-                    console.log('New level detected – baseline placement handled vertical spacing, no additional shift.');
+                for (const node of nodesPerLevel[level]) {
+                    const oldX = node.x;
+                    const oldY = node.y;
+                    if (!node.manual) {
+                        node.y = yPos;
+                    } else {
+                        node.manualSavedY = yPos / 1000; // keep normalised copy in sync
+                    }
+                    if (!node.manual) {
+                        node.x = node.x * 3;
+                    }
+                }
+            }
+        } else {
+            // Incremental additions
+            {
+                // === INCREMENTAL LAYOUT FOR NEWLY ADDED CLASSES ===
+                const newClasses = [...this.selectedClasses].filter(id => !this.prevSelectedClasses.has(id));
+                console.log('[Incremental] New classes detected:', newClasses);
+
+                if (newClasses.length === 0) {
+                    console.log('[Incremental] No new classes - nothing to place.');
                 } else {
-                    // No new level – place new nodes on their existing level
-                    const minSpacing = width / 10;
-                    console.log('No new level. Positioning new classes on existing level with minSpacing', minSpacing);
+                    // Determine if a brand-new level has appeared
+                    const prevMax = this.prevMaxLevel !== undefined ? this.prevMaxLevel : -1;
+                    const levelSpacing = height * 0.5; // same formula as baseline
+                    const addedNewLevel = maxLevel > prevMax;
+
+                    if (addedNewLevel) {
+                        // Shifting the nodes based on levels
+                        const shiftSummary = [];
+                        this.prevSelectedClasses.forEach(id => {
+                            const cls = this.classes.get(id);
+                            if (!cls) return;
+                            const oldLvl = this.prevLevels ? this.prevLevels.get(id) : undefined;
+                            if (oldLvl === undefined) return;
+                            const newLvl = cls.level;
+                            const diff = oldLvl - newLvl;
+                            if (diff === 0) return;
+                            const deltaY = diff * levelSpacing;
+                            cls.y += deltaY;
+                            if (cls.manual) cls.manualSavedY = cls.y / 1000;
+                            shiftSummary.push({ id, oldLvl, newLvl, deltaY });
+                        });
+                        if (shiftSummary.length) {
+                            console.log('[Incremental] Y-shifts applied due to level changes:', shiftSummary);
+                        }
+
+                        // If a new top level was added, push *all* pre-existing nodes down by one levelSpacing
+                        if (addedNewLevel) {
+                            const levelsInserted = maxLevel - prevMax; // number of new upper levels
+                            const globalShift = levelsInserted * levelSpacing;
+                            this.prevSelectedClasses.forEach(id => {
+                                const cls = this.classes.get(id);
+                                if (!cls) return;
+                                cls.y += globalShift;
+                                if (cls.manual) cls.manualSavedY = cls.y / 1000;
+                            });
+                            console.log(`[Incremental] Global shift: pushed all previous nodes down by ${globalShift}px to make space for ${levelsInserted} new level(s).`);
+                        }
+                    }
+
+                    // Re-align existing nodes whose level number changed
+                    
+
+                    // Helper to test overlap with current placed nodes – gap based on radius from graph.js
+                    const minGapPx = this.getMinGapPx();
+
+                    // Build up list incrementally so subsequent placements avoid earlier ones
+                    const placedSoFar = [...this.prevSelectedClasses].map(id => this.classes.get(id));
+
+                    // Sort new classes so that higher (top) levels are processed first; tie-break by id
+                    newClasses.sort((a, b) => {
+                        const la = this.classes.get(a).level;
+                        const lb = this.classes.get(b).level;
+                        if (la !== lb) return lb - la; // higher level first
+                        return a.localeCompare(b);
+                    });
+
                     newClasses.forEach(id => {
                         const cd = this.classes.get(id);
                         if (!cd) return;
+
                         const lvl = cd.level;
-                        console.log('Placing new class', id, 'on level', lvl);
-                        const others = (nodesPerLevel[lvl] || []).filter(n => n.id !== id);
-                        if (others.length > 0) {
-                            // Position vertically at average Y of peers
-                            cd.y = others.reduce((s, n) => s + n.y, 0) / others.length;
-                            // Choose an X near its neighbours / connections
-                            const connected = [
-                                ...Array.from(cd.trim_contains),
-                                ...Array.from(cd.trim_within)
-                            ].filter(t => this.selectedClasses.has(t)).map(t => this.classes.get(t));
-                            let candX;
-                            if (connected.length > 0) {
-                                candX = connected.reduce((s, n) => s + n.x, 0) / connected.length;
-                            } else {
-                                candX = others.reduce((s, n) => s + n.x, 0) / others.length;
-                            }
-                            // Avoid overlap by nudging rightwards until clear
-                            let offset = 0;
-                            let guard = 0;
-                            while (others.some(n => Math.abs((candX + offset) - n.x) < minSpacing) && guard < 10) {
-                                offset += minSpacing;
-                                guard += 1;
-                            }
-                            cd.x = candX + offset;
+                        // Compute y based on current peers (use their shifted position if any)
+                        const sameLevelPeers = placedSoFar.filter(n => n.level === lvl);
+                        if (sameLevelPeers.length > 0) {
+                            cd.y = sameLevelPeers[0].y; // align with first peer (all peers share same y)
+                        } else {
+                            cd.y = (maxLevel - lvl) * levelSpacing + levelSpacing / 2;
                         }
+
+                        // === Choose X ===
+                        // Gather neighbours to bias position
+                        const neighbourIds = [
+                            ...Array.from(cd.trim_contains),
+                            ...Array.from(cd.trim_within)
+                        ].filter(n => this.selectedClasses.has(n));
+
+                        const neighbourXs = neighbourIds
+                            .map(n => this.classes.get(n))
+                            .filter(Boolean)
+                            .map(n => n.x);
+
+                        const targetX = neighbourXs.length > 0
+                            ? neighbourXs.reduce((s, v) => s + v, 0) / neighbourXs.length
+                            : (width * 3) / 2; // centre of canvas
+
+                        // Build occupied list for this level from already placed nodes (peers)
+                        const peerXs = placedSoFar
+                            .filter(n => n.level === lvl)
+                            .map(n => n.x)
+                            .sort((a, b) => a - b);
+
+                        const leftBound = 0;
+                        const rightBound = width * 3;
+                        const gaps = [];
+
+                        const addGap = (start, end) => {
+                            if (end - start >= minGapPx) {
+                                gaps.push({ start, end });
+                            }
+                        };
+
+                        let prevEnd = leftBound;
+                        peerXs.forEach(px => {
+                            addGap(prevEnd, px - minGapPx);
+                            prevEnd = px + minGapPx;
+                        });
+                        addGap(prevEnd, rightBound);
+
+                        console.log(`[Incremental] Level ${lvl} gaps before placing ${id}:`, gaps);
+
+                        // Choose gap closest to targetX; if none, pick widest gap
+                        let chosenGap;
+                        if (gaps.length === 0) {
+                            console.warn(`[Incremental] No gaps available on level ${lvl}; fallback to random X`);
+                        } else {
+                            chosenGap = gaps.reduce((best, g) => {
+                                const dist = Math.abs(((g.start + g.end) / 2) - targetX);
+                                if (!best || dist < best.dist) {
+                                    return { gap: g, dist };
+                                }
+                                return best;
+                            }, null).gap;
+                        }
+
+                        let candidateX;
+                        if (chosenGap) {
+                            // Place near targetX within the gap
+                            candidateX = Math.min(Math.max(targetX, chosenGap.start + minGapPx / 2), chosenGap.end - minGapPx / 2);
+                        } else {
+                            // No gap, random
+                            candidateX = Math.random() * rightBound;
+                        }
+
+                        cd.x = candidateX;
+
+                        console.log(`[Incremental] Placed ${id} (level ${lvl}) at (${cd.x.toFixed(1)}, ${cd.y.toFixed(1)}). Neighbours:`, neighbourIds);
+
+                        placedSoFar.push(cd);
                     });
                 }
             }
-        } catch (e) {
-            console.error('Incremental positioning error', e);
         }
-        // === End incremental layout adjustment ===
+
+        
 
         // Preserve current state for the next incremental update
         this.prevSelectedClasses = new Set(this.selectedClasses);
         this.prevMaxLevel = maxLevel;
+        this.prevLevels = new Map();
+        for (const id of this.selectedClasses) {
+            const cls = this.classes.get(id);
+            if (cls) this.prevLevels.set(id, cls.level);
+        }
 
         // Output final positions and diff
         const finalPositions = [...this.selectedClasses].map(id => {
@@ -1362,11 +1403,6 @@ class NetworkProcessor {
             return { id, x: c.x, y: c.y, manual: c.manual };
         });
         console.log('Final positions snapshot:', finalPositions);
-        const moved = finalPositions.filter(fp => {
-            const ip = initialPositions.find(i => i.id === fp.id);
-            return ip && (ip.x !== fp.x || ip.y !== fp.y);
-        });
-        // console.log('Nodes moved during setPositions:', moved);
         console.groupEnd();
     }
 
@@ -1382,6 +1418,12 @@ class NetworkProcessor {
         const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
         cls.x = savedXNorm / x_scale; // reverse mapping used in getTrimmedNetworkJson
         cls.y = savedYNorm * 1000;    // reverse mapping used in getTrimmedNetworkJson
+        console.log('setManualPosition', name, savedXNorm, savedYNorm, cls.x, cls.y);
+    }
+
+    getMinGapPx() {
+        console.log('getMinGapPx', window.currentNodeRadius);
+        return window.currentNodeRadius ? window.currentNodeRadius * 3 : 500;
     }
 }
 
