@@ -182,6 +182,36 @@ function link_classes_information(information_text)
 
 }
 
+function getSessionId() {
+    let sid = localStorage.getItem('sessionId');
+    if (!sid) {
+        sid = crypto.randomUUID();
+        localStorage.setItem('sessionId', sid);
+    }
+    return sid;
+}
+
+function track_class_click(className) {
+
+    const url = "https://nu0naevqt8.execute-api.us-east-1.amazonaws.com/initial";
+    const now = new Date();
+    console.log("Attempting to track information...");
+
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            className: className,
+            timestamp: now.getTime(),
+            isoTimestamp: now.toISOString(),
+            userAgent: navigator.userAgent,
+            referrer: document.referrer,
+            sessionId: getSessionId()
+        })
+    }).catch(console.error);
+}
+
 
 
 // Open side window with class information
@@ -190,6 +220,8 @@ function open_side_window(d) {
     if (!classData) {
         return;
     }
+
+    track_class_click(classData.id);
 
     // Handle title with MathJax
     const titleElement = document.getElementById('class-title');
