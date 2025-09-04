@@ -499,6 +499,10 @@ function handleClassSelection(checkbox) {
         trackClassSelection(className + " (Deselected)");
     }
 
+    const action = checkbox.checked ? 'Selected' : 'Deselected';
+    track_class_click(className, { action });
+    console.log(`[TRACKING] ${className} and action: ${action}...`);
+
     console.log('Selected classes after update:', 
         Array.from(window.networkProcessor.getSelectedClasses()));
     

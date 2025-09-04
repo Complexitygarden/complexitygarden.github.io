@@ -1,3 +1,8 @@
+//Function which tracks information of the user when something is clicked
+//Attach track_class_click() to wherever you want to track class information (for example when opening description)
+
+
+
 function getSessionId() {
     let sid = localStorage.getItem('sessionId');
     if (!sid) {
@@ -7,24 +12,27 @@ function getSessionId() {
     return sid;
 }
 
-function track_class_click(className) {
+function track_class_click(className, extra = {}) {
 
     const url = "https://e3yc4hoe81.execute-api.us-east-1.amazonaws.com/log";
     const now = new Date();
     console.log("Attempting to track information...");
+    console.log(navigator.language);
+    console.log(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
     const body = {
         operation: "create",
         payload: {
             Item: {
-                //pk: `class#${className}`,
-                //sk: `ts#${now.toISOString()}`,
                 className: className,
+                actionSource: extra.action || null,
                 timestamp: now.getTime(),
                 isoTimestamp: now.toISOString(),
                 userAgent: navigator.userAgent,
                 referrer: document.referrer || null,
-                sessionId: getSessionId()
+                sessionId: getSessionId(),
+                language : navigator.language, //"en-US"
+                timeZone : Intl.DateTimeFormat().resolvedOptions().timeZone // "America/New_York.. "
             }
         }
     }

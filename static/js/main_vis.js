@@ -192,7 +192,9 @@ function open_side_window(d) {
         return;
     }
 
-    track_class_click(classData.id);
+    const action = "Description";
+
+    track_class_click(classData.id, { action });
 
     // Handle title with MathJax
     const titleElement = document.getElementById('class-title');
