@@ -211,6 +211,25 @@
                 "year": "1998",
                 "copyright": "Assumed arXiv.org perpetual, non-exclusive license to distribute this article for submissions made before January 2004"
             }
+        },
+        {
+            "identifier": "FFKL03",
+            "citation_key": "Fenner_2003",
+            "entry_type": "article",
+            "fields": {
+                "title": "An oracle builder’s toolkit",
+                "volume": "182",
+                "ISSN": "0890-5401",
+                "url": "http://dx.doi.org/10.1016/S0890-5401(03)00018-X",
+                "DOI": "10.1016/s0890-5401(03)00018-x",
+                "number": "2",
+                "journal": "Information and Computation",
+                "publisher": "Elsevier BV",
+                "author": "Fenner, Stephen and Fortnow, Lance and Kurtz, Stuart A. and Li, Lide",
+                "year": "2003",
+                "month": "may",
+                "pages": "95–136"
+            }
         }
     ]
 }

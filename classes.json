@@ -443,6 +443,24 @@
             "latex_name":"\\mathsf{NQP}",
             "description":"Non-deterministic Quantum Polynomial-Time",
             "information":"The class of decision problems solvable by a quantum Turing machine such that a particular accept state has a non-zero amplitude if and only if the answer is 'yes'. Equals coCequalsP [FGHP98]. Contrast with QMA."
+        },
+        "APP":{
+            "name":"APP",
+            "latex_name":"\\mathsf{APP}",
+            "description":"Amplified PP",
+            "information":"The class of decision problems for which for all polynomials $p(n)$, there exist two GapP functions $f,g$ such that <br> <br> <ul> <li> If the answer is yes, then $1 > f(x)/g(1^n) > 1-2^{-p(n)}$ </li> <li> If the answer is no, $0 < f(x)/g(1^n) < 2^{-p(n)}$</li></ul> <br> <br> It has been shown that it is low for PP."
+        },
+        "ExistsBPP":{
+            "name":"ExistsBPP",
+            "latex_name":"\\mathsf{\\exists BPP}",
+            "description":"BPP with an existential quantifier",
+            "information":"The class of decision problems for which there exists a BPP machine M such that, for all inputs x,<ul> <li> If x is a 'yes' instance, there exists a y such that M(x,y) accepts. </li> <li> If x is a 'no' instance, M(x,y) rejects for all y. </li></ul> Alternatively, it is defined as $\\mathsf{NP}^{\\mathsf{BPP}}$. It appears obviously equal to MA, but there exists oracle separating them [FFKL03]."
+        },
+        "ParityP":{
+            "name":"ParityP",
+            "latex_name": "\\mathsf{\\oplus P}",
+            "description": "Parity P",
+            "information": "The class of decision problems solvable by an NP machine M such that, <ul> <li> M has an odd number of accepting paths if x is a 'yes' instance </li> <li> M has an even number of accepting paths if x is a 'no' instance. </li></ul>"
         }
     }
 }

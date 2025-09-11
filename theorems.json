@@ -557,6 +557,41 @@
             "type":"containment",
             "small":"coNP",
             "large":"CequalsP"
+        },
+        {
+            "type":"containment",
+            "small":"APP",
+            "large":"PP"
+        },
+        {
+            "type":"containment",
+            "small":"AWPP",
+            "large":"APP"
+        },
+        {
+            "type":"containment",
+            "small":"ExistsBPP",
+            "large":"MA"
+        },
+        {
+            "type":"containment",
+            "small":"NP",
+            "large":"ExistsBPP"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"ExistsBPP"
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"ParityP"
+        },
+        {
+            "type":"containment",
+            "small":"ParityP",
+            "large":"PsharpP"
         }
     ]
 }
