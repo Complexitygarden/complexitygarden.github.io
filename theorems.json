@@ -3,42 +3,50 @@
         {
             "type": "containment",
             "small": "EXP",
-            "large": "NEXP"
+            "large": "NEXP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "PSPACE",
-            "large": "EXP"
+            "large": "EXP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "BQP",
-            "large": "QCMA"
+            "large": "QCMA",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "SZK",
-            "large": "PDQP"
+            "large": "PDQP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "BQP",
-            "large": "PDQP"
+            "large": "PDQP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "P",
-            "large": "NP"
+            "large": "NP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "PDQP",
-            "large": "CH"
+            "large": "CH",
+            "relativizes":"1"
         },
         {
             "type": "containment",
             "small": "BPP",
-            "large": "BQP"
+            "large": "BQP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
@@ -48,7 +56,8 @@
         {
             "type": "containment",
             "small": "BQP",
-            "large": "DQP"
+            "large": "DQP",
+            "relativizes":"1"
         },
         {
             "type": "containment",
@@ -58,7 +67,8 @@
         {
             "type": "containment",
             "small": "L",
-            "large": "NL"
+            "large": "NL",
+            "relativizes":"1"
         },
         {
             "type":"containment",
@@ -68,17 +78,20 @@
         {
             "type":"containment",
             "small": "NP",
-            "large": "MA"
+            "large": "MA",
+            "relativizes":"1"
         },
         {
             "type":"containment",
             "small": "BPP",
-            "large": "MA"
+            "large": "MA",
+            "relativizes":"1"
         },
         {
             "type":"containment",
             "small": "MA",
-            "large": "QCMA"
+            "large": "QCMA",
+            "relativizes":"1"
         },
         {
             "type":"containment",
@@ -88,7 +101,8 @@
         {
             "type":"containment",
             "small": "QMA",
-            "large": "QMA(2)"
+            "large": "QMA(2)",
+            "relativizes":"1"
         },
         {
             "type":"containment",
@@ -576,22 +590,37 @@
         {
             "type":"containment",
             "small":"NP",
-            "large":"ExistsBPP"
+            "large":"ExistsBPP",
+            "relativizes":"1"
         },
         {
             "type":"containment",
             "small":"BPP",
-            "large":"ExistsBPP"
+            "large":"ExistsBPP",
+            "relativizes":"1"
         },
         {
             "type":"containment",
             "small":"P",
-            "large":"ParityP"
+            "large":"ParityP",
+            "relativizes":"1"
         },
         {
             "type":"containment",
             "small":"ParityP",
-            "large":"PsharpP"
+            "large":"MP",
+            "relativizes":"1"
+        },
+        {
+            "type":"containment",
+            "small":"MP",
+            "large":"PsharpP",
+            "relativizes":"1"
+        }
+    ],
+    "oracle_separations":[
+        {
+            
         }
     ]
 }

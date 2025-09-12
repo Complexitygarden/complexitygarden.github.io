@@ -5,7 +5,8 @@
             "latex_name": "\\mathsf{ALL}",
             "top": true,
             "description": "The class of all languages.",
-            "information": "ALL is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to ALL, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]."
+            "information": "ALL is the complexity class of all languages. <br>It has shown that various non-uniform classes are equal to ALL, such as $\\mathsf{PP/rpoly}$, $\\mathsf{PostBQP/qpoly}$ [Aar04], $\\mathsf{QIP/qpoly}$ [Raz05] and $\\mathsf{PDQP/qpoly}$ [Aar18]. Additionally, note that $\\mathsf{coALL} = ALL$.",
+            "complement":"ALL"
         },
         "NONE": {
             "name": "NONE",
@@ -18,7 +19,7 @@
             "name": "PP",
             "latex_name": "\\mathsf{PP}",
             "description": "Probabilistic Polynomial Time",
-            "information": "The class of decision problems solvable by an NP machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul>"
+            "information": "The class of decision problems solvable by an NP machine such that <br> <br> <ul> <li> If the answer is yes, then at least half of the computational paths accept </li> <li> If the answer is no, then less than half of the computational paths accept.</li></ul> Defined in [Gil74]. <br> Can be generalized to CH. <br> It has been shown that BPP [KSTT92], BQP [FR98] and $\\mathsf{YQP^*}$ [Yir24] are low for PP (i.e. $\\mathsf{PP}^{\\mathsf{YQP^*}}= PP$)."
         },
         "QMA": {
             "name": "QMA",
@@ -356,7 +357,7 @@
             "name":"PsharpP",
             "latex_name":"\\mathsf{P^{\\#P}}",
             "description":"P with #P oracle",
-            "information":"The class of decision problems solvable by a P machine with a #P oracle. Equals $\\mathsf{P^{\\mathsf{PP}}}$.<br>Contains PH. [Tod91]."
+            "information":"The class of decision problems solvable by a P machine with a #P oracle. Equals $\\mathsf{P^{\\mathsf{PP}}}$.<br>Contains PH [Tod91]."
         },
         "coNP":{
             "name":"coNP",
@@ -461,6 +462,12 @@
             "latex_name": "\\mathsf{\\oplus P}",
             "description": "Parity P",
             "information": "The class of decision problems solvable by an NP machine M such that, <ul> <li> M has an odd number of accepting paths if x is a 'yes' instance </li> <li> M has an even number of accepting paths if x is a 'no' instance. </li></ul>"
+        },
+        "MP":{
+            "name":"MP",
+            "latex_name":"\\mathsf{MP}",
+            "description":"Middle-Bit P",
+            "information":"The class of decision problems for which there exists a $\\mathsf{\\#P}$ function $f$ such that x is a 'yes' instance iff the middle bit of $f(x)$ is 1 (by middle bit, we mean the value of $f(x)$ at index $\\left \\lfloor{1/2 |f(x)|}\\right \\rfloor $). Defined in [GKRST95]."
         }
     }
 }
