@@ -45,12 +45,6 @@
         {
             "type": "containment",
             "small": "BPP",
-            "large": "BQP",
-            "relativizes":"1"
-        },
-        {
-            "type": "containment",
-            "small": "BPP",
             "large": "SZK"
         },
         {
@@ -615,6 +609,18 @@
             "type":"containment",
             "small":"MP",
             "large":"PsharpP",
+            "relativizes":"1"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"NISQ",
+            "relativizes":"1"
+        },
+        {
+            "type":"containment",
+            "small":"NISQ",
+            "large":"BQP",
             "relativizes":"1"
         }
     ],
