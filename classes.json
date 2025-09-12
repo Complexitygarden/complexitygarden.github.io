@@ -472,7 +472,8 @@
         "NISQ":{
             "name":"NISQ",
             "latex_name":"\\mathsf{NISQ}",
-            "description":"The class of decision problems solvable by a BPP machine with access to a noisy quantum device. Defined in [CCHL23]."
+            "description":"Noisy intermediate-scale quantum",
+            "information":"The class of decision problems solvable by a BPP machine with access to a noisy quantum device. Defined in [CCHL23]."
         }
     }
 }

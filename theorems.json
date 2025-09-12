@@ -77,12 +77,6 @@
         },
         {
             "type":"containment",
-            "small": "BPP",
-            "large": "MA",
-            "relativizes":"1"
-        },
-        {
-            "type":"containment",
             "small": "MA",
             "large": "QCMA",
             "relativizes":"1"
