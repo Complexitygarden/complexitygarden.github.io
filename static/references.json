@@ -333,6 +333,53 @@
                 "year": "2023",
                 "month": "sep"
             }
+        },
+        {
+            "identifier": "JKNN11",
+            "citation_key": "https://doi.org/10.48550/arxiv.1111.5306",
+            "entry_type": "article",
+            "fields": {
+                "doi": "10.48550/ARXIV.1111.5306",
+                "url": "https://arxiv.org/abs/1111.5306",
+                "author": "Jordan, Stephen P. and Kobayashi, Hirotada and Nagaj, Daniel and Nishimura, Harumichi",
+                "keywords": "Quantum Physics (quant-ph), FOS: Physical sciences, FOS: Physical sciences",
+                "title": "Achieving perfect completeness in classical-witness quantum Merlin-Arthur proof systems",
+                "publisher": "arXiv",
+                "year": "2011",
+                "copyright": "arXiv.org perpetual, non-exclusive license"
+            }
+        },
+        {
+            "identifier": "GS15",
+            "citation_key": "Gharibian_2015",
+            "entry_type": "inbook",
+            "fields": {
+                "title": "Ground State Connectivity of Local Hamiltonians",
+                "ISBN": "9783662476727",
+                "ISSN": "1611-3349",
+                "url": "http://dx.doi.org/10.1007/978-3-662-47672-7_50",
+                "DOI": "10.1007/978-3-662-47672-7_50",
+                "booktitle": "Automata, Languages, and Programming",
+                "publisher": "Springer Berlin Heidelberg",
+                "author": "Gharibian, Sevag and Sikora, Jamie",
+                "year": "2015",
+                "pages": "617â€“628"
+            }
+        },
+        {
+            "identifier": "KKR04",
+            "citation_key": "https://doi.org/10.48550/arxiv.quant-ph/0406180",
+            "entry_type": "article",
+            "fields": {
+                "doi": "10.48550/ARXIV.QUANT-PH/0406180",
+                "url": "https://arxiv.org/abs/quant-ph/0406180",
+                "author": "Kempe, Julia and Kitaev, Alexei and Regev, Oded",
+                "keywords": "Quantum Physics (quant-ph), Computational Complexity (cs.CC), FOS: Physical sciences, FOS: Physical sciences, FOS: Computer and information sciences, FOS: Computer and information sciences",
+                "title": "The Complexity of the Local Hamiltonian Problem",
+                "publisher": "arXiv",
+                "year": "2004",
+                "copyright": "Assumed arXiv.org perpetual, non-exclusive license to distribute this article for submissions made before January 2004"
+            }
         }
     ]
 }

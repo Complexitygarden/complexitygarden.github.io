@@ -25,13 +25,13 @@
             "name": "QMA",
             "latex_name": "\\mathsf{QMA}",
             "description": "Quantum Merlin-Arthur",
-            "information": "The class of decision problems such that 'yes' instances can be verified efficiently. That is: <br> <br> <ul> <li>If the answer is 'yes', then there exists a quantum state such that the verifier accepts with probability at least 2/3</li> <li>If the answer is 'no', then for all quantum states the verifier rejects with probability at least 2/3.</li></ul>"
+            "information": "The class of decision problems such that 'yes' instances can be verified efficiently. That is: <br> <br> <ul> <li>If the answer is 'yes', then there exists a quantum state such that the verifier accepts with probability at least 2/3</li> <li>If the answer is 'no', then for all quantum states the verifier rejects with probability at least 2/3.</li></ul> The $k$-local Hamiltonian problem, for $k \\geq 2$, is QMA-complete [KKR04]."
         },
         "QCMA": {
             "name": "QCMA",
             "latex_name": "\\mathsf{QCMA}",
             "description": "Quantum Classical Merlin-Arthur",
-            "information": "The class of decision problems for which a 'yes' answer can be efficiently verified by a family of uniform quantum circuits with access to a classical proof. Concretely: <br> <br> <ul> <li>For all 'yes' instances, there exists a poly(|x|) size classical proof such that the verifier accepts with probability at least 2/3</li> <li> For a 'no' instance, for all such classical proofs the verifier rejects with probability at least 2/3.</li></ul>"
+            "information": "The class of decision problems for which a 'yes' answer can be efficiently verified by a family of uniform quantum circuits with access to a classical proof. Concretely: <br> <br> <ul> <li>For all 'yes' instances, there exists a poly(|x|) size classical proof such that the verifier accepts with probability at least 2/3</li> <li> For a 'no' instance, for all such classical proofs the verifier rejects with probability at least 2/3.</li></ul> It is equal to $\\mathsf{QCMA}_1$, which is QCMA where the acceptance probability in the yes-case is 1 [JKNN11]. <br> A QCMA-complete problem is GSCONN (Ground State Connectivity), defined in [GS15]. Essentially given a Hamiltonian H and two ground states a,b, the goal is determining whether there exists a sequence of local unitary operations which transforms a to b while every intermediate state is in the ground space of H.<br> It is an open problem whether there exists a classical oracle which separates QCMA from QMA."
         },
         "QIP": {
             "name": "QIP",
@@ -110,7 +110,7 @@
             "name": "MA",
             "latex_name": "\\mathsf{MA}",
             "description": "Merlin-Arthur",
-            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP. Similar to AM, except Arthur does not send a question to Merlin and Merlin simply provides a \"proof\"."
+            "information": "Class of decision problems solvable by a Merlin-Arthur protocol. A probabilistic version of NP. Similar to AM, except Arthur does not send a question to Merlin and Merlin simply provides a \"proof\". <br> $\\mathsf{MA}_1$, MA with perfect completeness (i.e. in the 'yes'-case, it always accepts), is equal to MA."
         },
         "AM": {
             "name": "AM",

@@ -13,7 +13,6 @@ This repository contains the code for the complexity garden - a tool whose goal 
  - BQL
  - Quantum Circuit Classes
  - Catalytic Computation
- - NQP, coNQP, coC_{=}P
  - QRG, SQG
  - QSZK, PZK, Non-interactive versions
  - YP, YPP, YQP
