@@ -4,43 +4,43 @@
             "type": "containment",
             "small": "EXP",
             "large": "NEXP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "PSPACE",
             "large": "EXP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "BQP",
             "large": "QCMA",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "SZK",
             "large": "PDQP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "BQP",
             "large": "PDQP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "P",
             "large": "NP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
             "small": "PDQP",
             "large": "CH",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
@@ -51,7 +51,7 @@
             "type": "containment",
             "small": "BQP",
             "large": "DQP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type": "containment",
@@ -62,7 +62,7 @@
             "type": "containment",
             "small": "L",
             "large": "NL",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
@@ -73,13 +73,13 @@
             "type":"containment",
             "small": "NP",
             "large": "MA",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small": "MA",
             "large": "QCMA",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
@@ -90,7 +90,7 @@
             "type":"containment",
             "small": "QMA",
             "large": "QMA(2)",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
@@ -579,43 +579,97 @@
             "type":"containment",
             "small":"NP",
             "large":"ExistsBPP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"BPP",
             "large":"ExistsBPP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"P",
             "large":"ParityP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"ParityP",
             "large":"MP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"MP",
             "large":"PsharpP",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"BPP",
             "large":"NISQ",
-            "relativizes":"1"
+            "relativizes":1
         },
         {
             "type":"containment",
             "small":"NISQ",
             "large":"BQP",
-            "relativizes":"1"
+            "relativizes":1
+        },
+        {
+            "type":"equality",
+            "a":"EXP",
+            "b":"RG",
+            "relativizes":0
+        },
+        {
+            "type":"equality",
+            "a":"EXP",
+            "b":"QRG",
+            "relativizes":0
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"RG(2)",
+            "relativizes":0
+        },
+        {
+            "type":"containment",
+            "small":"RG(1)",
+            "large":"PSPACE",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"MA",
+            "large":"RG(1)",
+            "relativizes":1
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"QRG(2)",
+            "relativizes":0
+        },
+                {
+            "type":"containment",
+            "small":"QRG(1)",
+            "large":"PSPACE",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"QMA",
+            "large":"QRG(1)",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"RG(1)",
+            "large":"QRG(1)",
+            "relativizes":1
         }
     ],
     "oracle_separations":[

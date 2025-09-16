@@ -474,6 +474,42 @@
             "latex_name":"\\mathsf{NISQ}",
             "description":"Noisy intermediate-scale quantum",
             "information":"The class of decision problems solvable by a BPP machine with access to a noisy quantum device. Defined in [CCHL23]."
+        },
+        "RG":{
+            "name":"RG",
+            "latex_name":"\\mathsf{RG}",
+            "description":"Refereed Games",
+            "information":"The class of decision problems solvable by a BPP verifier who can exchange a polynomial number of messages with two competing provers. The provers are computationally unbounded and each is trying to convince you of a different output. Note that $RG\\subseteq EXP$ relativizes [KM92], but the opposite direction is not known to relativize. Additionally, $\\mathsf{RG(k)}$ denotes RG where exactly $k$ messages are exchanged with each prover."
+        },
+        "QRG":{
+            "name":"QRG",
+            "latex_name":"\\mathsf{QRG}",
+            "description": "Quantum Refereed Games",
+            "information": "Same as RG, except the verifier is a BQP machine and they can exchange quantum messages with the provers. Equality with EXP was shown in [GW07]."
+        },
+        "RG(1)":{
+            "name":"RG(1)",
+            "latex_name":"\\mathsf{RG(1)}",
+            "description": "One-turn Refereed Games",
+            "information":"RG where the verifier receives a single message from each prover."
+        },
+        "RG(2)":{
+            "name":"RG(2)",
+            "latex_name":"\\mathsf{RG(2)}",
+            "description": "Two-turn (one-round) Refereed Games",
+            "information":"RG where the verifier exchanges only two messages with each prover. Note that the verifiers messages are sent in parallel."
+        },
+        "QRG(2)":{
+            "name":"QRG(2)",
+            "latex_name":"\\mathsf{QRG(2)}",
+            "description": "Two-turn (one-round) Quantum Refereed Games",
+            "information": "QRG where the verifier exchanges only two messages with each prover. Note that the verifiers messages are sent in parallel. Additionally, its definition coincides with the definition of the second level of QPH [GSSSY18]."
+        },
+        "QRG(1)":{
+            "name":"QRG(1)",
+            "latex_name":"\\mathsf{QRG(1)}",
+            "description": "One-turn Quantum Refereed Games",
+            "information": "QRG here the verifier receives a single message from each prover."
         }
     }
 }
