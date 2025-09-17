@@ -17,6 +17,7 @@ This repository contains the code for the complexity garden - a tool whose goal 
  - QSZK, PZK, Non-interactive versions
  - YP, YPP, YQP
  - NE(EEEEEE)
+ - BH, QH
 
 ### Ideas:
 - Allowing for other graphs to be created - for communication complexity, cryptographic assumptions or relational complexity classes.

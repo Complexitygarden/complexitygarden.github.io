@@ -510,6 +510,12 @@
             "latex_name":"\\mathsf{QRG(1)}",
             "description": "One-turn Quantum Refereed Games",
             "information": "QRG here the verifier receives a single message from each prover."
+        },
+        "QEPH":{
+            "name":"QEPH",
+            "latex_name":"\\mathsf{QEPH}",
+            "description": "Quantum Entangle PH",
+            "information": "QPH, except the provers may entangle their proofs. Defined in [GY24], who showed that it collapses to its second level (even for polynomially-many rounds)."
         }
     }
 }

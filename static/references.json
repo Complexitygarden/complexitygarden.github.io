@@ -417,6 +417,22 @@
                 "pages": "565â€“574",
                 "collection": "STOC07"
             }
+        },
+        {
+            "identifier": "GY24",
+            "citation_key": "https://doi.org/10.4230/lipics.ccc.2024.6",
+            "entry_type": "inproceedings",
+            "fields": {
+                "doi": "10.4230/LIPICS.CCC.2024.6",
+                "url": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CCC.2024.6",
+                "author": "Grewal, Sabee and Yirka, Justin",
+                "keywords": "Polynomial hierarchy, Entangled proofs, Correlated proofs, Minimax, Theory of computation → Interactive proof systems, Theory of computation → Complexity classes, Theory of computation → Quantum complexity theory",
+                "language": "en",
+                "title": "The Entangled Quantum Polynomial Hierarchy Collapses",
+                "publisher": "Schloss Dagstuhl – Leibniz-Zentrum für Informatik",
+                "year": "2024",
+                "copyright": "Creative Commons Attribution 4.0 International license"
+            }
         }
     ]
 }

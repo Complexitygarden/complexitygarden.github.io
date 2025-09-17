@@ -670,6 +670,18 @@
             "small":"RG(1)",
             "large":"QRG(1)",
             "relativizes":1
+        },
+        {
+            "type":"equality",
+            "a":"QEPH",
+            "b":"QRG(1)",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"QEPH",
+            "large":"QPH",
+            "relativizes":1
         }
     ],
     "oracle_separations":[
