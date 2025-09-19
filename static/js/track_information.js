@@ -66,6 +66,7 @@ function track_class_click(className, extra = {}) {
 /**
  * Representation of an object that will track class information
  * 
+ * TODO Actually track the information into AWS
  */
 class SearchBurstTracker 
 {
