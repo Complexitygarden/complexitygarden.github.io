@@ -6,6 +6,12 @@ let currentSearchIndex = -1;
 // Add constant for mobile breakpoint
 const MOBILE_BREAKPOINT = 600;
 
+const searchTracker = new SearchBurstTracker(
+    1000,
+    2,
+    (value, meta) => console.log("[search]", meta.reason, value, meta)
+);
+
 $(document).ready(function(){
     const body = $('body');
     const searchBar = $('#complexity_class_search_bar');
@@ -197,6 +203,7 @@ $(document).ready(function(){
     // Show dropdown and overlay when focusing on search
     searchBar.on('focus', function() {
         body.addClass('search-active');
+        searchTracker.onFocus(searchBar.val());
         search_vals(''); // Show all classes initially
     });
     
@@ -259,6 +266,7 @@ $(document).ready(function(){
         // Clicking enter when searching will select the highlighted search result (or top if none)
         if (event.key === 'Enter' && body.hasClass('search-active')){
             event.preventDefault(); // Prevent form submission
+            searchTracker.onEnter($('#complexity_class_search_bar').val()); //Track information when enter is clicked
             const now = Date.now();
             if (now - lastSelectTopResultTime > 500) { // debounce
                 lastSelectTopResultTime = now;
@@ -272,8 +280,9 @@ $(document).ready(function(){
         event.stopPropagation();
     });
     
-    searchBar.on('input', function(){
+    searchBar.on('input', function(e){
         var query = $(this).val();
+        searchTracker.onInput(query, e.originalEvent);
         search_vals(query);
     });
     
@@ -450,7 +459,7 @@ function search_vals(query) {
             const label = `<label class="container"><span class="latex-name">${d.latex_name}</span>${checkbox}<span class="checkmark"></span></label>`;
             searchResults.innerHTML += `<li>${infoIcon}${label}</li>`;
         });
-        console.log('Added filtered classes to search results');
+        //console.log('Added filtered classes to search results');
 
         // Reset and highlight the first result by default
         currentSearchIndex = filteredClasses.length > 0 ? 0 : -1;
