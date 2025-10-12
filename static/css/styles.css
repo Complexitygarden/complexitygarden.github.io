@@ -56,6 +56,13 @@ body {
 }
 
 /*References Page */
+/* Enable scrolling specifically for references page */
+html.reference-page,
+body.reference-page {
+    overflow-y: auto !important;
+    height: auto !important;
+}
+
 .reference-header{
     display: flex;
     justify-content: center;
