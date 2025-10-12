@@ -820,6 +820,18 @@
             "type":"containment",
             "small":"ParityL",
             "large":"NC2"
+        },
+        {
+            "type":"containment",
+            "small":"BPP",
+            "large":"FH",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"FH",
+            "large":"BQP",
+            "relativizes":1
         }
     ],
     "oracle_separations":[
