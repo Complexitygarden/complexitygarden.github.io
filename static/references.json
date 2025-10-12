@@ -433,6 +433,159 @@
                 "year": "2024",
                 "copyright": "Creative Commons Attribution 4.0 International license"
             }
+        },
+        {
+            "identifier": "Sav70",
+            "citation_key": "Savitch_1970",
+            "entry_type": "article",
+            "fields": {
+                "title": "Relationships between nondeterministic and deterministic tape complexities",
+                "volume": "4",
+                "ISSN": "0022-0000",
+                "url": "http://dx.doi.org/10.1016/S0022-0000(70)80006-X",
+                "DOI": "10.1016/s0022-0000(70)80006-x",
+                "number": "2",
+                "journal": "Journal of Computer and System Sciences",
+                "publisher": "Elsevier BV",
+                "author": "Savitch, Walter J.",
+                "year": "1970",
+                "month": "apr",
+                "pages": "177â€“192"
+            }
+        },
+        {
+            "identifier": "FR21",
+            "citation_key": "Fefferman_2021",
+            "entry_type": "inproceedings",
+            "fields": {
+                "series": "STOC ’21",
+                "title": "Eliminating intermediate measurements in space-bounded Quantum computation",
+                "url": "http://dx.doi.org/10.1145/3406325.3451051",
+                "DOI": "10.1145/3406325.3451051",
+                "booktitle": "Proceedings of the 53rd Annual ACM SIGACT Symposium on Theory of Computing",
+                "publisher": "ACM",
+                "author": "Fefferman, Bill and Remscrim, Zachary",
+                "year": "2021",
+                "month": "jun",
+                "pages": "1343–1356",
+                "collection": "STOC ’21"
+            }
+        },
+        {
+            "identifier": "HO02",
+            "entry_type": "book",
+            "fields": {
+                "author": "Hemaspaandra, Lane A. and Ogihara, Mitsunori",
+                "year": "2002",
+                "publisher": "Springer-Verlag",
+                "title": "The Complexity Theory Companion",
+                "url": "https://www.cs.rochester.edu/u/lane/=companion"
+            }
+        },
+        {
+            "identifier": "Imm88",
+            "citation_key": "Immerman_1988",
+            "entry_type": "article",
+            "fields": {
+                "title": "Nondeterministic Space is Closed under Complementation",
+                "volume": "17",
+                "ISSN": "1095-7111",
+                "url": "http://dx.doi.org/10.1137/0217058",
+                "DOI": "10.1137/0217058",
+                "number": "5",
+                "journal": "SIAM Journal on Computing",
+                "publisher": "Society for Industrial & Applied Mathematics (SIAM)",
+                "author": "Immerman, Neil",
+                "year": "1988",
+                "month": "oct",
+                "pages": "935â€“938"
+            }
+        },
+        {
+            "identifier": "Sze88",
+            "citation_key": "Szelepcs_nyi_1988",
+            "entry_type": "article",
+            "fields": {
+                "title": "The method of forced enumeration for nondeterministic automata",
+                "volume": "26",
+                "ISSN": "1432-0525",
+                "url": "http://dx.doi.org/10.1007/bf00299636",
+                "DOI": "10.1007/bf00299636",
+                "number": "3",
+                "journal": "Acta Informatica",
+                "publisher": "Springer Science and Business Media LLC",
+                "author": "Szelepcs�nyi, R�bert",
+                "year": "1988",
+                "month": "nov",
+                "pages": "279–284"
+            }
+        },
+        {
+            "identifier": "GTWB90",
+            "entry_type": "inproceedings",
+            "fields": {
+                "title": "Generalized kolmogorov complexity in relativized separations",
+                "author": "Gavaldà, Ricard and Torenvliet, Leen and Watanabe, Osamu and Balcázar, José L.",
+                "booktitle": "Mathematical Foundations of Computer Science 1990",
+                "year": "1990",
+                "publisher": "Springer Berlin Heidelberg",
+                "address": "Berlin, Heidelberg",
+                "pages": "269--276"
+            }
+        },
+        {
+            "identifier": "Nis93",
+            "citation_key": "Nisan_1993",
+            "entry_type": "article",
+            "fields": {
+                "title": "On read once vs. multiple access to randomness in logspace",
+                "volume": "107",
+                "ISSN": "0304-3975",
+                "url": "http://dx.doi.org/10.1016/0304-3975(93)90258-U",
+                "DOI": "10.1016/0304-3975(93)90258-u",
+                "number": "1",
+                "journal": "Theoretical Computer Science",
+                "publisher": "Elsevier BV",
+                "author": "Nisan, Noam",
+                "year": "1993",
+                "month": "jan",
+                "pages": "135â€“144"
+            }
+        },
+        {
+            "identifier": "Kor22",
+            "citation_key": "https://doi.org/10.4230/lipics.ccc.2022.37",
+            "entry_type": "inproceedings",
+            "fields": {
+                "doi": "10.4230/LIPICS.CCC.2022.37",
+                "url": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.CCC.2022.37",
+                "author": "Korten, Oliver",
+                "keywords": "Pseudorandomness, circuit complexity, total functions, Theory of computation → Complexity theory and logic",
+                "language": "en",
+                "title": "Derandomization from Time-Space Tradeoffs",
+                "publisher": "Schloss Dagstuhl – Leibniz-Zentrum für Informatik",
+                "year": "2022",
+                "copyright": "Creative Commons Attribution 4.0 International license"
+            }
+        },
+        {
+            "identifier": "HRV00",
+            "citation_key": "Hertrampf_2000",
+            "entry_type": "article",
+            "fields": {
+                "title": "A note on closure properties of logspace MOD classes",
+                "volume": "75",
+                "ISSN": "0020-0190",
+                "url": "http://dx.doi.org/10.1016/S0020-0190(00)00091-0",
+                "DOI": "10.1016/s0020-0190(00)00091-0",
+                "number": "3",
+                "journal": "Information Processing Letters",
+                "publisher": "Elsevier BV",
+                "author": "Hertrampf, Ulrich and Reith, Steffen and Vollmer, Heribert",
+                "year": "2000",
+                "month": "aug",
+                "pages": "91â€“93"
+            }
         }
     ]
 }

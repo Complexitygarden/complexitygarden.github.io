@@ -10,6 +10,11 @@
     "completed": true
   },
   {
+    "id":"fix-positioning",
+    "text":"Fix positioning of classes",
+    "completed":true
+  },
+  {
     "id": "feature-mobile-version",
     "text": "Improve mobile version",
     "completed": false

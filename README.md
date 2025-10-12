@@ -10,14 +10,15 @@ This repository contains the code for the complexity garden - a tool whose goal 
 2. Theorems may be added in the theorems.json file. You must define what type of theorem it is and which classes it applies to.
 
 ### Classes to add:
- - BQL
  - Quantum Circuit Classes
- - Catalytic Computation
- - SQG, S2P
+ - SQG, S2P, L2P
  - QSZK, PZK, Non-interactive versions
  - YP, YPP, YQP
- - NE(EEEEEE)
+ - E, NE
  - BH, QH
+ - Binary Decision Diagram Classes (OBDD)
+ - NP\cap coNP
+ - LOGCFL, UP, US, FewP, SL
 
 ### Ideas:
 - Allowing for other graphs to be created - for communication complexity, cryptographic assumptions or relational complexity classes.
