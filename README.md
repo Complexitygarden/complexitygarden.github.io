@@ -17,7 +17,6 @@ This repository contains the code for the complexity garden - a tool whose goal 
  - E, NE
  - BH, QH
  - Binary Decision Diagram Classes (OBDD)
- - NP\cap coNP
  - LOGCFL, UP, US, FewP, SL
  - FO
 
