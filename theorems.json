@@ -32,12 +32,6 @@
         },
         {
             "type": "containment",
-            "small": "P",
-            "large": "NP",
-            "relativizes":1
-        },
-        {
-            "type": "containment",
             "small": "PDQP",
             "large": "CH",
             "relativizes":1
@@ -409,11 +403,6 @@
             "type":"containment",
             "small":"PH",
             "large":"PsharpP"
-        },
-        {
-            "type":"containment",
-            "small":"P",
-            "large":"coNP"
         },
         {
             "type":"containment",
@@ -831,6 +820,24 @@
             "type":"containment",
             "small":"FH",
             "large":"BQP",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"P",
+            "large":"NPcapcoNP",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"NPcapcoNP",
+            "large":"coNP",
+            "relativizes":1
+        },
+        {
+            "type":"containment",
+            "small":"NPcapcoNP",
+            "large":"NP",
             "relativizes":1
         }
     ],

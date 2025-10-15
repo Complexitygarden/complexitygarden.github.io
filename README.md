@@ -19,6 +19,7 @@ This repository contains the code for the complexity garden - a tool whose goal 
  - Binary Decision Diagram Classes (OBDD)
  - NP\cap coNP
  - LOGCFL, UP, US, FewP, SL
+ - FO
 
 ### Ideas:
 - Allowing for other graphs to be created - for communication complexity, cryptographic assumptions or relational complexity classes.

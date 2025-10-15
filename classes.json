@@ -612,6 +612,12 @@
             "latex_name":"\\mathsf{FH}",
             "description":"Fourier Hierarchy",
             "information":"Defined in [Shi05] as $\\cup_k \\mathsf{FH_k}$ where $\\mathsf{FH_k}$ is the class of decison problems solvable using a uniform famiily of polynomial-sized quantum circuits with at most $k$ Fourier transforms and all other gates preserving the computational basis. Note that $\\mathsf{FH_0} = $ P and $\\mathsf{FH_1} = $ BPP."
+        },
+        "NPcapcoNP":{
+            "name":"NPcapcoNP",
+            "latex_name":"\\mathsf{NP \\cap coNP}",
+            "description":"Intersection of NP and coNP",
+            "information":"The class of decision problems both in NP and coNP."
         }
     }
 }
