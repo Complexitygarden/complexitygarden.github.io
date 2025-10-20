@@ -839,6 +839,11 @@
             "small":"NPcapcoNP",
             "large":"NP",
             "relativizes":1
+        },
+        {
+            "type":"equality",
+            "a":"PSPACE",
+            "b":"AP"
         }
     ],
     "oracle_separations":[
