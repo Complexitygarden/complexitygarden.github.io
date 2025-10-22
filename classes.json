@@ -623,7 +623,7 @@
             "name":"AP",
             "latex_name":"\\mathsf{AP}",
             "description":"Alternating P",
-            "information":"Class of decision problems solvable by a polynomial-time <i>alternating</i> Turing machine. An alternating Turing machine is a generalization of a non-deterministic Turing machine where except for the accept and reject states, each state is labeled with a $\\exists$ or $\\forall$ quantifier. The machine accepts if and only if they accept over the appropriate quantifier."
+            "information":"Class of decision problems solvable by a polynomial-time <i>alternating</i> Turing machine. An alternating Turing machine is a generalization of a non-deterministic Turing machine where except for the accept and reject states, each state is labeled with a $\\exists$ or $\\forall$ quantifier. The machine accepts if and only if they accept over the appropriate quantifier with which this state was labeled."
         }
     }
 }
