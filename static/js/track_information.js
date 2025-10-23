@@ -52,10 +52,10 @@ function track_class_click(className, extra = {}) {
         return res.json();
     })
     .then((data) => {
-        console.debug("Tracked:", data);
+        //console.debug("Tracked:", data);
     })
     .catch((err) => {
-        console.error("Track failed:", err);
+        //console.error("Track failed:", err);
     })
 }
 

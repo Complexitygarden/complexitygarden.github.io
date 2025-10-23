@@ -375,6 +375,27 @@ input[class="openRightSidebarMenu"] {
     transition: all 0.3s;
 }
 
+.headerButton {
+  position: absolute;
+  z-index: 99;
+  top: 37px;          /* align with your header icons */
+  right: 100px;       /* to the left of the share link */
+  display: inline-block;
+  padding: 4px 10px;
+  line-height: 20px;
+  background: #2c5282;
+  color: #fff;
+  border: 2px solid #2c5282;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+}
+.headerButton:hover {
+  background: #426daa;
+  border-color: #1a365d;
+}
+
 /* X state transformations */
 input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle .i-circle {
     transform: rotate(135deg);

@@ -127,7 +127,6 @@ function redrawVisualization() {
     create_visualisation();
 }
 
-//should this function be in a new js file or is it alright here?
 function link_classes_information(information_text)
 {
     const all_classes = networkProcessor.getAllClasses();
