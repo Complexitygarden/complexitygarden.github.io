@@ -20,9 +20,11 @@ async function initializeVisualization() {
         window.networkProcessor = new NetworkProcessor();
         
         // Load data files
+        url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
+        url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
         const [classesData, theoremsData] = await Promise.all([
-            fetch('../classes.json').then(response => response.json()),
-            fetch('../theorems.json').then(response => response.json())
+            fetch(url_classes).then(response => response.json()),
+            fetch(url_theorems).then(response => response.json())
         ]);
 
         // Initialize network processor with data
