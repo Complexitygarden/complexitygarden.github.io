@@ -94,7 +94,8 @@ class NetworkProcessor {
             coClass: data.coClass || null,
             manual: false,     // User has moved this node manually
             manualSavedX: null,
-            manualSavedY: null
+            manualSavedY: null,
+            definition: data.definition || false
         });
         this.classesIdentifiers.push(name);
         // console.log(`Class ${name} added successfully. Current class count: ${this.classes.size}`);
