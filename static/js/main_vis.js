@@ -346,32 +346,15 @@ function determineDeterministic(classData) {
 function populateBriefDescription(classData) {
     const briefDescElement = document.getElementById('class-brief-description');
     
-    // Create a brief description from the information field or description field
-    let briefDesc = '';
-    
-    if (classData.information) {
-        // Extract first 1-2 sentences from information
-        const infoText = classData.information.replace(/<[^>]*>/g, ' '); // Remove HTML tags
-        const sentences = infoText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-        briefDesc = sentences.slice(0, 2).join('. ').trim();
-        if (briefDesc && !briefDesc.endsWith('.')) {
-            briefDesc += '.';
-        }
-    } else if (classData.description) {
-        // Fallback to description if information is not available
-        briefDesc = classData.description;
-    }
-    
-    if (!briefDesc) {
-        briefDesc = 'No description available for this complexity class.';
-    }
+    // Use the class description (like "Polynomial Space" for PSPACE)
+    let briefDesc = classData.description || 'No description available for this complexity class.';
     
     briefDescElement.innerHTML = link_classes_information(briefDesc);
 }
 
 function populateDefinition(classData) {
     const descElement = document.getElementById('class-description');
-    descElement.innerHTML = link_classes_information(classData.description) || 'No description available';
+    descElement.innerHTML = link_classes_information(classData.information) || 'No definition available';
 }
 
 function populateUsefulInformationNew(classData, enhancedData) {
