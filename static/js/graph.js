@@ -129,7 +129,7 @@ function delete_old_graph(){
 }
 
 var colorScale = d3.scaleLinear()
-    .range(["#63B3ED", "#2C5282"]);
+    .range(["#8FBC8F", "#2D5016"]);
 
 // Main function which draws the graph
 function draw_graph(){
@@ -281,29 +281,29 @@ function draw_graph(){
                 .append("polyline")
                 .attr("class", "link-visible")
                 .attr("stroke-width", 2)
-                .style("stroke", "#2c5282")
+                .style("stroke", "#2D5016")
                 .style("fill", "none")
                 .attr("points", get_points);
         })
         .on("mouseover", function(d) {
             d3.select(this).select(".link-visible")
-                .style("stroke", "#4299e1")
+                .style("stroke", "#4F7942")
                 .attr("stroke-width", 12);
             // Arrow highlight
             arrowLayer.selectAll(".arrow")
                 .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", "#4299e1")
-                .style("fill", "#4299e1");
+                .style("stroke", "#4F7942")
+                .style("fill", "#4F7942");
         })
         .on("mouseout", function(d) {
             d3.select(this).select(".link-visible")
-                .style("stroke", "#2c5282")
+                .style("stroke", "#2D5016")
                 .attr("stroke-width", 2);
             // Arrow reset
             arrowLayer.selectAll(".arrow")
                 .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", "#2c5282")
-                .style("fill", "#2c5282");
+                .style("stroke", "#2D5016")
+                .style("fill", "#2D5016");
         })
         .on("click", function(d) {
             d3.event.preventDefault();
@@ -326,8 +326,8 @@ function draw_graph(){
         .append("path")
         .attr("class", "arrow")
         .attr("stroke-width", 2)
-        .style("stroke", "#2c5282")
-        .style("fill", "#2c5282")
+        .style("stroke", "#2D5016")
+        .style("fill", "#2D5016")
         .attr("d", function(d) {
             var midX = (d.source.x + d.target.x) / 2;
             var midY = (d.source.y + d.target.y) / 2;
@@ -337,23 +337,23 @@ function draw_graph(){
         .on("mouseover", function(d) {
             // Arrow highlight
             d3.select(this)
-                .style("stroke", "#4299e1")
-                .style("fill", "#4299e1");
+                .style("stroke", "#4F7942")
+                .style("fill", "#4F7942");
             // Arrow highlight
             link.filter(l => l.source === d.source && l.target === d.target)
                 .select(".link-visible")
-                .style("stroke", "#4299e1")
+                .style("stroke", "#4F7942")
                 .attr("stroke-width", 12);
         })
         .on("mouseout", function(d) {
             // Arrow reset
             d3.select(this)
-                .style("stroke", "#2c5282")
-                .style("fill", "#2c5282");
+                .style("stroke", "#2D5016")
+                .style("fill", "#2D5016");
             // Arrow reset
             link.filter(l => l.source === d.source && l.target === d.target)
                 .select(".link-visible")
-                .style("stroke", "#2c5282")
+                .style("stroke", "#2D5016")
                 .attr("stroke-width", 2);
         })
         .on("click", function(d) {
@@ -382,7 +382,7 @@ function draw_graph(){
             .on("mouseover", function(d) {
                 d3.select(this).select("circle")
                     .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
-                    .attr("stroke", "#2c5282");
+                    .attr("stroke", "#2D5016");
                 // Show delete button on hover
                 d3.select(this).select(".delete-button")
                     .style("display", "block");
@@ -430,7 +430,7 @@ function draw_graph(){
                 // Background circle
                 g.append("circle")
                     .attr("r", radius/6)
-                    .attr("fill", "#3182CE")
+                    .attr("fill", "#2D5016")
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1);
                 // Plus sign
