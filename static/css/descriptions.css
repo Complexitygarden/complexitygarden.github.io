@@ -52,6 +52,41 @@ h1 {
   flex: 1;
   min-width: 200px;
 }
+
+.search-wrapper:focus-within .search-dropdown {
+  display: block;
+}
+
+.search-result-item {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.search-result-item label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.search-result-item input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+
 .search-icon {
   position: absolute;
   left: 0.75rem;

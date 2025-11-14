@@ -1,7 +1,7 @@
-
 import { updateURLWithConfig, decodeConfiguration } from './url_state.js';
 
 let complexityClasses = [];
+let allClasses = [];
 
 
 const normalizeKey = k => (k || '').trim().replace(/\s+/g, '').toUpperCase();
@@ -36,6 +36,10 @@ async function buildComplexityClasses() {
     const data = await response.json();
     
     const classMap = data.class_list || data;
+    allClasses = Object.keys(classMap)
+      .map(k => normalizeKey(k))
+      .map(k => classMap[k] ? toCardShape(k, classMap[k]) : null)
+      .filter(Boolean);
 
     const keys = selected.length ? selected : Object.keys(classMap);
 
@@ -48,95 +52,14 @@ async function buildComplexityClasses() {
 }
 
 
-const complexityClasses2 = [
-      {
-        id: "p",
-        name: "P",
-        fullName: "Polynomial Time",
-        category: "Time Complexity",
-        definition: "The class of decision problems that can be solved by a deterministic Turing machine in polynomial time. These are problems considered efficiently solvable.",
-        examples: ["Sorting algorithms", "Shortest path (Dijkstra's algorithm)", "Linear programming"],
-        applications: ["Database queries", "Network routing", "Optimization in various domains"],
-        keyRelationships: ["P ⊆ NP", "P ⊆ PSPACE", "P ⊆ BQP"]
-      },
-      {
-        id: "np",
-        name: "NP",
-        fullName: "Nondeterministic Polynomial Time",
-        category: "Time Complexity",
-        definition: "The class of decision problems for which a 'yes' answer can be verified in polynomial time by a deterministic Turing machine, or equivalently, solved in polynomial time by a nondeterministic Turing machine.",
-        examples: ["Boolean satisfiability (SAT)", "Traveling salesman decision problem", "Graph coloring"],
-        applications: ["Cryptography", "Scheduling problems", "Resource allocation"],
-        keyRelationships: ["P ⊆ NP", "NP ⊆ PSPACE", "NP ⊆ EXPTIME"]
-      },
-      {
-        id: "pspace",
-        name: "PSPACE",
-        fullName: "Polynomial Space",
-        category: "Space Complexity",
-        definition: "The class of decision problems that can be solved by a Turing machine using polynomial space. Time is not constrained, only memory usage.",
-        examples: ["Quantified Boolean formula (QBF)", "Many two-player games", "Regular expression equivalence"],
-        applications: ["Game theory", "Formal verification", "Planning problems"],
-        keyRelationships: ["NP ⊆ PSPACE", "PSPACE ⊆ EXPTIME", "PSPACE = NPSPACE (Savitch's theorem)"]
-      },
-      {
-        id: "bqp",
-        name: "BQP",
-        fullName: "Bounded-Error Quantum Polynomial Time",
-        category: "Quantum Complexity",
-        definition: "The class of decision problems solvable by a quantum computer in polynomial time with an error probability of at most 1/3 for all instances.",
-        examples: ["Integer factorization (Shor's algorithm)", "Discrete logarithm", "Simulation of quantum systems"],
-        applications: ["Cryptanalysis", "Quantum simulation", "Optimization problems"],
-        keyRelationships: ["P ⊆ BQP", "BQP ⊆ PSPACE", "Relationship with NP is unknown"]
-      },
-      {
-        id: "exptime",
-        name: "EXPTIME",
-        fullName: "Exponential Time",
-        category: "Time Complexity",
-        definition: "The class of decision problems solvable by a deterministic Turing machine in exponential time, i.e., in O(2^p(n)) time where p(n) is a polynomial function of n.",
-        examples: ["Generalized chess on n×n board", "Certain protocol verification problems", "Some model checking problems"],
-        applications: ["Theoretical computer science", "Formal methods", "Complexity theory research"],
-        keyRelationships: ["P ⊊ EXPTIME (proven)", "NP ⊆ EXPTIME", "PSPACE ⊆ EXPTIME"]
-      },
-      {
-        id: "np-complete",
-        name: "NP-Complete",
-        fullName: "NP-Complete",
-        category: "Time Complexity",
-        definition: "A problem is NP-complete if it is in NP and every problem in NP can be reduced to it in polynomial time. These are the 'hardest' problems in NP.",
-        examples: ["Boolean satisfiability (SAT)", "Vertex cover", "Hamiltonian path", "Subset sum"],
-        applications: ["Scheduling", "Resource allocation", "Circuit design", "Bioinformatics"],
-        keyRelationships: ["NP-Complete ⊆ NP", "If any NP-Complete problem is in P, then P = NP", "All NP-Complete problems are polynomial-time reducible to each other"]
-      },
-      {
-        id: "l",
-        name: "L",
-        fullName: "Logarithmic Space",
-        category: "Space Complexity",
-        definition: "The class of decision problems decidable by a deterministic Turing machine using logarithmic space. The input tape is read-only and doesn't count toward space usage.",
-        examples: ["Path existence in directed graphs", "Undirected graph connectivity (USTCON)", "Palindrome recognition"],
-        applications: ["Memory-constrained computation", "Streaming algorithms", "Small-space data structures"],
-        keyRelationships: ["L ⊆ NL", "L ⊆ P", "L ⊆ PSPACE"]
-      },
-      {
-        id: "nl",
-        name: "NL",
-        fullName: "Nondeterministic Logarithmic Space",
-        category: "Space Complexity",
-        definition: "The class of decision problems decidable by a nondeterministic Turing machine using logarithmic space.",
-        examples: ["Reachability in directed graphs", "2-SAT", "Strongly connected components"],
-        applications: ["Graph algorithms", "Database query optimization", "Network analysis"],
-        keyRelationships: ["L ⊆ NL", "NL ⊆ P", "NL = coNL (Immerman-Szelepcsényi theorem)"]
-      }
-    ];
-
 let currentSearch = '';
 let currentCategory = 'all';
 
 function initializeApp() {
     const categories = ['all', ...new Set(complexityClasses.map(c => c.category))];
     const categoryFilter = document.getElementById('categoryFilter');
+    const searchInput = document.getElementById('searchInput');
+    const searchDropdown = document.getElementById('searchDropdown');
       
     categories.forEach(category => {
         const option = document.createElement('option');
@@ -145,9 +68,22 @@ function initializeApp() {
         categoryFilter.appendChild(option);
     });
 
-    document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchInput.addEventListener('focus', (e) => {
+      searchDropdown.style.display = 'block';
+      updateSearchResults();
+    })
+
+        // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-wrapper')) {
+            searchDropdown.style.display = 'none';
+        }
+    });
+
+
+    searchInput.addEventListener('input', (e) => {
         currentSearch = e.target.value;
-        filterAndRender();
+        updateSearchResults();
     });
 
     document.getElementById('categoryFilter').addEventListener('change', (e) => {
@@ -155,8 +91,75 @@ function initializeApp() {
         filterAndRender();
     });
 
+    updateSearchResults();
     filterAndRender();
 }
+
+function handleClassToggle(checkbox)
+{
+  console.log("Class toggle has happened");
+  const classId = checkbox.value;
+  const isChecked = checkbox.checked;
+
+  if (isChecked)
+  {
+    //add the class
+
+    //if the class we clicked on is not in our current selection
+    if (!complexityClasses.find(c => c.id === classId))
+    {
+
+      //then we get the id to add from the big list of classes
+      const classToAdd = allClasses.find(c => c.id === classId);
+      {
+        //this should aways run, just as a safety measure
+        if (classToAdd)
+        {
+          complexityClasses.push(classToAdd);
+        }
+      }
+    }
+  }
+  else 
+  {
+    //this is already in and we must remove in
+    complexityClasses = complexityClasses.filter(c => c.id !== classId);  
+  }
+
+  filterAndRender();
+}
+
+
+function updateSearchResults() {
+  const filtered = allClasses.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(currentSearch.toLowerCase()) ||
+    item.fullName.toLowerCase().includes(currentSearch.toLowerCase());
+    return matchesSearch;
+  });
+
+  const selectedIds = new Set(complexityClasses.map(c => c.id));
+
+  searchDropdown.innerHTML = filtered.map(item => 
+    `
+    <div class="search-result-item">
+      <label>
+        <input 
+          type="checkbox"
+          class="class-checkbox"
+          value="${item.id}"
+          ${selectedIds.has(item.id) ? 'checked' : ''}
+        >
+        <span>${item.name}</span>
+      </label>
+    </div>
+    `
+  ).join('');
+
+  searchDropdown.querySelectorAll('.class-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => handleClassToggle(e.target));
+  });
+}
+
 
 function filterAndRender() {
     const filtered = complexityClasses.filter(item => {
