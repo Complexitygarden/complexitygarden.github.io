@@ -1266,6 +1266,7 @@ class NetworkProcessor {
         const sortedLevels = Object.keys(nodesPerLevel).sort((a, b) => parseInt(a) - parseInt(b));
         const width = 1500;
         const height = 1000;
+        const scaledWidth = width * 3;
 
         // console.log('Processing levels:', sortedLevels);
 
@@ -1353,75 +1354,108 @@ class NetworkProcessor {
             }
         }
 
-        // Set y positions based on levels
+        // Set y positions based on levels, keeping manual offsets relative to level baseline
+        const levelYMap = {};
         for (const level in nodesPerLevel) {
             const levelSpacing = height * 0.5;
             const yPos = (maxLevel - parseInt(level)) * levelSpacing + levelSpacing / 2;
+            levelYMap[level] = yPos;
             // console.log(`\nSetting y positions for level ${level}: y = ${yPos}`);
 
             for (const node of nodesPerLevel[level]) {
                 const oldX = node.x;
                 const oldY = node.y;
-                if (!node.manual) {
-                    node.y = yPos;
+                if (node.manual) {
+                    const offset = Number.isFinite(node.manualYOffset) ? node.manualYOffset : (oldY ?? yPos) - yPos;
+                    node.manualYOffset = offset;
+                    node.y = yPos + offset;
+                    node.manualSavedY = node.y / 1000;
                 } else {
-                    node.manualSavedY = yPos / 1000; // keep normalised copy in sync
-                }
-                if (!node.manual) {
+                    node.y = yPos;
                     node.x = node.x * 3;
                 }
                 // console.log(`Position for ${node.id}: (${oldX}, ${oldY}) -> (${node.x}, ${node.y})`);
             }
         }
+        this.levelYMap = levelYMap;
 
         // === Post-processing: guarantee no overlaps ===
-        console.log("Actually post processing")
-        const minGapPx = 200;
+        console.log("Actually post processing");
+        const minGapPx = 500;
+        const minBound = minGapPx / 2;
+        let maxBound = scaledWidth - minGapPx / 2;
+        if (maxBound <= minBound) {
+            maxBound = minBound + minGapPx;
+        }
+        const layoutBounds = {
+            minX: minBound,
+            maxX: maxBound
+        };
 
         const allNodes = Array.from(this.selectedClasses).map(id => this.classes.get(id));
 
-        // Helper to compute overlaps list
-        function findOverlaps(list) {
+        const findOverlaps = (list) => {
             const pairs = [];
             for (let i = 0; i < list.length; i++) {
                 for (let j = i + 1; j < list.length; j++) {
-                    const a = list[i], b = list[j];
-                    if (Math.hypot(b.x - a.x, b.y - a.y) < minGapPx) {
+                    const a = list[i];
+                    const b = list[j];
+                    const sameLevel = (
+                        Number.isFinite(a.level) && Number.isFinite(b.level)
+                            ? a.level === b.level
+                            : Math.abs((a.y || 0) - (b.y || 0)) < 1
+                    );
+                    if (!sameLevel) continue;
+                    if (Math.abs(b.x - a.x) < minGapPx) {
                         pairs.push([a.id, b.id]);
                     }
                 }
             }
             return pairs;
-        }
+        };
+
+        const clampX = (val) => Math.max(layoutBounds.minX, Math.min(layoutBounds.maxX, val));
+
+        const resolveLevelCollisions = (levelNodes) => {
+            const maxIterations = 25;
+            for (let iter = 0; iter < maxIterations; iter++) {
+                let adjusted = false;
+                const ordered = [...levelNodes].sort((a, b) => a.x - b.x);
+                for (let i = 0; i < ordered.length - 1; i++) {
+                    const left = ordered[i];
+                    const right = ordered[i + 1];
+
+                    if ((left.manual && right.manual) || !Number.isFinite(left.x) || !Number.isFinite(right.x)) {
+                        continue;
+                    }
+
+                    const gap = right.x - left.x;
+                    if (gap >= minGapPx) continue;
+
+                    const deficit = minGapPx - gap;
+                    if (!left.manual && !right.manual) {
+                        left.x = clampX(left.x - deficit / 2);
+                        right.x = clampX(right.x + deficit / 2);
+                    } else if (left.manual) {
+                        right.x = clampX(right.x + deficit);
+                    } else if (right.manual) {
+                        left.x = clampX(left.x - deficit);
+                    }
+                    adjusted = true;
+                }
+                if (!adjusted) break;
+            }
+        };
 
         console.groupCollapsed('[OverlapCheck] Starting overlap resolution');
         const initialOverlaps = findOverlaps(allNodes);
-        console.log('Initial overlapping pairs (dist <', minGapPx, '):', initialOverlaps);
+        console.log('Initial overlapping pairs (same level, gap <', minGapPx, '):', initialOverlaps);
 
-        let overlapsResolved = 0;
-        for (let i = 0; i < allNodes.length; i++) {
-            for (let j = i + 1; j < allNodes.length; j++) {
-                const a = allNodes[i];
-                const b = allNodes[j];
-                const dx = b.x - a.x;
-                const dy = b.y - a.y;
-                const dist = Math.hypot(dx, dy);
-                if (dist < minGapPx) {
-                    const shift = minGapPx - dist;
-                    console.log(`Shifting ${b.id} by ${shift}px to resolve overlap with ${a.id}`);
-                    b.x += shift; // push to the right
-                    if (b.manual) {
-                        const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
-                        b.manualSavedX = b.x * x_scale;
-                    }
-                    overlapsResolved++;
-                }
-            }
-        }
+        Object.keys(nodesPerLevel).forEach(level => resolveLevelCollisions(nodesPerLevel[level]));
 
         const remainingOverlaps = findOverlaps(allNodes);
         console.log('Remaining overlapping pairs after resolution:', remainingOverlaps);
-        console.log(`Resolved ${overlapsResolved} overlaps (min gap ${minGapPx}px)`);
+        console.log(`Resolved ${initialOverlaps.length - remainingOverlaps.length} overlaps (min gap ${minGapPx}px)`);
         console.groupEnd();
 
         // Verify positions were set
@@ -1454,7 +1488,7 @@ class NetworkProcessor {
                     console.log('New level detected – baseline placement handled vertical spacing, no additional shift.');
                 } else {
                     // No new level – place new nodes on their existing level
-                    const minSpacing = width / 10;
+                    const minSpacing = minGapPx;
                     console.log('No new level. Positioning new classes on existing level with minSpacing', minSpacing);
                     newClasses.forEach(id => {
                         const cd = this.classes.get(id);
@@ -1479,13 +1513,15 @@ class NetworkProcessor {
                             // Avoid overlap by nudging rightwards until clear
                             let offset = 0;
                             let guard = 0;
-                            while (others.some(n => Math.abs((candX + offset) - n.x) < minSpacing) && guard < 10) {
+                            while (others.some(n => Number.isFinite(n.x) && Math.abs((candX + offset) - n.x) < minSpacing) && guard < 25) {
                                 offset += minSpacing;
                                 guard += 1;
                             }
-                            cd.x = candX + offset;
+                            cd.x = clampX(candX + offset);
                         }
                     });
+                    // Re-run collision resolution now that we've nudged the new classes
+                    Object.keys(nodesPerLevel).forEach(level => resolveLevelCollisions(nodesPerLevel[level]));
                 }
             }
         } catch (e) {
@@ -1523,6 +1559,11 @@ class NetworkProcessor {
         const x_scale = (1 + (this.maxAvgLevel + 1) / 25) / 3000;
         cls.x = savedXNorm / x_scale; // reverse mapping used in getTrimmedNetworkJson
         cls.y = savedYNorm * 1000;    // reverse mapping used in getTrimmedNetworkJson
+        const levelKey = cls.level != null ? String(cls.level) : null;
+        const baselineY = (levelKey && this.levelYMap && this.levelYMap[levelKey] !== undefined)
+            ? this.levelYMap[levelKey]
+            : cls.y;
+        cls.manualYOffset = cls.y - baselineY;
     }
 }
 
