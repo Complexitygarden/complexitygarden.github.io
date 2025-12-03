@@ -160,22 +160,162 @@ class NetworkProcessor {
     }
 
     processEqualityTheorems() {
-        // This method is now just for logging and verification
-        // console.log('Verifying equality theorems...');
+        // Propagate containment relationships through equality chains
+        // console.log('Processing equality theorems and propagating relationships...');
         const equalityTheorems = this.theorems.filter(t => t.type === 'equality');
         // console.log(`Found ${equalityTheorems.length} equality theorems`);
 
+        // First, build transitive equality groups (if A = B and B = C, then A = B = C)
+        const equalityGroups = new Map(); // Maps each class to its equality group
         for (const theorem of equalityTheorems) {
             const classA = this.classes.get(theorem.a);
             const classB = this.classes.get(theorem.b);
             
-            // console.log(`Verifying equality relationship:`, {
-            //     theorem,
-            //     classAFound: !!classA,
-            //     classBFound: !!classB,
-            //     classAEquals: classA ? Array.from(classA.equals) : [],
-            //     classBEquals: classB ? Array.from(classB.equals) : []
-            // });
+            if (!classA || !classB) continue;
+            
+            // Find or create equality groups
+            let groupA = equalityGroups.get(theorem.a);
+            let groupB = equalityGroups.get(theorem.b);
+            
+            if (!groupA && !groupB) {
+                // Create new group
+                const newGroup = new Set([theorem.a, theorem.b]);
+                equalityGroups.set(theorem.a, newGroup);
+                equalityGroups.set(theorem.b, newGroup);
+            } else if (groupA && !groupB) {
+                // Add B to A's group
+                groupA.add(theorem.b);
+                equalityGroups.set(theorem.b, groupA);
+            } else if (!groupA && groupB) {
+                // Add A to B's group
+                groupB.add(theorem.a);
+                equalityGroups.set(theorem.a, groupB);
+            } else if (groupA !== groupB) {
+                // Merge two groups
+                for (const cls of groupB) {
+                    groupA.add(cls);
+                    equalityGroups.set(cls, groupA);
+                }
+            }
+        }
+
+        // Now propagate containment relationships within each equality group
+        const processedGroups = new Set();
+        for (const [className, group] of equalityGroups.entries()) {
+            if (processedGroups.has(group)) continue;
+            processedGroups.add(group);
+            
+            // Collect all containment relationships from all classes in the group
+            const allContains = new Set();
+            const allWithin = new Set();
+            
+            for (const equalClass of group) {
+                const classData = this.classes.get(equalClass);
+                if (!classData) continue;
+                
+                // Collect contains relationships
+                for (const contained of classData.contains) {
+                    allContains.add(contained);
+                }
+                
+                // Collect within relationships
+                for (const within of classData.within) {
+                    allWithin.add(within);
+                }
+            }
+            
+            // Propagate all relationships to all classes in the group
+            for (const equalClass of group) {
+                const classData = this.classes.get(equalClass);
+                if (!classData) continue;
+                
+                // Add all contains relationships (but exclude other members of the equality group)
+                for (const contained of allContains) {
+                    if (!group.has(contained)) {
+                        classData.contains.add(contained);
+                        // Also update the bidirectional relationship
+                        const containedClass = this.classes.get(contained);
+                        if (containedClass) {
+                            containedClass.within.add(equalClass);
+                            classData.relationships.add(contained);
+                            containedClass.relationships.add(equalClass);
+                        }
+                    }
+                }
+                
+                // Add all within relationships (but exclude other members of the equality group)
+                for (const within of allWithin) {
+                    if (!group.has(within)) {
+                        classData.within.add(within);
+                        // Also update the bidirectional relationship
+                        const withinClass = this.classes.get(within);
+                        if (withinClass) {
+                            withinClass.contains.add(equalClass);
+                            classData.relationships.add(within);
+                            withinClass.relationships.add(equalClass);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Also handle direct equality relationships (not in groups)
+        for (const theorem of equalityTheorems) {
+            const classA = this.classes.get(theorem.a);
+            const classB = this.classes.get(theorem.b);
+            
+            if (!classA || !classB) continue;
+            
+            // Skip if already processed in a group
+            if (equalityGroups.has(theorem.a) || equalityGroups.has(theorem.b)) continue;
+            
+            // Propagate A's relationships to B
+            for (const contained of classA.contains) {
+                if (contained !== theorem.b) {
+                    classB.contains.add(contained);
+                    const containedClass = this.classes.get(contained);
+                    if (containedClass) {
+                        containedClass.within.add(theorem.b);
+                        classB.relationships.add(contained);
+                        containedClass.relationships.add(theorem.b);
+                    }
+                }
+            }
+            for (const within of classA.within) {
+                if (within !== theorem.b) {
+                    classB.within.add(within);
+                    const withinClass = this.classes.get(within);
+                    if (withinClass) {
+                        withinClass.contains.add(theorem.b);
+                        classB.relationships.add(within);
+                        withinClass.relationships.add(theorem.b);
+                    }
+                }
+            }
+            
+            // Propagate B's relationships to A
+            for (const contained of classB.contains) {
+                if (contained !== theorem.a) {
+                    classA.contains.add(contained);
+                    const containedClass = this.classes.get(contained);
+                    if (containedClass) {
+                        containedClass.within.add(theorem.a);
+                        classA.relationships.add(contained);
+                        containedClass.relationships.add(theorem.a);
+                    }
+                }
+            }
+            for (const within of classB.within) {
+                if (within !== theorem.a) {
+                    classA.within.add(within);
+                    const withinClass = this.classes.get(within);
+                    if (withinClass) {
+                        withinClass.contains.add(theorem.a);
+                        classA.relationships.add(within);
+                        withinClass.relationships.add(theorem.a);
+                    }
+                }
+            }
         }
     }
 
