@@ -13,17 +13,43 @@ function stripTags(html = '') {
 }
 
 
+function addClassById(classId)
+{
+  if (!classId) return;
+
+  const id = String(classId).toLowerCase();
+
+  //already selected
+  if (complexityClasses.some(c => c.id === id)) return;
+
+  const classToAdd = allClasses.find(c => c.id === id);
+  if (!classToAdd) return;
+
+  complexityClasses.push(classToAdd);
+
+  try {
+    updateURLWithConfig(complexityClasses.map(c => normalizeKey(c.id)));
+  }
+  catch
+  {
+
+  }
+
+  updateSearchResults();
+  filterAndRender();
+}
+
+
 function toCardShape(id, info = {}) {
   return {
     id: id.toLowerCase(),
     name: info.name || id,
     fullName: info.description || '',
-    category: info.category || 'Complexity',
-    // renderer wraps definition in html tags, so pass plain text here
-    definition: info.information ? stripTags(info.information) : 'No description available.',
-    examples: info.examples || [],
+    tags: info.tags || 'Complexity',
+    // renderer wraps definition in html tags, pass plain text here
+    definition: info.definition ? stripTags(info.definition) : 'No definition available.',
     applications: info.applications || [],
-    keyRelationships: info.keyRelationships || info.relations || []
+    see_also: info.see_also || info.see_also || []
   };
 }
 
@@ -32,8 +58,10 @@ async function buildComplexityClasses() {
     const encoded = new URLSearchParams(location.search).get('config');
     const selected = encoded ? (decodeConfiguration(encoded) || []) : [];
 
-    const response = await fetch('../classes.json');
+    const url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
+    const response = await fetch(url_classes);
     const data = await response.json();
+
     
     const classMap = data.class_list || data;
     allClasses = Object.keys(classMap)
@@ -48,6 +76,11 @@ async function buildComplexityClasses() {
     .filter((k, i, arr) => arr.indexOf(k) === i) // dedupe
     .map(k => classMap[k] ? toCardShape(k, classMap[k]) : null)
     .filter(Boolean);
+
+    //console.log("ALL CLASSES"+ allClasses);
+    //console.log("CURRENT " + complexityClasses);
+    //console.log(complexityClasses);
+  
 
 }
 
@@ -196,21 +229,63 @@ function renderClasses(classes) {
     document.querySelectorAll('.accordion-trigger').forEach(trigger => {
         trigger.addEventListener('click', toggleAccordion);
     });
+
+    //add clicks to see also
+
+    document.querySelectorAll('.see-also-add').forEach(btn => {
+      btn.addEventListener('click', (e) =>{
+        e.preventDefault();
+        e.stopPropagation();
+        addClassById(btn.dataset.classId);
+      })
+    })
 }
 
 function createCard(complexityClass) {
+  console.log(complexityClass);
+
+  const definition = createAccordionItem('Definition', `<p>${complexityClass.definition}</p>`);
+
+  const applications = complexityClass.applications.length === 0 ? '</>' : createAccordionItem('Applications', `<ul>${complexityClass.applications.map(app => `<li>${app}</li>`).join('')}</ul>`)
+
+  const seeAlsoItems = (Array.isArray(complexityClass.see_also) ? complexityClass.see_also : [])
+  .map(rel => {
+    const relId = normalizeKey(rel).toLowerCase();
+    const relClass = allClasses.find(c => c.id === relId);
+    const label = relClass?.name || rel;
+
+    return `
+      <li>
+        <button
+          type="button"
+          class="see-also-add see-also-btn"
+          data-class-id="${relId}"
+        >${label}</button>
+      </li>
+    `;
+  })
+  .join('');
+
+  const seeAlso =
+  seeAlsoItems.length > 0
+    ? createAccordionItem('See Also', `<ul>${seeAlsoItems}</ul>`)
+    : '';
+
   return `
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">${complexityClass.name}</h2>
         <p class="card-subtitle">${complexityClass.fullName}</p>
-        <span class="badge">${complexityClass.category}</span>
+        ${(Array.isArray(complexityClass.tags) ? complexityClass.tags : [complexityClass.tags])
+          .filter(Boolean)
+          .map(tag => `<span class="badge">${tag}</span>`)
+          .join(' ')}
+       
       </div>
       <div class="card-content">
-        ${createAccordionItem('Definition', `<p>${complexityClass.definition}</p>`)}
-        ${createAccordionItem('Examples', `<ul>${complexityClass.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>`)}
-        ${createAccordionItem('Applications', `<ul>${complexityClass.applications.map(app => `<li>${app}</li>`).join('')}</ul>`)}
-        ${createAccordionItem('Key Relationships', `<ul>${complexityClass.keyRelationships.map(rel => `<li>${rel}</li>`).join('')}</ul>`)}
+        ${definition}
+        ${applications}
+        ${seeAlso}
       </div>
     </div>
   `;

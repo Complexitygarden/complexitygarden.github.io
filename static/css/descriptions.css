@@ -240,6 +240,13 @@ select:focus {
 .button:hover {
   background-color: #f9fafb;
 }
+
+.see-also-btn {
+  padding: 2px 8px;
+  font-size: 0.85em;
+  line-height: 1.2;
+}
+
 footer {
   border-top: 1px solid #e1e8ed;
   background-color: white;
