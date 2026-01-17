@@ -308,7 +308,7 @@ function populateClassHeader(classData) {
 
 function populateDefinition(classData) {
     const descElement = document.getElementById('class-definition');
-    descElement.innerHTML = link_classes_information(classData.definition) || 'No definition available';
+    descElement.innerHTML = format_reference_information(link_classes_information(classData.definition)) || 'No definition available';
 }
 
 function populateUsefulInformation(classData) {
@@ -320,7 +320,7 @@ function populateUsefulInformation(classData) {
         infoCard.style.display = 'none';
     } else {
         infoCard.style.display = '';
-        descElement.innerHTML = link_classes_information(classData.information);
+        descElement.innerHTML = format_reference_information(link_classes_information(classData.information));
     }
 }
 
