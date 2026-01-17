@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
     else
     {
 
-        fetch("../static/references.json")
+        url_references = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/references/references.json"
+        fetch(url_references)
         .then(response => response.json())
         .then(data => {
             const references_array = data.references;

@@ -20,9 +20,11 @@ async function initializeVisualization() {
         window.networkProcessor = new NetworkProcessor();
         
         // Load data files
+        url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
+        url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
         const [classesData, theoremsData] = await Promise.all([
-            fetch('../classes.json').then(response => response.json()),
-            fetch('../theorems.json').then(response => response.json())
+            fetch(url_classes).then(response => response.json()),
+            fetch(url_theorems).then(response => response.json())
         ]);
 
         // Initialize network processor with data
@@ -254,60 +256,29 @@ function showWelcomeState() {
 function populateComplexityClassPanel(classData) {
     console.log("Populating panel for:", classData.name);
     
-    // Get enhanced data
-    let enhancedData = null;
-    try {
-        if (typeof getEnhancedClassData !== 'undefined') {
-            enhancedData = getEnhancedClassData(classData.name);
-        }
-    } catch (error) {
-        console.error("Error getting enhanced data:", error);
-    }
-    
-    // If no enhanced data, create basic structure
-    if (!enhancedData) {
-        enhancedData = {
-            examples: [],
-            applications: [],
-            keyRelationships: [],
-            relatedClasses: [],
-            references: []
-        };
-    }
-    
     // Populate header
     populateClassHeader(classData);
-    
-    // Populate brief description
-    populateBriefDescription(classData);
     
     // Populate definition
     populateDefinition(classData);
     
     // Populate useful information
-    populateUsefulInformationNew(classData, enhancedData);
+    populateUsefulInformationNew(classData);
     
     // Populate links
-    populateLinks(classData, enhancedData);
-    
-    // Populate see also section
-    populateSeeAlso(classData, enhancedData);
+    populateLinks(classData);
     
     // Populate references
-    populateReferencesNew(classData, enhancedData);
+    populateReferences(classData);
     
     // Process MathJax
     const elementsToTypeset = [
         document.getElementById('class-title'),
-        document.getElementById('class-brief-description'),
-        document.getElementById('class-description'),
-        document.getElementById('class-examples'),
-        document.getElementById('class-applications'),
-        document.getElementById('class-relationships'),
+        document.getElementById('class-definition'),
+        document.getElementById('class-information'),
         document.getElementById('class-links'),
         document.getElementById('related-classes-list'),
-        document.getElementById('see-also-tags'),
-        document.getElementById('see-also-links')
+        document.getElementById('see-also-link')
     ];
     
     MathJax.typesetPromise(elementsToTypeset.filter(el => el)).then(() => {
@@ -318,342 +289,113 @@ function populateComplexityClassPanel(classData) {
 function populateClassHeader(classData) {
     // Set title and full name
     document.getElementById('class-title').innerHTML = `$${classData.latex_name}$`;
-    document.getElementById('class-full-name').textContent = classData.description?.split('.')[0] || classData.name;
+    document.getElementById('class-full-name').textContent = classData.description || "";
     
+    // These processes to determine badges are wrong
     // Determine type and update badges
-    const typeText = determineComplexityType(classData);
-    const isDeterministic = determineDeterministic(classData);
+    // const typeText = determineComplexityType(classData);
+    // const isDeterministic = determineDeterministic(classData);
     
-    document.getElementById('type-text').textContent = typeText;
-    document.getElementById('deterministic-text').textContent = isDeterministic ? 'Deterministic' : 'Non-deterministic';
+    // document.getElementById('type-text').textContent = typeText;
+    // document.getElementById('deterministic-text').textContent = isDeterministic ? 'Deterministic' : 'Non-deterministic';
 }
 
-function determineComplexityType(classData) {
-    const name = classData.name.toLowerCase();
-    if (name.includes('space') || name.includes('pspace') || name.includes('nspace')) {
-        return 'space complexity';
-    } else if (name.includes('time') || name.includes('p') || name.includes('np') || name.includes('exp')) {
-        return 'time complexity';
-    }
-    return 'complexity';
-}
+// function determineComplexityType(classData) {
+//     const name = classData.name.toLowerCase();
+//     if (name.includes('space') || name.includes('pspace') || name.includes('nspace')) {
+//         return 'space complexity';
+//     } else if (name.includes('time') || name.includes('p') || name.includes('np') || name.includes('exp')) {
+//         return 'time complexity';
+//     }
+//     return 'complexity';
+// }
 
-function determineDeterministic(classData) {
-    const name = classData.name.toLowerCase();
-    return !name.startsWith('n') || name === 'nspace' || name === 'nl';
-}
-
-function populateBriefDescription(classData) {
-    const briefDescElement = document.getElementById('class-brief-description');
-    
-    // Create a brief description from the information field or description field
-    let briefDesc = '';
-    
-    if (classData.information) {
-        // Extract first 1-2 sentences from information
-        const infoText = classData.information.replace(/<[^>]*>/g, ' '); // Remove HTML tags
-        const sentences = infoText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-        briefDesc = sentences.slice(0, 2).join('. ').trim();
-        if (briefDesc && !briefDesc.endsWith('.')) {
-            briefDesc += '.';
-        }
-    } else if (classData.description) {
-        // Fallback to description if information is not available
-        briefDesc = classData.description;
-    }
-    
-    if (!briefDesc) {
-        briefDesc = 'No description available for this complexity class.';
-    }
-    
-    briefDescElement.innerHTML = link_classes_information(briefDesc);
-}
+// function determineDeterministic(classData) {
+//     const name = classData.name.toLowerCase();
+//     return !name.startsWith('n') || name === 'nspace' || name === 'nl';
+// }
 
 function populateDefinition(classData) {
-    const descElement = document.getElementById('class-description');
-    descElement.innerHTML = link_classes_information(classData.description) || 'No description available';
+    const descElement = document.getElementById('class-definition');
+    descElement.innerHTML = link_classes_information(classData.definition) || 'No description available';
 }
 
-function populateUsefulInformationNew(classData, enhancedData) {
-    // Populate examples
-    const examplesElement = document.getElementById('class-examples');
-    const examplesSection = document.getElementById('examples-section');
-    
-    if (enhancedData.examples && enhancedData.examples.length > 0) {
-        examplesElement.innerHTML = '';
-        enhancedData.examples.forEach(example => {
-            const li = document.createElement('li');
-            li.textContent = example;
-            examplesElement.appendChild(li);
-        });
-        examplesSection.style.display = 'block';
-    } else {
-        examplesSection.style.display = 'none';
-    }
-    
-    // Populate applications
-    const applicationsElement = document.getElementById('class-applications');
-    const applicationsSection = document.getElementById('applications-section');
-    
-    if (enhancedData.applications && enhancedData.applications.length > 0) {
-        applicationsElement.innerHTML = '';
-        enhancedData.applications.forEach(application => {
-            const li = document.createElement('li');
-            li.textContent = application;
-            applicationsElement.appendChild(li);
-        });
-        applicationsSection.style.display = 'block';
-    } else {
-        applicationsSection.style.display = 'none';
-    }
-    
-    // Populate key relationships
-    const relationshipsElement = document.getElementById('class-relationships');
-    const relationshipsSection = document.getElementById('relationships-section');
-    
-    if (enhancedData.keyRelationships && enhancedData.keyRelationships.length > 0) {
-        relationshipsElement.innerHTML = '';
-        enhancedData.keyRelationships.forEach(relationship => {
-            const li = document.createElement('li');
-            li.innerHTML = link_classes_information(relationship);
-            relationshipsElement.appendChild(li);
-        });
-        relationshipsSection.style.display = 'block';
-    } else {
-        relationshipsSection.style.display = 'none';
-    }
+function populateUsefulInformationNew(classData) {
+    const descElement = document.getElementById('class-information');
+    descElement.innerHTML = link_classes_information(classData.information) || 'No description available';
 }
 
-function populateLinks(classData, enhancedData) {
+function populateLinks(classData) {
     const linksElement = document.getElementById('class-links');
     linksElement.innerHTML = '';
-    
-    // Check for links in classData or enhancedData
-    const linksList = classData.links || enhancedData.links || [];
-    
+
+    // Check for links in classData - these are complexity class identifiers
+    const linksList = classData.see_also || [];
+
     if (linksList && linksList.length > 0) {
+        let validLinksCount = 0;
+
         linksList.forEach(link => {
-            const li = document.createElement('li');
-            
-            if (typeof link === 'object' && link.url) {
-                // Link with URL and title
-                li.innerHTML = `
-                    <a href="${link.url}" target="_blank">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                        <span>${link.title}</span>
-                    </a>
-                `;
-            } else if (typeof link === 'string') {
-                // Plain text link or URL
-                if (link.startsWith('http://') || link.startsWith('https://')) {
-                    li.innerHTML = `
-                        <a href="${link}" target="_blank">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span>${link}</span>
-                        </a>
-                    `;
-                } else {
-                    // Plain text (non-clickable)
-                    li.innerHTML = `
-                        <div class="link-text">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                            </svg>
-                            <span>${link}</span>
-                        </div>
-                    `;
+            if (typeof link === 'string') {
+                // Check if it's a complexity class identifier
+                const linkedClassData = networkProcessor.getClass(link);
+
+                if (linkedClassData) {
+                    // It's a valid complexity class - create a clickable link
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('role', 'button');
+                    linkElement.className = 'see-also-link clickable-class';
+                    linkElement.setAttribute('onclick', `open_side_window(networkProcessor.getClass('${link}'))`);
+
+                    // Use latex name if available, otherwise use the id
+                    const latex = linkedClassData.latex_name || link;
+                    linkElement.innerHTML = `$${latex}$`;
+
+                    linksElement.appendChild(linkElement);
+                    validLinksCount++;
                 }
             }
-            
-            linksElement.appendChild(li);
         });
+
+        // Show message if no valid class links were found
+        if (validLinksCount === 0) {
+            linksElement.innerHTML = '<div class="link-text">No related classes found.</div>';
+        }
     } else {
         // Show a message when no links are available
-        const li = document.createElement('li');
-        li.innerHTML = '<div class="link-text">No links available for this complexity class.</div>';
-        linksElement.appendChild(li);
+        linksElement.innerHTML = '<div class="link-text">No links available for this complexity class.</div>';
     }
 }
 
-function populateSeeAlso(classData, enhancedData) {
-    // Populate Related Classes
-    populateSeeAlsoClasses(classData, enhancedData);
-    
-    // Populate Tags
-    populateSeeAlsoTags(classData, enhancedData);
-    
-    // Populate Links
-    populateSeeAlsoLinks(classData, enhancedData);
-}
-
-function populateSeeAlsoClasses(classData, enhancedData) {
-    const relatedElement = document.getElementById('related-classes-list');
-    const sectionElement = document.getElementById('see-also-classes-section');
-    relatedElement.innerHTML = '';
-    
-    // Check for seeAlso classes in classData or enhancedData
-    const seeAlsoClasses = classData.seeAlso || enhancedData.seeAlso || enhancedData.relatedClasses || [];
-    
-    if (seeAlsoClasses && seeAlsoClasses.length > 0) {
-        sectionElement.style.display = 'block';
-        seeAlsoClasses.slice(0, 3).forEach(relatedClass => {
-            const item = document.createElement('div');
-            item.className = 'related-class-item clickable-class';
-            const className = typeof relatedClass === 'string' ? relatedClass : relatedClass.name;
-            item.dataset.class = className;
-            item.innerHTML = `
-                <div class="related-class-content">
-                    <div class="related-class-name">$\\mathsf{${className}}$</div>
-                </div>
-            `;
-            item.onclick = () => {
-                handleClassSelect(className);
-            };
-            relatedElement.appendChild(item);
-        });
-    } else {
-        // Fallback: extract related classes from text
-        const textContent = (classData.description || '') + ' ' + (classData.information || '');
-        const allClasses = networkProcessor.getAllClasses();
-        const foundClasses = [];
-        
-        Object.keys(allClasses).forEach(className => {
-            if (className !== classData.name && 
-                (textContent.includes(className) || textContent.includes(`\\mathsf{${className}}`))) {
-                foundClasses.push(className);
-            }
-        });
-        
-        if (foundClasses.length > 0) {
-            sectionElement.style.display = 'block';
-            foundClasses.slice(0, 3).forEach(className => {
-                const item = document.createElement('div');
-                item.className = 'related-class-item clickable-class';
-                item.dataset.class = className;
-                
-                item.innerHTML = `
-                    <div class="related-class-content">
-                        <div class="related-class-name">$\\mathsf{${className}}$</div>
-                    </div>
-                `;
-                
-                relatedElement.appendChild(item);
-            });
-        } else {
-            sectionElement.style.display = 'none';
-        }
-    }
-}
-
-function populateSeeAlsoTags(classData, enhancedData) {
-    const tagsElement = document.getElementById('see-also-tags');
-    const sectionElement = document.getElementById('see-also-tags-section');
-    tagsElement.innerHTML = '';
-    
-    // Check for tags in classData or enhancedData
-    const tagsList = classData.tags || enhancedData.tags || [];
-    
-    if (tagsList && tagsList.length > 0) {
-        sectionElement.style.display = 'block';
-        tagsList.forEach(tag => {
-            const tagElement = document.createElement('span');
-            tagElement.className = 'tag';
-            tagElement.textContent = tag;
-            tagsElement.appendChild(tagElement);
-        });
-    } else {
-        sectionElement.style.display = 'none';
-    }
-}
-
-function populateSeeAlsoLinks(classData, enhancedData) {
-    const linksElement = document.getElementById('see-also-links');
-    const sectionElement = document.getElementById('see-also-links-section');
-    linksElement.innerHTML = '';
-    
-    // Check for links in classData or enhancedData
-    const linksList = classData.links || enhancedData.links || [];
-    
-    if (linksList && linksList.length > 0) {
-        sectionElement.style.display = 'block';
-        linksList.forEach(link => {
-            const li = document.createElement('li');
-            
-            if (typeof link === 'object' && link.url) {
-                li.innerHTML = `
-                    <a href="${link.url}" target="_blank">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                        <span>${link.title}</span>
-                    </a>
-                `;
-            } else if (typeof link === 'string') {
-                if (link.startsWith('http://') || link.startsWith('https://')) {
-                    li.innerHTML = `
-                        <a href="${link}" target="_blank">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span>${link}</span>
-                        </a>
-                    `;
-                } else {
-                    li.innerHTML = `<div class="link-text">${link}</div>`;
-                }
-            }
-            
-            linksElement.appendChild(li);
-        });
-    } else {
-        sectionElement.style.display = 'none';
-    }
-}
-
-function populateReferencesNew(classData, enhancedData) {
+function populateReferences(classData) {
     const referencesElement = document.getElementById('class-references');
     referencesElement.innerHTML = '';
     
     // Add enhanced references
-    if (enhancedData.references && enhancedData.references.length > 0) {
-        enhancedData.references.forEach(ref => {
+    if (classData.references && classData.references.length > 0) {
+        classData.references.forEach(ref => {
             const item = document.createElement('div');
             item.className = 'reference-item';
-            
-            if (typeof ref === 'object' && ref.url) {
+
+            if (ref.length == 2) {
+                ref_title = ref[0];
+                // Reference url - special case for the zoo
+                ref_url = (ref_title == "Complexity Zoo")? ("https://complexityzoo.net/Complexity_Zoo:" +ref[1]):ref[1];
                 item.innerHTML = `
-                    <a href="${ref.url}" target="_blank" class="reference-link">
-                        ${ref.title}
+                    <a href="${ref_url}" target="_blank" class="reference-link">
+                        ${ref_title}
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                         </svg>
                     </a>
                 `;
             } else {
-                item.innerHTML = `<div class="reference-text">${typeof ref === 'string' ? ref : ref.title}</div>`;
+                console.log("Error parsing the following reference: " + ref)
             }
             
             referencesElement.appendChild(item);
         });
     }
-    
-    // Add Complexity Zoo link
-    const zooItem = document.createElement('div');
-    zooItem.className = 'reference-item';
-    zooItem.innerHTML = `
-        <a href="https://complexityzoo.net/Complexity_Zoo:${classData.name.charAt(0).toUpperCase()}#${classData.name.toLowerCase()}" 
-           target="_blank" class="reference-link">
-            Complexity Zoo
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-            </svg>
-        </a>
-    `;
-    referencesElement.appendChild(zooItem);
 }
 
 function setupClickableElements() {

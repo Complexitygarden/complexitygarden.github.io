@@ -786,6 +786,33 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #FFFFFF;
 }
 
+/* See Also Container and Links - styled similar to reference items */
+.see-also-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.see-also-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #FFFFFF;
+    border: 1px solid #D4E4D4;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: #1A1A1A;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.see-also-link:hover {
+    background: #F0F6F0;
+    border-color: #8FBC8F;
+    color: #2D5016;
+}
+
 /* Links List in See Also */
 .links-list {
     list-style: none;

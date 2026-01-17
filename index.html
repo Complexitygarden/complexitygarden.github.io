@@ -227,7 +227,7 @@
                             </button>
                         </div>
                         <div class="class-badges">
-                            <div id="type-badge" class="badge badge-primary">
+                            <!-- <div id="type-badge" class="badge badge-primary">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <path d="M12 6v6l4 2"/>
@@ -236,26 +236,12 @@
                             </div>
                             <div id="deterministic-badge" class="badge badge-primary">
                                 <span id="deterministic-text">Deterministic</span>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 
                     <!-- Scrollable Content -->
                     <div class="class-content">
-                        <!-- Description Card (Brief overview) -->
-                        <div class="info-card description-overview">
-                            <div class="card-header">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M12 6v6l4 2"/>
-                                </svg>
-                                <h3>Description</h3>
-                            </div>
-                            <div class="card-content">
-                                <p id="class-brief-description">Click on a complexity class to view its description</p>
-                            </div>
-                        </div>
-
                         <!-- Definition Card -->
                         <div class="info-card">
                             <div class="card-header">
@@ -265,7 +251,7 @@
                                 <h3>Definition</h3>
                             </div>
                             <div class="card-content">
-                                <p id="class-description">Click on a complexity class to view its definition</p>
+                                <p id="class-definition">Click on a complexity class to view its definition</p>
                             </div>
                         </div>
 
@@ -280,53 +266,11 @@
                                 <h3>Useful Information</h3>
                             </div>
                             <div class="card-content">
-                                <!-- Examples -->
-                                <div class="info-subsection" id="examples-section">
-                                    <h4>Examples</h4>
-                                    <ul id="class-examples" class="info-list">
-                                        <!-- Examples will be populated here -->
-                                    </ul>
-                                </div>
-
-                                <div class="separator"></div>
-
-                                <!-- Applications -->
-                                <div class="info-subsection" id="applications-section">
-                                    <h4>Applications</h4>
-                                    <ul id="class-applications" class="info-list">
-                                        <!-- Applications will be populated here -->
-                                    </ul>
-                                </div>
-
-                                <div class="separator"></div>
-
-                                <!-- Key Relationships -->
-                                <div class="info-subsection" id="relationships-section">
-                                    <h4>Key Relationships</h4>
-                                    <ul id="class-relationships" class="info-list">
-                                        <!-- Key relationships will be populated here -->
-                                    </ul>
-                                </div>
+                                <p id="class-information"></p>
                             </div>
                         </div>
 
                         <!-- Links Card -->
-                        <div class="info-card">
-                            <div class="card-header">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                                </svg>
-                                <h3>Links</h3>
-                            </div>
-                            <div class="card-content">
-                                <ul id="class-links" class="links-list">
-                                    <!-- Links will be populated here -->
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- See Also Card -->
                         <div class="info-card">
                             <div class="card-header">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -337,32 +281,8 @@
                                 <h3>See Also</h3>
                             </div>
                             <div class="card-content">
-                                <!-- Related Classes -->
-                                <div class="info-subsection" id="see-also-classes-section">
-                                    <h4>Related Classes</h4>
-                                    <div id="related-classes-list" class="related-classes-list">
-                                        <!-- Related classes will be populated here -->
-                                    </div>
-                                </div>
-
-                                <div class="separator"></div>
-
-                                <!-- Tags -->
-                                <div class="info-subsection" id="see-also-tags-section">
-                                    <h4>Tags</h4>
-                                    <div id="see-also-tags" class="tags-container">
-                                        <!-- Tags will be populated here -->
-                                    </div>
-                                </div>
-
-                                <div class="separator"></div>
-
-                                <!-- Links -->
-                                <div class="info-subsection" id="see-also-links-section">
-                                    <h4>Links</h4>
-                                    <ul id="see-also-links" class="links-list">
-                                        <!-- Links will be populated here -->
-                                    </ul>
+                                <div id="class-links" class="see-also-container">
+                                    <!-- Links will be populated here -->
                                 </div>
                             </div>
                         </div>
@@ -450,7 +370,6 @@
 
         <!-- Load scripts in correct order -->
         <script src="../static/js/utils.js?v=1.001"></script>
-        <script src="../static/js/enhanced_class_data.js"></script>
         <script src="../static/js/display_references.js"></script>
         <script src="../static/js/networkProcessor.js?v=1.008"></script>
         <script src="../static/js/visual_objects.js"></script>

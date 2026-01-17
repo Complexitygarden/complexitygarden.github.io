@@ -77,6 +77,7 @@ class NetworkProcessor {
             name: data.name || name,
             latex_name: data.latex_name || name,
             description: data.description || '',
+            definition: data.definition || '',
             information: data.information || '',
             contains: new Set(),
             within: new Set(),
@@ -91,10 +92,13 @@ class NetworkProcessor {
             x: 0,  // Initialize position
             y: 0,  // Initialize position
             visible: false,
-            coClass: data.coClass || null,
+            coClass: data.complement || null,
             manual: false,     // User has moved this node manually
             manualSavedX: null,
-            manualSavedY: null
+            manualSavedY: null,
+            tags: data.tags || [],
+            references:data.links || [],
+            see_also: data.see_also|| []
         });
         this.classesIdentifiers.push(name);
         // console.log(`Class ${name} added successfully. Current class count: ${this.classes.size}`);

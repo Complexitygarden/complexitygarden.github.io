@@ -1,3 +1,10 @@
+# To do before merging with main
+- [x] Link files to actual db(github)
+- [] Fix the wrong right_side organization + links
+- [] Figure out which tags to include
+- [] Fix going backwards in the right side menu
+- [] Fix not being able to click on classes on the right side menu
+
 # Complexity Garden
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.
 
