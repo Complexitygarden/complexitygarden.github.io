@@ -1,10 +1,14 @@
 # To do before merging with main
 - [x] Link files to actual db(github)
-- [] Fix the wrong right_side organization + links
+- [x] Fix the wrong right_side organization + links
 - [] Figure out which tags to include
-- [] Fix going backwards in the right side menu
+- [x] Fix going backwards in the right side menu
 - [x] Fix not being able to click on classes on the right side menu
 - [] Linking references in descriptions
+- [] Name + description moves when the backwards button is present
+- [] Sizing - things look really small + placement of icons feels off (Maybe the circles on the icons on the right change my perception) + Lack of space in some cases?
+- [] Sizing of the complexity classes (such as BQPSPACE/qpoly)
+- [] Merge with main
 
 # Complexity Garden
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.

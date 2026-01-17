@@ -175,7 +175,7 @@ function link_classes_information(information_text)
                 const classData = networkProcessor.getClass(class_id);
                 if (!classData) return match;
                 const latex = classData.latex_name || class_id;
-                return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${class_id}'))">\$${latex}\$</a>`;
+                return `<a role="button" class="clickable-class" data-class="${class_id}">\$${latex}\$</a>`;
             })
         }
     });
@@ -187,7 +187,8 @@ function link_classes_information(information_text)
 
 
 
-// Open side window with class information
+// Open side window with class information (called from graph clicks)
+// This clears the navigation history since we're starting fresh from the graph
 function open_side_window(d) {
     const classData = networkProcessor.getClass(d.id);
     if (!classData) {
@@ -197,29 +198,17 @@ function open_side_window(d) {
     const action = "Description";
     track_class_click(classData.id, { action });
 
-    // Store navigation history
-    if (!window.classHistory) {
-        window.classHistory = [];
-    }
-    if (!window.classHistoryIndex) {
-        window.classHistoryIndex = -1;
-    }
-    
-    // Add to history (only if it's a new navigation, not back/forward)
-    if (!window.navigatingHistory) {
-        // Remove any history after current index
-        window.classHistory = window.classHistory.slice(0, window.classHistoryIndex + 1);
-        window.classHistory.push(classData.id);
-        window.classHistoryIndex = window.classHistory.length - 1;
-    }
+    // Clear navigation history when clicking from graph (start fresh)
+    AppState.navigationHistory = [];
+    AppState.selectedClass = classData.id;
 
     // Show class panel and hide welcome state
     document.getElementById('welcome-state').style.display = 'none';
     document.getElementById('class-panel').style.display = 'flex';
 
-    // Update navigation
+    // Update navigation buttons (back button should be hidden since history is empty)
     updateNavigationButtons();
-    
+
     // Populate class information
     populateComplexityClassPanel(classData);
 
@@ -263,7 +252,7 @@ function populateComplexityClassPanel(classData) {
     populateDefinition(classData);
     
     // Populate useful information
-    populateUsefulInformationNew(classData);
+    populateUsefulInformation(classData);
     
     // Populate links
     populateLinks(classData);
@@ -278,7 +267,8 @@ function populateComplexityClassPanel(classData) {
         document.getElementById('class-information'),
         document.getElementById('class-links'),
         document.getElementById('related-classes-list'),
-        document.getElementById('see-also-link')
+        document.getElementById('see-also-link'),
+        document.getElementById('class-full-name')
     ];
     
     MathJax.typesetPromise(elementsToTypeset.filter(el => el)).then(() => {
@@ -289,7 +279,8 @@ function populateComplexityClassPanel(classData) {
 function populateClassHeader(classData) {
     // Set title and full name
     document.getElementById('class-title').innerHTML = `$${classData.latex_name}$`;
-    document.getElementById('class-full-name').textContent = classData.description || "";
+    const class_description = document.getElementById('class-full-name');
+    class_description.innerHTML = link_classes_information(classData.description) || "";
     
     // These processes to determine badges are wrong
     // Determine type and update badges
@@ -317,12 +308,20 @@ function populateClassHeader(classData) {
 
 function populateDefinition(classData) {
     const descElement = document.getElementById('class-definition');
-    descElement.innerHTML = link_classes_information(classData.definition) || 'No description available';
+    descElement.innerHTML = link_classes_information(classData.definition) || 'No definition available';
 }
 
-function populateUsefulInformationNew(classData) {
+function populateUsefulInformation(classData) {
     const descElement = document.getElementById('class-information');
-    descElement.innerHTML = link_classes_information(classData.information) || 'No description available';
+    const infoCard = descElement.closest('.info-card');
+
+    // Hide the entire card if there's no information
+    if (!classData.information || classData.information.trim() === '') {
+        infoCard.style.display = 'none';
+    } else {
+        infoCard.style.display = '';
+        descElement.innerHTML = link_classes_information(classData.information);
+    }
 }
 
 function populateLinks(classData) {
@@ -415,234 +414,6 @@ function navigateBack() {
     AppState.navigateBack();
 }
 
-// Helper function to populate useful information sections
-function populateUsefulInformation(classData, enhancedData) {
-    console.log("Populating useful information for:", classData.name);
-    console.log("Enhanced data:", enhancedData);
-    
-    // Special handling for PSPACE as a test
-    if (classData.name === 'PSPACE') {
-        console.log("Special PSPACE handling");
-        
-        // Force populate examples for PSPACE
-        const examplesElement = document.getElementById('class-examples');
-        if (examplesElement) {
-            const pspaceExamples = [
-                "Quantified Boolean Formula (QBF)",
-                "Geography game", 
-                "Regular expression equivalence",
-                "Linear space reachability"
-            ];
-            let examplesHtml = '<ul>';
-            pspaceExamples.forEach(example => {
-                examplesHtml += `<li>${example}</li>`;
-            });
-            examplesHtml += '</ul>';
-            examplesElement.innerHTML = examplesHtml;
-            document.getElementById('examples-subsection').style.display = 'block';
-            console.log("PSPACE examples hardcoded successfully");
-        }
-        
-        // Force populate applications for PSPACE
-        const applicationsElement = document.getElementById('class-applications');
-        if (applicationsElement) {
-            const pspaceApplications = [
-                "Game theory and two-player games",
-                "Model checking and verification",
-                "Planning problems in AI",
-                "Database query evaluation"
-            ];
-            let applicationsHtml = '<ul>';
-            pspaceApplications.forEach(application => {
-                applicationsHtml += `<li>${application}</li>`;
-            });
-            applicationsHtml += '</ul>';
-            applicationsElement.innerHTML = applicationsHtml;
-            document.getElementById('applications-subsection').style.display = 'block';
-            console.log("PSPACE applications hardcoded successfully");
-        }
-        
-        return; // Skip the rest for PSPACE test
-    }
-    
-    // Regular logic for other classes
-    const examplesElement = document.getElementById('class-examples');
-    console.log("Examples element:", examplesElement);
-    
-    if (enhancedData && enhancedData.examples && enhancedData.examples.length > 0) {
-        console.log("Found examples:", enhancedData.examples);
-        let examplesHtml = '<ul>';
-        enhancedData.examples.forEach(example => {
-            examplesHtml += `<li>${example}</li>`;
-        });
-        examplesHtml += '</ul>';
-        examplesElement.innerHTML = examplesHtml;
-        document.getElementById('examples-subsection').style.display = 'block';
-        console.log("Examples populated successfully");
-    } else {
-        console.log("No examples found, hiding section");
-        document.getElementById('examples-subsection').style.display = 'none';
-    }
-
-    // Populate applications
-    const applicationsElement = document.getElementById('class-applications');
-    console.log("Applications element:", applicationsElement);
-    
-    if (enhancedData && enhancedData.applications && enhancedData.applications.length > 0) {
-        console.log("Found applications:", enhancedData.applications);
-        let applicationsHtml = '<ul>';
-        enhancedData.applications.forEach(application => {
-            applicationsHtml += `<li>${application}</li>`;
-        });
-        applicationsHtml += '</ul>';
-        applicationsElement.innerHTML = applicationsHtml;
-        document.getElementById('applications-subsection').style.display = 'block';
-        console.log("Applications populated successfully");
-    } else {
-        console.log("No applications found, hiding section");
-        document.getElementById('applications-subsection').style.display = 'none';
-    }
-
-    // Populate key relationships
-    const relationshipsElement = document.getElementById('class-relationships');
-    if (enhancedData.keyRelationships && enhancedData.keyRelationships.length > 0) {
-        let relationshipsHtml = '<ul>';
-        enhancedData.keyRelationships.forEach(relationship => {
-            relationshipsHtml += `<li>${link_classes_information(relationship)}</li>`;
-        });
-        relationshipsHtml += '</ul>';
-        relationshipsElement.innerHTML = relationshipsHtml;
-        document.getElementById('relationships-subsection').style.display = 'block';
-    } else {
-        document.getElementById('relationships-subsection').style.display = 'none';
-    }
-
-    // Populate additional information from original data
-    const additionalInfoElement = document.getElementById('class-additional-info');
-    if (classData.information) {
-        const processedInfo = link_classes_information(classData.information);
-        additionalInfoElement.innerHTML = format_information(processedInfo);
-        document.getElementById('additional-info-subsection').style.display = 'block';
-    } else {
-        document.getElementById('additional-info-subsection').style.display = 'none';
-    }
-}
-
-// Helper function to populate enhanced related classes section
-function populateEnhancedRelatedClasses(classData, enhancedData) {
-    const relatedElement = document.getElementById('related-classes-list');
-    let relatedHtml = '';
-    
-    if (enhancedData.relatedClasses && enhancedData.relatedClasses.length > 0) {
-        enhancedData.relatedClasses.forEach(relatedClass => {
-            const arrow = getRelationshipArrow(relatedClass.direction);
-            relatedHtml += `
-                <div class="related-class-item clickable-class" data-class="${relatedClass.name}">
-                    <div class="related-class-info">
-                        <div class="related-class-name">$\\mathsf{${relatedClass.name}}$</div>
-                        <div class="related-class-relationship">${relatedClass.relationship}</div>
-                    </div>
-                    <div class="relationship-arrow">${arrow}</div>
-                </div>
-            `;
-        });
-    } else {
-        // Fallback to automatic detection
-        const allClasses = networkProcessor.getAllClasses();
-        const relatedClasses = new Set();
-        
-        // Look for classes mentioned in the description and information
-        const textContent = (classData.description || '') + ' ' + (classData.information || '');
-        
-        // Extract class names from text (look for \mathsf{...} patterns)
-        const classPattern = /\\mathsf\{([^}]+)\}/g;
-        let match;
-        while ((match = classPattern.exec(textContent)) !== null) {
-            const className = match[1];
-            if (allClasses[className] && className !== classData.name) {
-                relatedClasses.add(className);
-            }
-        }
-        
-        if (relatedClasses.size > 0) {
-            Array.from(relatedClasses).slice(0, 6).forEach(className => {
-                relatedHtml += `
-                    <div class="related-class-item clickable-class" data-class="${className}">
-                        <div class="related-class-info">
-                            <div class="related-class-name">$\\mathsf{${className}}$</div>
-                            <div class="related-class-relationship">Related class</div>
-                        </div>
-                        <div class="relationship-arrow">→</div>
-                    </div>
-                `;
-            });
-        }
-    }
-    
-    if (relatedHtml === '') {
-        relatedHtml = '<p style="color: rgba(255,255,255,0.6);">No related classes available.</p>';
-    }
-    
-    relatedElement.innerHTML = relatedHtml;
-}
-
-// Helper function to get relationship arrow based on direction
-function getRelationshipArrow(direction) {
-    switch (direction) {
-        case 'subset': return '⊆';
-        case 'superset': return '⊇';
-        case 'equal': return '=';
-        case 'complement': return '¬';
-        case 'unknown': return '?';
-        default: return '→';
-    }
-}
-
-// Helper function to populate enhanced references section  
-function populateEnhancedReferences(classData, enhancedData) {
-    const referencesElement = document.getElementById('class-references');
-    let referencesHtml = '';
-    
-    // Use enhanced references if available
-    if (enhancedData.references && enhancedData.references.length > 0) {
-        referencesHtml += '<ul>';
-        enhancedData.references.forEach(ref => {
-            referencesHtml += `<li>${ref}</li>`;
-        });
-        referencesHtml += '</ul>';
-    }
-    
-    // Extract additional references from information text (look for [ABC123] patterns)
-    const text = (classData.information || '') + ' ' + (classData.description || '');
-    const referencePattern = /\[([A-Za-z0-9]+)\]/g;
-    const foundRefs = new Set();
-    let match;
-    
-    while ((match = referencePattern.exec(text)) !== null) {
-        foundRefs.add(match[1]);
-    }
-    
-    if (foundRefs.size > 0) {
-        if (referencesHtml !== '') referencesHtml += '<br>';
-        referencesHtml += '<div class="references-list">';
-        foundRefs.forEach(ref => {
-            referencesHtml += `<div class="reference-item">[${ref}]</div>`;
-        });
-        referencesHtml += '</div>';
-    }
-    
-    // Add external resources
-    referencesHtml += '<div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">';
-    referencesHtml += '<h4 style="margin: 0 0 10px 0; font-size: 14px; color: rgba(255,255,255,0.8);">External Resources</h4>';
-    referencesHtml += `<a href="https://complexityzoo.net/Complexity_Zoo:${classData.name.charAt(0).toUpperCase()}#${classData.name.toLowerCase()}" target="_blank" class="external-link">Complexity Zoo →</a>`;
-    referencesHtml += '</div>';
-    
-    if (referencesHtml === '') {
-        referencesHtml = '<p style="color: rgba(255,255,255,0.6);">No references available.</p>';
-    }
-    
-    referencesElement.innerHTML = referencesHtml;
-}
 
 // Function to show initial state of right panel
 function showInitialPanelState() {
