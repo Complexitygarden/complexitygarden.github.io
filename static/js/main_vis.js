@@ -345,7 +345,7 @@ function populateLinks(classData) {
                     const linkElement = document.createElement('a');
                     linkElement.setAttribute('role', 'button');
                     linkElement.className = 'see-also-link clickable-class';
-                    linkElement.setAttribute('onclick', `open_side_window(networkProcessor.getClass('${link}'))`);
+                    linkElement.setAttribute('data-class', link);
 
                     // Use latex name if available, otherwise use the id
                     const latex = linkedClassData.latex_name || link;
