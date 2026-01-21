@@ -1005,12 +1005,22 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #2D5016;
 }
 
+/* Back button always maintains its size for consistent layout */
+#back-button {
+    transition: opacity 0.2s ease, visibility 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
 #back-button:hover,
 #close-panel-button:hover {
     background: #8FBC8F;
     border-color: #4F7942;
     color: #FFFFFF;
     transform: translateY(-1px);
+}
+
+/* When back button is hidden, disable pointer events */
+#back-button[style*="visibility: hidden"] {
+    pointer-events: none;
 }
 
 .class-title {

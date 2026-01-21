@@ -4,10 +4,10 @@
 - [] Figure out which tags to include
 - [x] Fix going backwards in the right side menu
 - [x] Fix not being able to click on classes on the right side menu
-- [] Linking references in descriptions
-- [] Name + description moves when the backwards button is present
+- [x] Linking references in descriptions
+- [x] Name + description moves when the backwards button is present
 - [] Sizing - things look really small + placement of icons feels off (Maybe the circles on the icons on the right change my perception) + Lack of space in some cases?
-- [] Sizing of the complexity classes (such as BQPSPACE/qpoly)
+- [x] Sizing of the complexity classes (such as BQPSPACE/qpoly)
 - [] Merge with main
 
 # Complexity Garden

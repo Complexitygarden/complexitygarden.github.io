@@ -220,12 +220,14 @@ function updateNavigationButtons() {
     const backButton = document.getElementById('back-button');
     const closeButton = document.getElementById('close-panel-button');
     
-    // Update back button
+    // Update back button - use visibility to preserve layout space
     if (AppState.navigationHistory.length > 0) {
-        backButton.style.display = 'flex';
+        backButton.style.visibility = 'visible';
+        backButton.style.opacity = '1';
         backButton.onclick = () => navigateBack();
     } else {
-        backButton.style.display = 'none';
+        backButton.style.visibility = 'hidden';
+        backButton.style.opacity = '0';
     }
     
     // Setup close button

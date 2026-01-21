@@ -541,7 +541,8 @@ function draw_graph(){
                             renderKaTeX(latexStr, targetEl, window.katexOptions);
 
                             if (textWidth > radius * 1.5) {
-                                targetEl.style.fontSize = `${fontSize * 0.7}px`;
+                                val = (textWidth > radius*2.75)? 0.5 : 0.7;
+                                targetEl.style.fontSize = `${fontSize * val}px`;
                                 renderKaTeX(latexStr, targetEl, window.katexOptions);
                             }
                         } catch (e) {
