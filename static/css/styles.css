@@ -900,6 +900,17 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #5A6B5A;
 }
 
+/* Citation links in definition/information text */
+.citation-link {
+    color: #000000;
+    text-decoration: none;
+}
+
+.citation-link:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     #rightSidebarMenu {
@@ -996,8 +1007,9 @@ The code below is similar to that one above, but I am keeping both copies as we 
     height: 18px;
 }
 
-/* Back and Close buttons in the right panel should be green for visibility */
+/* Back, Add and Close buttons in the right panel should be green for visibility */
 #back-button,
+#add-class-button,
 #close-panel-button {
     /* light green background with green icon */
     background: rgba(240, 246, 240, 0.95);
@@ -1005,12 +1017,20 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #2D5016;
 }
 
-/* Back button always maintains its size for consistent layout */
-#back-button {
+/* Back and Add buttons always maintain their size for consistent layout */
+#back-button,
+#add-class-button {
     transition: opacity 0.2s ease, visibility 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
+/* Position add button close to back button */
+#add-class-button {
+    margin-left: -10px;
+    margin-right: 5px;
+}
+
 #back-button:hover,
+#add-class-button:hover,
 #close-panel-button:hover {
     background: #8FBC8F;
     border-color: #4F7942;
@@ -1018,8 +1038,9 @@ The code below is similar to that one above, but I am keeping both copies as we 
     transform: translateY(-1px);
 }
 
-/* When back button is hidden, disable pointer events */
-#back-button[style*="visibility: hidden"] {
+/* When back/add buttons are hidden, disable pointer events */
+#back-button[style*="visibility: hidden"],
+#add-class-button[style*="visibility: hidden"] {
     pointer-events: none;
 }
 
@@ -1083,14 +1104,14 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .section-content a {
-    color: #64b5f6;
+    color: #000000;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .section-content a:hover {
-    color: #90caf9;
-    text-decoration: underline;
+    color: #000000;
+    text-decoration: none;
 }
 
 /* Related Classes Styling */
@@ -1128,14 +1149,14 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .rightSidebarMenuInner li a{
-    color: #64b5f6;
+    color: #000000;
     cursor: pointer;
     text-decoration: none;
 }
 
 .rightSidebarMenuInner li a:hover{
-    color: #90caf9;
-    text-decoration: underline;
+    color: #000000;
+    text-decoration: none;
 }
 
 /* References Section Styling */
@@ -1614,9 +1635,9 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     background-color: #ccc;
   }
   
-  /* When the checkbox is checked, add a blue background */
+  /* When the checkbox is checked, add a green background */
   .container input:checked ~ .checkmark {
-    background-color: #2196F3;
+    background-color: #2D5016;
   }
   
   /* Create the checkmark/indicator (hidden when not checked) */
@@ -1664,7 +1685,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #2c5282;
+    border: 1px solid #2D5016;
     border-top: none;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 1001;
@@ -1692,19 +1713,19 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .search-dropdown::-webkit-scrollbar-thumb {
-    background: #2c5282;
+    background: #2D5016;
     border-radius: 0px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #1a365d;
+    background: #1a3a0d;
 }
 
 /* Adjust list items to center content vertically */
 .search-dropdown li {
     padding: 10px 25px 10px 15px;
     border-bottom: 1px solid #edf2f7;
-    color: #2c5282;
+    color: #2D5016;
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
@@ -1773,7 +1794,7 @@ body.search-active .header-center .search-dropdown {
 .info-icon {
     width: 28px;
     height: 28px;
-    border: 2px solid #2c5282;
+    border: 2px solid #2D5016;
     border-radius: 50%;
     text-align: center;
     line-height: 26px;  /* Slightly less than height to vertically center the 'i' */
@@ -1781,7 +1802,7 @@ body.search-active .header-center .search-dropdown {
     font-style: normal;
     font-family: system-ui, -apple-system, sans-serif;
     font-weight: 500;
-    color: #2c5282;
+    color: #2D5016;
     cursor: pointer;
     font-size: 16px;    /* Increased font size */
     background-color: transparent;
@@ -1796,15 +1817,15 @@ body.search-active .header-center .search-dropdown {
 }
 
 .info-icon:hover {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: white;
-    box-shadow: 0 3px 6px rgba(44, 82, 130, 0.3);
+    box-shadow: 0 3px 6px rgba(45, 80, 22, 0.3);
     transform: translateY(-1px);
 }
 
 .info-icon:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(44, 82, 130, 0.2);
+    box-shadow: 0 1px 2px rgba(45, 80, 22, 0.2);
 }
 
 .header-center .filter-container {
@@ -1902,9 +1923,9 @@ body.search-active .header-center .search-dropdown {
 
 .settings-select {
     background-color: #fff;
-    border: 1px solid #2c5282;
+    border: 1px solid #2D5016;
     border-radius: 4px;
-    color: #2c5282;
+    color: #2D5016;
     padding: 4px 8px;
     font-size: 14px;
     cursor: pointer;
@@ -1912,17 +1933,17 @@ body.search-active .header-center .search-dropdown {
 }
 
 .settings-select:hover {
-    border-color: #1a365d;
+    border-color: #1a3a0d;
 }
 
 .settings-select:focus {
     outline: none;
-    border-color: #1a365d;
-    box-shadow: 0 0 0 2px rgba(26, 54, 93, 0.2);
+    border-color: #1a3a0d;
+    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.2);
 }
 
 .settings-button {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: white;
     border: none;
     border-radius: 4px;
@@ -1935,7 +1956,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .settings-button:hover {
-    background-color: #1a365d;
+    background-color: #1a3a0d;
 }
 
 /* Creator list styling in about modal */
@@ -2025,7 +2046,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .history-return-button {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -2039,7 +2060,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .history-return-button:hover {
-    background-color: #1a365d;
+    background-color: #1a3a0d;
 }
 
 .history-details {
@@ -2072,7 +2093,7 @@ body.search-active .header-center .search-dropdown {
 
 .history-current {
     background-color: rgba(255, 255, 255, 0.1);
-    border-left: 3px solid #3182CE;
+    border-left: 3px solid #2D5016;
 }
 
 /* History list scrollbar styling */

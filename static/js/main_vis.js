@@ -219,7 +219,8 @@ function open_side_window(d) {
 function updateNavigationButtons() {
     const backButton = document.getElementById('back-button');
     const closeButton = document.getElementById('close-panel-button');
-    
+    const addButton = document.getElementById('add-class-button');
+
     // Update back button - use visibility to preserve layout space
     if (AppState.navigationHistory.length > 0) {
         backButton.style.visibility = 'visible';
@@ -229,7 +230,25 @@ function updateNavigationButtons() {
         backButton.style.visibility = 'hidden';
         backButton.style.opacity = '0';
     }
-    
+
+    // Update add button - show only if class is not already selected
+    if (AppState.selectedClass && window.networkProcessor && !window.networkProcessor.isClassSelected(AppState.selectedClass)) {
+        addButton.style.visibility = 'visible';
+        addButton.style.opacity = '1';
+        addButton.onclick = () => {
+            window.networkProcessor.selectClass(AppState.selectedClass);
+            draw_graph();
+            if (typeof trackVisualizationChange === 'function') {
+                trackVisualizationChange("Add Class", `Added ${AppState.selectedClass} to selection`);
+            }
+            addButton.style.visibility = 'hidden';
+            addButton.style.opacity = '0';
+        };
+    } else {
+        addButton.style.visibility = 'hidden';
+        addButton.style.opacity = '0';
+    }
+
     // Setup close button
     closeButton.onclick = () => {
         document.getElementById('openRightSidebarMenu').checked = false;

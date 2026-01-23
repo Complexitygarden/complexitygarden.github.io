@@ -9,6 +9,13 @@
 - [] Sizing - things look really small + placement of icons feels off (Maybe the circles on the icons on the right change my perception) + Lack of space in some cases?
 - [x] Sizing of the complexity classes (such as BQPSPACE/qpoly)
 - [] Merge with main
+- [x] Change color of search scrollbar
+- [x] Add class that we got from see also
+- [] Improve the references section
+- [x] Get rid of the blue on reference links
+- [x] Change color of the buttons on the left-side menu
+- [] Fix that in the search bar, the hover color is different from the select by keypad (also, there should just be one)
+- [] Move title of classes down?
 
 # Complexity Garden
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.

@@ -399,7 +399,7 @@ function draw_graph(){
         // Adding the circle
         nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", d => d.isNew ? "#a11f1f" : colorScale(d.level))
+            .attr("fill", d => d.isNew ? "#B45309" : colorScale(d.level))
             .attr("stroke", "none")
             .attr("stroke-width", 3)
             .each(function(d){
