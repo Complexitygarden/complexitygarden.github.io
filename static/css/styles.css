@@ -24,7 +24,7 @@ body {
 
 /* Modern App Header */
 .app-header {
-    height: 3.5rem;
+    height: 4.5rem;
     border-bottom: 1px solid rgba(45, 80, 22, 0.2);
     background: rgba(45, 80, 22, 0.95);
     backdrop-filter: blur(12px);
@@ -67,8 +67,8 @@ body {
     transition: background-color 0.2s;
     align-items: center;
     justify-content: center;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
 }
 
 .mobile-menu-btn:hover {
@@ -76,12 +76,12 @@ body {
 }
 
 .mobile-menu-btn svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .app-title {
-    font-size: 1.125rem;
+    font-size: 1.375rem;
     font-weight: 600;
     color: #fff;
     margin: 0;
@@ -118,7 +118,7 @@ body {
     align-items: stretch;
     max-width: 500px;
     width: 100%;
-    height: 2.5rem;
+    height: 3rem;
 }
 
 /* Mobile responsive header */
@@ -169,8 +169,8 @@ body {
 .main {
     margin: 0 auto;
     display: block;
-    height: calc(100vh - 3.5rem);
-    margin-top: 3.5rem;
+    height: calc(100vh - 4.5rem);
+    margin-top: 4.5rem;
     z-index: 5;
     position: relative;
     overflow: hidden;
@@ -235,10 +235,10 @@ body {
 #leftSidebarMenu {
     height: 100%;
     position: fixed;
-    top: 3.5rem;
+    top: 4.5rem;
     left: 0;
     /* Sidebar height fills remaining viewport under header */
-    height: calc(100vh - 3.5rem);
+    height: calc(100vh - 4.5rem);
     /* Responsive width: use 400px unless the viewport is narrower */
     width: min(400px, 100vw);
     /* Move exactly its own width off-screen in the closed state */
@@ -357,10 +357,10 @@ The code below is similar to that one above, but I am keeping both copies as we 
 */
 
 #rightSidebarMenu {
-    height: calc(100vh - 3.5rem);
+    height: calc(100vh - 4.5rem);
     position: fixed;
     right: 0;
-    top: 3.5rem;
+    top: 4.5rem;
     width: min(400px, 100vw);
     transform: translateX(100%);
     transition: transform 250ms ease-in-out;
@@ -1344,8 +1344,8 @@ input[class="openRightSidebarMenu"] {
     cursor: pointer;
     position: relative;
     z-index: 1;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1371,8 +1371,8 @@ input[class="openRightSidebarMenu"] {
     cursor: pointer;
     position: relative;
     z-index: 1;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1387,8 +1387,8 @@ input[class="openRightSidebarMenu"] {
 }
 
 .header-right .shareIcon svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     fill: #ffffff;
     opacity: 1;
 }
@@ -1396,11 +1396,11 @@ input[class="openRightSidebarMenu"] {
 .header-right .rightSidebarIconToggle .i-circle {
     display: inline-block;
     position: relative;
-    width: 2.5px;
-    height: 9px;
+    width: 3px;
+    height: 11px;
     background-color: #fff;
     border-radius: 2px;
-    margin: 4px 0 0 0;
+    margin: 5px 0 0 0;
     transition: all 0.3s;
     opacity: 1;
     transform: translateY(-1px);
@@ -1409,11 +1409,11 @@ input[class="openRightSidebarMenu"] {
 .header-right .rightSidebarIconToggle .i-circle::before {
     content: '';
     position: absolute;
-    width: 2.5px;
-    height: 2.5px;
+    width: 3px;
+    height: 3px;
     background-color: #fff;
     border-radius: 50%;
-    top: -4px;
+    top: -5px;
     left: 0;
     transition: all 0.3s;
     opacity: 1;
@@ -1532,23 +1532,23 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     align-items: stretch;
     max-width: 500px;
     width: 100%;
-    height: 2.5rem;
+    height: 3rem;
 }
 
 .header-center .search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 18px;
+    font-size: 22px;
     color: #718096;
     z-index: 2;
     pointer-events: none;
 }
 
 .header-center .filter-button {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 3rem;
+    width: 3rem;
     background: #B45309;
     border: 1px solid #B45309;
     border-left: none;
@@ -1569,15 +1569,15 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .header-center .filter-button svg {
     fill: white;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
 }
 
 .header-center input[type=text] {
     flex: 1;
-    height: 2.5rem;
-    font-size: 14px;
-    padding: 0 12px 0 40px;
+    height: 3rem;
+    font-size: 16px;
+    padding: 0 12px 0 46px;
     border-radius: 0.375rem 0 0 0.375rem;
     background: #FFFBF7;
     border: 1px solid #B45309;
