@@ -2246,6 +2246,35 @@ body.search-active .header-center .search-dropdown {
     body.mobile-search-collapsed .rightSidebarIconToggle {
         width: 40px !important;
         height: 40px !important;
+        border: none !important;
+    }
+
+    /* Circular hover backgrounds for all header icons on mobile */
+    body.mobile-search-collapsed .shareIcon:hover,
+    body.mobile-search-collapsed .rightSidebarIconToggle:hover,
+    body.mobile-search-collapsed .search-container:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-radius: 50% !important;
+    }
+
+    /* Circular hover background for hamburger icon using pseudo-element */
+    /* Size is 27px because the icon has scale(1.5) applied, so 27*1.5 ≈ 40px */
+    body.mobile-search-collapsed .leftSidebarIconToggle::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 27px;
+        height: 27px;
+        border-radius: 50%;
+        background: transparent;
+        transition: background 0.3s;
+        z-index: -1;
+    }
+
+    body.mobile-search-collapsed .leftSidebarIconToggle:hover::before {
+        background: rgba(255, 255, 255, 0.15);
     }
 
     /* body.mobile-search-collapsed .shareIcon, */
