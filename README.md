@@ -15,7 +15,8 @@
 - [x] Get rid of the blue on reference links
 - [x] Change color of the buttons on the left-side menu
 - [] Fix that in the search bar, the hover color is different from the select by keypad (also, there should just be one)
-- [] Move title of classes down?
+- [x] Move title of classes down?
+- [] Make the Select ALL buttons green
 
 # Complexity Garden
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.

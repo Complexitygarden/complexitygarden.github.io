@@ -209,21 +209,19 @@
                     <!-- Header with navigation and badges -->
                     <div class="class-header">
                         <div class="header-nav">
-                            <button id="back-button" class="nav-button" title="Go back" style="visibility: hidden; opacity: 0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="m12 19-7-7 7-7"/>
-                                    <path d="M19 12H5"/>
-                                </svg>
-                            </button>
-                            <button id="add-class-button" class="nav-button" title="Add to selection" style="visibility: hidden; opacity: 0;">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 5v14"/>
-                                    <path d="M5 12h14"/>
-                                </svg>
-                            </button>
-                            <div class="class-info">
-                                <h1 id="class-title" class="class-title">Class Name</h1>
-                                <p id="class-full-name" class="class-full-name">Full Name</p>
+                            <div class="header-nav-left">
+                                <button id="back-button" class="nav-button" title="Go back" style="visibility: hidden; opacity: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m12 19-7-7 7-7"/>
+                                        <path d="M19 12H5"/>
+                                    </svg>
+                                </button>
+                                <button id="add-class-button" class="nav-button" title="Add to selection" style="visibility: hidden; opacity: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14"/>
+                                        <path d="M5 12h14"/>
+                                    </svg>
+                                </button>
                             </div>
                             <button id="close-panel-button" class="nav-button" title="Close panel">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -231,6 +229,10 @@
                                     <path d="m6 6 12 12"/>
                                 </svg>
                             </button>
+                        </div>
+                        <div class="class-info">
+                            <h1 id="class-title" class="class-title">Class Name</h1>
+                            <p id="class-full-name" class="class-full-name">Full Name</p>
                         </div>
                         <div class="class-badges">
                             <!-- <div id="type-badge" class="badge badge-primary">
