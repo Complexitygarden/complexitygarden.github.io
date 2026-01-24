@@ -1,23 +1,3 @@
-# To do before merging with main
-- [x] Link files to actual db(github)
-- [x] Fix the wrong right_side organization + links
-- [] Figure out which tags to include
-- [x] Fix going backwards in the right side menu
-- [x] Fix not being able to click on classes on the right side menu
-- [x] Linking references in descriptions
-- [x] Name + description moves when the backwards button is present
-- [x] Sizing - things look really small + placement of icons feels off (Maybe the circles on the icons on the right change my perception) + Lack of space in some cases?
-- [x] Sizing of the complexity classes (such as BQPSPACE/qpoly)
-- [] Merge with main
-- [x] Change color of search scrollbar
-- [x] Add class that we got from see also
-- [] Improve the references section
-- [x] Get rid of the blue on reference links
-- [x] Change color of the buttons on the left-side menu
-- [x] Fix that in the search bar, the hover color is different from the select by keypad (also, there should just be one)
-- [x] Move title of classes down?
-- [x] Make the Select ALL buttons green
-
 # Complexity Garden
 This repository contains the code for the complexity garden - a tool whose goal to clearly visualize computational complexity classes.
 
@@ -50,3 +30,6 @@ This repository contains the code for the complexity garden - a tool whose goal 
 - See also classes
 - "Tags"
 - Useful information
+
+# To do
+- [] Improve the references section
