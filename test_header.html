@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Header Test</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="static/css/styles.css" rel="stylesheet">
+    <style>
+        /* Additional debugging styles */
+        .header-right {
+            border: 2px solid red; /* Debug border */
+        }
+        .shareIcon {
+            border: 2px solid green !important; /* Debug border */
+        }
+        .rightSidebarIconToggle {
+            border: 2px solid blue !important; /* Debug border */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="header-left">
+                <label for="openLeftSidebarMenu" class="mobile-menu-btn">
+                    <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </label>
+            </div>
+            
+            <div class="header-center">
+                <div class="search-container">
+                    <span class="search-icon"><i class="fa fa-search"></i></span>
+                    <input type="text" id="complexity_class_search_bar" placeholder="Search complexity classes">
+                </div>
+            </div>
+
+            <div class="header-right">
+                <a href="#" id="share-link" class="shareIcon" title="Share">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ffffff">
+                        <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z"/>
+                    </svg>
+                </a>
+                <label for="openRightSidebarMenu" class="rightSidebarIconToggle">
+                    <div class="i-circle"></div>
+                </label>
+            </div>
+        </div>
+    </header>
+
+    <div style="margin-top: 80px; padding: 20px;">
+        <h1>Header Icon Test</h1>
+        <p>Check if the share icon (left) and info icon (right) are visible in the header above.</p>
+        <p>The icons should have colored borders for debugging:</p>
+        <ul>
+            <li>Red border around the entire header-right section</li>
+            <li>Green border around the share icon</li>
+            <li>Blue border around the info icon</li>
+        </ul>
+    </div>
+</body>
+</html>

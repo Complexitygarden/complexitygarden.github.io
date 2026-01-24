@@ -48,29 +48,52 @@
         <link rel="icon" href="./Images/garden_logo.png">
     </head>
     <body>
-        <!-- Top header -->
-        <div class="header">
-            <!-- <span>Complexity Garden</span> -->
-            <!-- Reference Page Test Link -->
-            <!-- <a href="{{ url_for('references') }}">References page</a> -->
-
-            <div class="search-container">
-                <span class="search-icon"><i class="fa fa-search"></i></span>
-                <input type="text" id="complexity_class_search_bar" placeholder="Search complexity classes">
-                <div class="filter-container">
-                    <button class="filter-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/></svg>
-                    </button>
-                    <div class="filter-dropdown">
-                        <button class="filter-option" onclick="select_all()">Select All</button>
-                        <button class="filter-option" onclick="deselect_all()">Deselect All</button>
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <label for="openLeftSidebarMenu" class="mobile-menu-btn">
+                        <svg id="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </label>
+                </div>
+                
+                <div class="header-center">
+                    <div class="search-container">
+                        <span class="search-icon"><i class="fa fa-search"></i></span>
+                        <input type="text" id="complexity_class_search_bar" placeholder="Search complexity classes">
+                        <div class="filter-container">
+                            <button class="filter-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <path d="M3.9 54.9C10.5 40.9 24.5 32 40 32l432 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L320 320.9 320 448c0 12.1-6.8 23.2-17.7 28.6s-23.8 4.3-33.5-3l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 97.3C-.7 85.4-2.8 68.8 3.9 54.9z"/>
+                                </svg>
+                            </button>
+                            <div class="filter-dropdown">
+                                <button class="filter-option" onclick="select_all()">Select All</button>
+                                <button class="filter-option" onclick="deselect_all()">Deselect All</button>
+                            </div>
+                        </div>
+                        <div class="search-dropdown">
+                            <ul id="complexity_class_search_results"></ul>
+                        </div>
                     </div>
                 </div>
-                <div class="search-dropdown">
-                    <ul id="complexity_class_search_results"></ul>
+
+                <div class="header-right">
+                    <a href="#" id="share-link" class="shareIcon" title="Share">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ffffff">
+                            <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z"/>
+                        </svg>
+                    </a>
+                    <label for="openRightSidebarMenu" class="rightSidebarIconToggle">
+                        <div class="i-circle"></div>
+                    </label>
                 </div>
             </div>
-        </div>
+        </header>
         <div class="overlay"></div>
         <!-- Sidebar manu check-box -->
         <input type="checkbox" class="openLeftSidebarMenu" id="openLeftSidebarMenu">
@@ -162,19 +185,134 @@
         </div>
         <!-- Class description sidebar -->
         <input type="checkbox" class="openRightSidebarMenu" id="openRightSidebarMenu">
-        <a href="#" id="share-link" class="shareIcon" title="Share">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="#ffffff"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 192 320c0 17.7 14.3 32 32 32s32-14.3 32-32l0-210.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 53 43 96 96 96l256 0c53 0 96-43 96-96l0-64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64c0 17.7-14.3 32-32 32L96 448c-17.7 0-32-14.3-32-32l0-64z"/></svg>
-        </a>
-        <label for="openRightSidebarMenu" class="rightSidebarIconToggle">
-            <div class="i-circle"></div>
-        </label>
         <!-- The actual sidebar text -->
         <div id="rightSidebarMenu">
-            <ul class="rightSidebarMenuInner">
-                <li id="class-title" class="title">Complexity Class Title</li>
-                <li id="class-description" class="description">Select a class to view its description</li>
-                <li id="class-information" class="information"> Class information goes here </li>
-            </ul>
+            <div class="rightSidebarMenuInner">
+                <!-- Welcome State (shown when no class selected) -->
+                <div id="welcome-state" class="welcome-state">
+                    <div class="welcome-content">
+                        <div class="welcome-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6"/>
+                                <path d="m21 12-6 0m-6 0-6 0"/>
+                            </svg>
+                        </div>
+                        <h3 class="welcome-title">No Class Selected</h3>
+                        <p class="welcome-description">
+                            Click on a complexity class in the graph to view detailed information
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Class Information Panel (shown when class selected) -->
+                <div id="class-panel" class="class-panel" style="display: none;">
+                    <!-- Header with navigation and badges -->
+                    <div class="class-header">
+                        <div class="header-nav">
+                            <div class="header-nav-left">
+                                <button id="back-button" class="nav-button" title="Go back" style="visibility: hidden; opacity: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="m12 19-7-7 7-7"/>
+                                        <path d="M19 12H5"/>
+                                    </svg>
+                                </button>
+                                <button id="add-class-button" class="nav-button" title="Add to selection" style="visibility: hidden; opacity: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 5v14"/>
+                                        <path d="M5 12h14"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button id="close-panel-button" class="nav-button" title="Close panel">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 6 6 18"/>
+                                    <path d="m6 6 12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="class-info">
+                            <h1 id="class-title" class="class-title">Class Name</h1>
+                            <p id="class-full-name" class="class-full-name">Full Name</p>
+                        </div>
+                        <div class="class-badges">
+                            <!-- <div id="type-badge" class="badge badge-primary">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span id="type-text">complexity</span>
+                            </div>
+                            <div id="deterministic-badge" class="badge badge-primary">
+                                <span id="deterministic-text">Deterministic</span>
+                            </div> -->
+                        </div>
+                    </div>
+
+                    <!-- Scrollable Content -->
+                    <div class="class-content">
+                        <!-- Definition Card -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                                </svg>
+                                <h3>Definition</h3>
+                            </div>
+                            <div class="card-content">
+                                <p id="class-definition">Click on a complexity class to view its definition</p>
+                            </div>
+                        </div>
+
+                        <!-- Useful Information Card -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6"/>
+                                    <path d="m21 12-6 0m-6 0-6 0"/>
+                                </svg>
+                                <h3>Useful Information</h3>
+                            </div>
+                            <div class="card-content">
+                                <p id="class-information"></p>
+                            </div>
+                        </div>
+
+                        <!-- Links Card -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 3h6v6"/>
+                                    <path d="M10 14 21 3"/>
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                </svg>
+                                <h3>See Also</h3>
+                            </div>
+                            <div class="card-content">
+                                <div id="class-links" class="see-also-container">
+                                    <!-- Links will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- References Card -->
+                        <div class="info-card">
+                            <div class="card-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                                </svg>
+                                <h3>References</h3>
+                            </div>
+                            <div class="card-content">
+                                <div id="class-references" class="references-list">
+                                    <!-- References will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
        
         <!-- Graph of the classes -->
