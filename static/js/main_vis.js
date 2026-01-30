@@ -174,7 +174,7 @@ function link_classes_information(information_text)
                 const classData = networkProcessor.getClass(class_id);
                 if (!classData) return match;
                 const latex = classData.latex_name || class_id;
-                return `<a role="button" class="clickable-class" onclick="open_side_window(networkProcessor.getClass('${class_id}'))">\$${latex}\$</a>`;
+                return `<a role="button" class="clickable-class" data-class="${class_id}">\$${latex}\$</a>`;
             })
         }
     });
@@ -186,7 +186,8 @@ function link_classes_information(information_text)
 
 
 
-// Open side window with class information
+// Open side window with class information (called from graph clicks)
+// This clears the navigation history since we're starting fresh from the graph
 function open_side_window(d) {
     const classData = networkProcessor.getClass(d.id);
     if (!classData) {
@@ -202,56 +203,376 @@ function open_side_window(d) {
     }
 
     const action = "Description";
-
     track_class_click(classData.id, { action });
 
-    // Handle title with MathJax
-    const titleElement = document.getElementById('class-title');
-    titleElement.innerHTML = `$${classData.latex_name}$`;
-    MathJax.typeset([titleElement]);
-    
-    // Set description with links and allow MathJax processing
-    const descElement = document.getElementById('class-description');
-    descElement.innerHTML = link_classes_information(classData.description) || 'No description available';
-    
-    // Format class information
-    let info = '';
-    // Add information from classes.json
-    if (classData.information) {
-        info += '<br><strong>Information:</strong><br>';
-        // Process LaTeX parts in the information text
-        //processedInfo = classData.information.replace(/\\mathsf\{[^}]+\}/g, match => `$${match}$`);
+    // Clear navigation history when clicking from graph (start fresh)
+    AppState.navigationHistory = [];
+    AppState.selectedClass = classData.id;
 
-        //console.log("Linked_class_information: ",link_classes_information(processedInfo));
+    // Show class panel and hide welcome state
+    document.getElementById('welcome-state').style.display = 'none';
+    document.getElementById('class-panel').style.display = 'flex';
 
-        processedInfo = link_classes_information(classData.information);
+    // Update navigation buttons (back button should be hidden since history is empty)
+    updateNavigationButtons();
 
-        info += format_information(processedInfo) + '<br>';
-    }
-    
-    const infoElement = document.getElementById('class-information');
-    infoElement.innerHTML = info;
-    // Typeset both description and information sections
-    MathJax.typesetPromise([descElement, infoElement]).then(() => {
-        //process clickable-elements
-        document.querySelectorAll('.clickable-class').forEach(el => {
-
-            el.onclick = () => {
-                const className = el.textContent.replace(/\s/g, '');
-                const classData = networkProcessor.getClass(className);
-                console.log("Class name: ", className);
-                console.log("Class data:", classData);
-                open_side_window(classData);
-            };
-        });
-    });
+    // Populate class information
+    populateComplexityClassPanel(classData);
 
     // Open the sidebar
     document.getElementById('openRightSidebarMenu').checked = true;
 }
 
+function updateNavigationButtons() {
+    const backButton = document.getElementById('back-button');
+    const closeButton = document.getElementById('close-panel-button');
+    const addButton = document.getElementById('add-class-button');
+
+    // Update back button - use visibility to preserve layout space
+    if (AppState.navigationHistory.length > 0) {
+        backButton.style.visibility = 'visible';
+        backButton.style.opacity = '1';
+        backButton.onclick = () => navigateBack();
+    } else {
+        backButton.style.visibility = 'hidden';
+        backButton.style.opacity = '0';
+    }
+
+    // Update add button - show only if class is not already selected
+    if (AppState.selectedClass && window.networkProcessor && !window.networkProcessor.isClassSelected(AppState.selectedClass)) {
+        addButton.style.visibility = 'visible';
+        addButton.style.opacity = '1';
+        addButton.onclick = () => {
+            window.networkProcessor.selectClass(AppState.selectedClass);
+            draw_graph();
+            if (typeof trackVisualizationChange === 'function') {
+                trackVisualizationChange("Add Class", `Added ${AppState.selectedClass} to selection`);
+            }
+            addButton.style.visibility = 'hidden';
+            addButton.style.opacity = '0';
+        };
+    } else {
+        addButton.style.visibility = 'hidden';
+        addButton.style.opacity = '0';
+    }
+
+    // Setup close button
+    closeButton.onclick = () => {
+        document.getElementById('openRightSidebarMenu').checked = false;
+        AppState.selectedClass = null;
+        AppState.navigationHistory = [];
+        showWelcomeState();
+    };
+}
+
+function showWelcomeState() {
+    document.getElementById('welcome-state').style.display = 'flex';
+    document.getElementById('class-panel').style.display = 'none';
+}
+
+function populateComplexityClassPanel(classData) {
+    console.log("Populating panel for:", classData.name);
+    
+    // Populate header
+    populateClassHeader(classData);
+    
+    // Populate definition
+    populateDefinition(classData);
+    
+    // Populate useful information
+    populateUsefulInformation(classData);
+    
+    // Populate links
+    populateLinks(classData);
+    
+    // Populate references
+    populateReferences(classData);
+    
+    // Process MathJax
+    const elementsToTypeset = [
+        document.getElementById('class-title'),
+        document.getElementById('class-definition'),
+        document.getElementById('class-information'),
+        document.getElementById('class-links'),
+        document.getElementById('related-classes-list'),
+        document.getElementById('see-also-link'),
+        document.getElementById('class-full-name')
+    ];
+    
+    MathJax.typesetPromise(elementsToTypeset.filter(el => el)).then(() => {
+        setupClickableElements();
+    });
+}
+
+function populateClassHeader(classData) {
+    // Set title and full name
+    document.getElementById('class-title').innerHTML = `$${classData.latex_name}$`;
+    const class_description = document.getElementById('class-full-name');
+    class_description.innerHTML = link_classes_information(classData.description) || "";
+    
+    // These processes to determine badges are wrong
+    // Determine type and update badges
+    // const typeText = determineComplexityType(classData);
+    // const isDeterministic = determineDeterministic(classData);
+    
+    // document.getElementById('type-text').textContent = typeText;
+    // document.getElementById('deterministic-text').textContent = isDeterministic ? 'Deterministic' : 'Non-deterministic';
+}
+
+// function determineComplexityType(classData) {
+//     const name = classData.name.toLowerCase();
+//     if (name.includes('space') || name.includes('pspace') || name.includes('nspace')) {
+//         return 'space complexity';
+//     } else if (name.includes('time') || name.includes('p') || name.includes('np') || name.includes('exp')) {
+//         return 'time complexity';
+//     }
+//     return 'complexity';
+// }
+
+// function determineDeterministic(classData) {
+//     const name = classData.name.toLowerCase();
+//     return !name.startsWith('n') || name === 'nspace' || name === 'nl';
+// }
+
+function populateDefinition(classData) {
+    const descElement = document.getElementById('class-definition');
+    descElement.innerHTML = format_reference_information(link_classes_information(classData.definition)) || 'No definition available';
+}
+
+function populateUsefulInformation(classData) {
+    const descElement = document.getElementById('class-information');
+    const infoCard = descElement.closest('.info-card');
+
+    // Hide the entire card if there's no information
+    if (!classData.information || classData.information.trim() === '') {
+        infoCard.style.display = 'none';
+    } else {
+        infoCard.style.display = '';
+        descElement.innerHTML = format_reference_information(link_classes_information(classData.information));
+    }
+}
+
+function populateLinks(classData) {
+    const linksElement = document.getElementById('class-links');
+    linksElement.innerHTML = '';
+
+    // Check for links in classData - these are complexity class identifiers
+    const linksList = classData.see_also || [];
+
+    if (linksList && linksList.length > 0) {
+        let validLinksCount = 0;
+
+        linksList.forEach(link => {
+            if (typeof link === 'string') {
+                // Check if it's a complexity class identifier
+                const linkedClassData = networkProcessor.getClass(link);
+
+                if (linkedClassData) {
+                    // It's a valid complexity class - create a clickable link
+                    const linkElement = document.createElement('a');
+                    linkElement.setAttribute('role', 'button');
+                    linkElement.className = 'see-also-link clickable-class';
+                    linkElement.setAttribute('data-class', link);
+
+                    // Use latex name if available, otherwise use the id
+                    const latex = linkedClassData.latex_name || link;
+                    linkElement.innerHTML = `$${latex}$`;
+
+                    linksElement.appendChild(linkElement);
+                    validLinksCount++;
+                }
+            }
+        });
+
+        // Show message if no valid class links were found
+        if (validLinksCount === 0) {
+            linksElement.innerHTML = '<div class="link-text">No related classes found.</div>';
+        }
+    } else {
+        // Show a message when no links are available
+        linksElement.innerHTML = '<div class="link-text">No links available for this complexity class.</div>';
+    }
+}
+
+function populateReferences(classData) {
+    const referencesElement = document.getElementById('class-references');
+    referencesElement.innerHTML = '';
+    
+    // Add enhanced references
+    if (classData.references && classData.references.length > 0) {
+        classData.references.forEach(ref => {
+            const item = document.createElement('div');
+            item.className = 'reference-item';
+
+            if (ref.length == 2) {
+                ref_title = ref[0];
+                // Reference url - special case for the zoo
+                ref_url = (ref_title == "Complexity Zoo")? ("https://complexityzoo.net/Complexity_Zoo:" +ref[1]):ref[1];
+                item.innerHTML = `
+                    <a href="${ref_url}" target="_blank" class="reference-link">
+                        ${ref_title}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                `;
+            } else {
+                console.log("Error parsing the following reference: " + ref)
+            }
+            
+            referencesElement.appendChild(item);
+        });
+    }
+}
+
+function setupClickableElements() {
+    document.querySelectorAll('.clickable-class').forEach(el => {
+        el.onclick = (e) => {
+            e.preventDefault();
+            const className = el.dataset.class;
+            if (className) {
+                handleClassSelect(className);
+            }
+        };
+    });
+}
+
+// Helper function to navigate back in class history
+function navigateBack() {
+    AppState.navigateBack();
+}
+
+
+// Function to show initial state of right panel
+function showInitialPanelState() {
+    showWelcomeState();
+    
+    // Setup close button
+    const closeButton = document.getElementById('close-panel-button');
+    if (closeButton) {
+        closeButton.onclick = () => {
+            document.getElementById('openRightSidebarMenu').checked = false;
+            showWelcomeState();
+        };
+    }
+}
+
+// Test function to populate content manually
+function testPopulateContent() {
+    console.log("Testing content population");
+    
+    // Test populating examples directly
+    const examplesElement = document.getElementById('class-examples');
+    if (examplesElement) {
+        examplesElement.innerHTML = '<ul><li>Test example 1</li><li>Test example 2</li></ul>';
+        document.getElementById('examples-subsection').style.display = 'block';
+        console.log("Test examples populated");
+    } else {
+        console.error("Examples element not found");
+    }
+    
+    // Test populating applications
+    const applicationsElement = document.getElementById('class-applications');
+    if (applicationsElement) {
+        applicationsElement.innerHTML = '<ul><li>Test application 1</li><li>Test application 2</li></ul>';
+        document.getElementById('applications-subsection').style.display = 'block';
+        console.log("Test applications populated");
+    } else {
+        console.error("Applications element not found");
+    }
+}
+
+// App State Management (similar to React component)
+const AppState = {
+    selectedClass: null,
+    navigationHistory: [],
+    sidebarOpen: false,
+    
+    setSelectedClass(classId) {
+        if (this.selectedClass && this.selectedClass !== classId) {
+            this.navigationHistory.push(this.selectedClass);
+        }
+        this.selectedClass = classId;
+        this.updateUI();
+    },
+    
+    navigateBack() {
+        const previousClass = this.navigationHistory.pop();
+        this.selectedClass = previousClass || null;
+        this.updateUI();
+    },
+    
+    navigateToClass(classId) {
+        if (this.selectedClass) {
+            this.navigationHistory.push(this.selectedClass);
+        }
+        this.selectedClass = classId;
+        this.updateUI();
+    },
+    
+    toggleSidebar() {
+        this.sidebarOpen = !this.sidebarOpen;
+        this.updateMobileMenu();
+    },
+    
+    updateUI() {
+        // Update navigation buttons
+        updateNavigationButtons();
+        
+        // Update panel content
+        if (this.selectedClass) {
+            const classData = networkProcessor.getClass(this.selectedClass);
+            if (classData) {
+                populateComplexityClassPanel(classData);
+                document.getElementById('welcome-state').style.display = 'none';
+                document.getElementById('class-panel').style.display = 'flex';
+            }
+        } else {
+            showWelcomeState();
+        }
+    },
+    
+    updateMobileMenu() {
+        const menuIcon = document.getElementById('menu-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const leftSidebar = document.getElementById('leftSidebarMenu');
+        
+        if (this.sidebarOpen) {
+            menuIcon.style.display = 'none';
+            closeIcon.style.display = 'block';
+            leftSidebar.style.display = 'block';
+        } else {
+            menuIcon.style.display = 'block';
+            closeIcon.style.display = 'none';
+            leftSidebar.style.display = '';
+        }
+    }
+};
+
+// Initialize mobile menu toggle
+function initializeMobileMenu() {
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', () => {
+            AppState.toggleSidebar();
+        });
+    }
+}
+
+// Update the open_side_window function to use AppState
+function handleClassSelect(classId) {
+    AppState.setSelectedClass(classId);
+    document.getElementById('openRightSidebarMenu').checked = true;
+}
+
 // Initialize visualization when the page loads
-document.addEventListener('DOMContentLoaded', initializeVisualization);
+document.addEventListener('DOMContentLoaded', () => {
+    initializeVisualization();
+    showInitialPanelState();
+    initializeMobileMenu();
+    
+    console.log("Complexity Class Explorer initialized");
+});
 
 // Add after other initialization code
 function initializeVisualizationControls() {

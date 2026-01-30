@@ -30,3 +30,6 @@ This repository contains the code for the complexity garden - a tool whose goal 
 - See also classes
 - "Tags"
 - Useful information
+
+# To do
+- [] Improve the references section
