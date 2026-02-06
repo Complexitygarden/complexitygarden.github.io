@@ -118,11 +118,42 @@ function setupVisualization() {
 // Create visualization based on selected type
 function create_visualisation() {
     if (vis_type === 'graph') {
+        setupVisualization();
         draw_graph();
     } else if (vis_type === 'sunburst') {
         draw_sunburst();
+    } else if (vis_type === 'descriptions') {
+        console.log("create visualization render description view");
+        delete_old_graph();
+        renderDescriptionsView();
     }
 }
+
+// Switch to descriptions view
+function switchToDescriptionsView() {
+    vis_type = 'descriptions';
+    console.log("Switching to descriptions view");
+    console.log(vis_type);
+    
+    // Update the select dropdown to reflect the change
+    const visTypeSelect = document.getElementById('vis-type-select');
+    if (visTypeSelect) {
+        visTypeSelect.value = 'descriptions';
+    }
+    
+    // Stop any running simulation
+    if (typeof simulation !== 'undefined' && simulation) {
+        simulation.stop();
+    }
+    
+    redrawVisualization();
+    
+    if (typeof trackVisualizationChange === 'function') {
+        trackVisualizationChange("View Changed", "Switched to Descriptions view");
+    }
+}
+
+window.switchToDescriptionsView = switchToDescriptionsView;
 
 // Redraw visualization
 function redrawVisualization() {
