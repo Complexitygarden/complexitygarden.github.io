@@ -1147,7 +1147,7 @@ function draw_graph(){
                 console.log(classes);
                 // Track the edge expansion
                 trackVisualizationChange("Edge Expanded", `Expanded edge from ${sourceClass} to ${targetClass}, added ${classes.length} classes: ${classes.join(", ")}`);
-                track_class_click(sourceClass, { action: "expand edge" });
+                track_class_click(sourceClass, { action: "Expand" });
             } else {
                 console.log("No new classes to add");
             }
@@ -1166,7 +1166,7 @@ function draw_graph(){
                 console.log(classes);
                 // Track the node expansion
                 trackVisualizationChange("Node Expanded", `Expanded node ${sourceClass}, added ${classes.length} classes: ${classes.join(", ")}`);
-                track_class_click(sourceClass, { action: "expand node" });
+                track_class_click(sourceClass, { action: "Expand" });
             } else {
                 console.log("No new classes to add");
             }
