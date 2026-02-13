@@ -196,12 +196,12 @@ function open_side_window(d) {
     }
 
     // Temporary fix combining definition and information
-    console.log("Checking for definition")
-    console.log(classData)
-    if (classData.definition){
-        console.log("Combining definition and information")
-        classData.information = classData.definition + " " + classData.information;
-    }
+    // console.log("Checking for definition")
+    // console.log(classData)
+    // if (classData.definition){
+    //     console.log("Combining definition and information")
+    //     classData.information = classData.definition + " " + classData.information;
+    // }
 
     const action = "Description";
     track_class_click(classData.id, { action });
