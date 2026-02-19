@@ -1,70 +1,46 @@
-/* Override parent .mainInner styles when descriptions view is active */
-.mainInner:has(.descriptions-container) {
-    display: block !important;
-    height: calc(100vh - 4.5rem);
-    text-align: left;
+body.view-descriptions .descriptions-container {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
 }
-
-/* Override the problematic .mainInner div rule for ALL divs in the chain */
-.mainInner:has(.descriptions-container) div {
-    display: block !important;
-    font-size: 1rem !important;
-    font-weight: normal !important;
-    letter-spacing: normal !important;
-}
-
-/* Specifically target #visualisation_div when it contains descriptions */
-#visualisation_div:has(.descriptions-container) {
-    display: block !important;
-    width: 100% !important;
-    height: 100% !important;
-}
-
-/* Main Container */
-.descriptions-container {
-    width: 100%;
-    height: calc(100vh - 4.5rem);
-    overflow-y: auto;
-    padding: 1.5rem;
-    background-color: #fafafa;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-    color: #1a2332;
-    line-height: 1.6;
-}
-
-.descriptions-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-.desc-card {
-  display: block !important;
-  background: white;
-  border: 1px solid #e1e8ed;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-
 
 .descriptions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 320px));
+  gap : 10px;
+
+  margin-left: 3vw;
+  margin-right: 3vw;
+    margin-bottom: 15vh;
+
+  
+  justify-content: center;
+
 }
 
+.descriptions-header, .descriptions-empty-state {
+  text-align: center;
+  margin-top: 1vh;
+  margin-bottom : 1vh;
+  color: #858585;
+}
+
+
+
 .desc-card {
+  display: flex ;
+  flex-direction: column;
   background: white;
   border: 1px solid #e1e8ed;
   border-radius: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
   transition: box-shadow 0.2s;
+
+  align-self: auto; /*Whether or not the cards bottoms get filled out or cut off*/
+  
+  max-width: 320px;
+  width : 100%;
 }
 
 .desc-card:hover {

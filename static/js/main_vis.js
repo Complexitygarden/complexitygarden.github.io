@@ -16,6 +16,9 @@ var zoom;
 // Initialize the visualization
 async function initializeVisualization() {
     try {
+        // Set Body Class to view-graph
+        document.body.classList.add("view-graph");
+
         // Initialize network processor
         window.networkProcessor = new NetworkProcessor();
         
@@ -133,7 +136,9 @@ function create_visualisation() {
 function switchToDescriptionsView() {
     vis_type = 'descriptions';
     console.log("Switching to descriptions view");
-    console.log(vis_type);
+    
+    document.body.classList.remove('view-graph');
+    document.body.classList.add('view-descriptions');
     
     // Update the select dropdown to reflect the change
     const visTypeSelect = document.getElementById('vis-type-select');
@@ -151,6 +156,14 @@ function switchToDescriptionsView() {
     if (typeof trackVisualizationChange === 'function') {
         trackVisualizationChange("View Changed", "Switched to Descriptions view");
     }
+}
+
+function switchToGraphView()
+{
+    vis_type = 'descriptions';
+
+    document.body.classList.remove('view-graph');
+    document.body.classList.add('view-descriptions');
 }
 
 window.switchToDescriptionsView = switchToDescriptionsView;

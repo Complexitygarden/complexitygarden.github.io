@@ -177,7 +177,7 @@ body {
     transition: transform 250ms ease-in-out;
 }
 
-.mainInner {
+body.view-graph .mainInner {
     display: table;
     height: 100%;
     width: 100%;
@@ -185,7 +185,7 @@ body {
     margin-top: -8px;
 }
 
-.mainInner div{
+body.view-graph .mainInner div{
     display:table-cell;
     vertical-align: middle;
     font-size: 3em;
@@ -1400,6 +1400,36 @@ input[class="openRightSidebarMenu"] {
     opacity: 1;
 }
 
+.header-right .descriptionsIcon {
+    transition: all 0.3s;
+    box-sizing: border-box;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+    height: 2.5rem;
+    width: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.header-right .descriptionsIcon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.header-right .descriptionsIcon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    fill: #ffffff;
+    opacity: 1;
+}
+
+
+
 .header-right .rightSidebarIconToggle .i-circle {
     display: inline-block;
     position: relative;
@@ -2210,7 +2240,8 @@ body.search-active .header-center .search-dropdown {
 /* Hover enlarge effect for hamburger and info icons */
 .leftSidebarIconToggle:hover,
 .rightSidebarIconToggle:hover,
-.shareIcon:hover {
+.shareIcon:hover,
+.descriptionsIcon:hover {
     transform: scale(1.1);
 }
 
@@ -2219,7 +2250,8 @@ body.search-active .header-center .search-dropdown {
     /* --- Hide header icons when overlay open to avoid overlap --- */
     body.mobile-search-open .leftSidebarIconToggle,
     body.mobile-search-open .rightSidebarIconToggle,
-    body.mobile-search-open .shareIcon {
+    body.mobile-search-open .shareIcon,
+    body.mobile-search-open .descriptionsIcon {
         display: none !important;
     }
 
@@ -2264,7 +2296,8 @@ body.search-active .header-center .search-dropdown {
 
     /* Uniform icon sizing for share, search, and info */
     body.mobile-search-collapsed .shareIcon,
-    body.mobile-search-collapsed .rightSidebarIconToggle {
+    body.mobile-search-collapsed .rightSidebarIconToggle,
+    body.mobile-search-collapsed .descriptionsIcon {
         width: 40px !important;
         height: 40px !important;
         border: none !important;
@@ -2273,7 +2306,8 @@ body.search-active .header-center .search-dropdown {
     /* Circular hover backgrounds for all header icons on mobile */
     body.mobile-search-collapsed .shareIcon:hover,
     body.mobile-search-collapsed .rightSidebarIconToggle:hover,
-    body.mobile-search-collapsed .search-container:hover {
+    body.mobile-search-collapsed .search-container:hover,
+    body.mobile-search-collapsed .descriptionsIcon {
         background: rgba(255, 255, 255, 0.15) !important;
         border-radius: 50% !important;
     }
@@ -2335,6 +2369,8 @@ body.search-active .header-center .search-dropdown {
         transform: translateX(-50%);
         /* top: 42px; */
     }
+
+    /*If the descriptions icon is broken in mobile this might be it idk*/
     body.mobile-search-collapsed .shareIcon {
         position: absolute !important;
         left: 62.5% !important;

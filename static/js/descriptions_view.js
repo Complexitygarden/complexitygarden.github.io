@@ -1,7 +1,7 @@
 
 
 function renderDescriptionsView() {
-    const container = document.getElementById('visualisation_div');
+    const container = document.getElementById('mainInner');
     console.log("Descriptions view page: changing the container");
     
     //console.log(container);
