@@ -113,23 +113,23 @@ class NetworkProcessor {
         // console.log(`Adding theorem of type ${theorem.type}:`, theorem);
 
         if (theorem.type === 'containment') {
-            const smallClass = this.classes.get(theorem.small);
-            const largeClass = this.classes.get(theorem.large);
+            const smallClass = this.classes.get(theorem.subset);
+            const largeClass = this.classes.get(theorem.superset);
             
             // console.log(`Looking for classes:`, {
-            //     small: theorem.small,
-            //     large: theorem.large,
+            //     small: theorem.subset,
+            //     large: theorem.superset,
             //     smallFound: !!smallClass,
             //     largeFound: !!largeClass
             // });
             
             if (smallClass && largeClass) {
                 // small is contained within large
-                smallClass.within.add(theorem.large);
-                largeClass.contains.add(theorem.small);
-                smallClass.relationships.add(theorem.large);
-                largeClass.relationships.add(theorem.small);
-                // console.log(`Added containment relationship: ${theorem.small} is contained within ${theorem.large}`);
+                smallClass.within.add(theorem.superset);
+                largeClass.contains.add(theorem.subset);
+                smallClass.relationships.add(theorem.superset);
+                largeClass.relationships.add(theorem.subset);
+                // console.log(`Added containment relationship: ${theorem.subset} is contained within ${theorem.superset}`);
             } else {
                 // console.warn('Classes not found for theorem:', {
                 //     theorem,
