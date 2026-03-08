@@ -151,20 +151,46 @@ function switchToDescriptionsView() {
         simulation.stop();
     }
     
-    redrawVisualization();
-    
-    if (typeof trackVisualizationChange === 'function') {
-        trackVisualizationChange("View Changed", "Switched to Descriptions view");
-    }
+    create_visualisation();
 }
 
 function switchToGraphView()
 {
-    vis_type = 'descriptions';
+    vis_type = 'graph';
+    console.log("Switching to graph view");
 
-    document.body.classList.remove('view-graph');
-    document.body.classList.add('view-descriptions');
+    document.body.classList.remove('view-descriptions');
+    document.body.classList.add('view-graph');
+
+    const visTypeSelect = document.getElementById('vis-type-select');
+    if (visTypeSelect) {
+        visTypeSelect.value = 'graph';
+    }
+
+    if (typeof simulation !== 'undefined' && simulation) {
+        simulation.stop();
+    }
+    
+
+    create_visualisation();
 }
+
+/*
+THE PROBLEM IS THAT SWITCHING TO DESCRIPTIONS VIEW DESTROYS THE VISUALIZATION DIV, AND SWITCHING BACK DOES NOT FIX IT.
+*/
+function toggleView()
+{
+    if (vis_type == 'graph')
+    {
+        switchToDescriptionsView();
+    }
+    else
+    {
+        switchToGraphView();
+    }
+}
+
+window.toggleView = toggleView;
 
 window.switchToDescriptionsView = switchToDescriptionsView;
 

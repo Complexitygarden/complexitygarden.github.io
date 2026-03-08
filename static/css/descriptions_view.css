@@ -37,7 +37,7 @@ body.view-descriptions .descriptions-container {
   overflow: hidden;
   transition: box-shadow 0.2s;
 
-  align-self: auto; /*Whether or not the cards bottoms get filled out or cut off*/
+  align-self: start; /*Whether or not the cards bottoms get filled out or cut off*/
   
   max-width: 320px;
   width : 100%;
