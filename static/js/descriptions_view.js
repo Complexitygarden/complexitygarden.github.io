@@ -8,14 +8,24 @@ function renderDescriptionsView() {
 
     if (!container) return;
 
-    // Clear existing visualization
-    container.innerHTML = '';
+    // DONT Clear existing visualization
+
+    const visDiv = document.getElementById('visualisation_div');
+
+    if (visDiv)
+    {
+        visDiv.style.display = "none";
+    }
+
+    container.querySelectorAll(".descriptions-container, .descriptions-empty-state").forEach(el => el.remove());
+
+
 
     // Get selected classes from network processor
     const selectedClasses = window.networkProcessor ? 
         window.networkProcessor.getSelectedClasses() : [];
 
-    console.log(window.networkProcessor.getSelectedClasses());
+    console.log(selectedClasses);
 
     if (selectedClasses.length === 0) {
         container.innerHTML = `
