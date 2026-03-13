@@ -22,6 +22,8 @@ async function initializeVisualization() {
         // Load data files
         url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
         url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
+        // url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_classes.json"
+        // url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_theorems.json"
         const [classesData, theoremsData] = await Promise.all([
             fetch(url_classes).then(response => response.json()),
             fetch(url_theorems).then(response => response.json())
@@ -572,6 +574,7 @@ function handleClassSelect(classId) {
 
 // Initialize visualization when the page loads
 document.addEventListener('DOMContentLoaded', () => {
+    initGraphColors();
     initializeVisualization();
     showInitialPanelState();
     initializeMobileMenu();
