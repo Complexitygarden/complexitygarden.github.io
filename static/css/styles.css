@@ -1366,6 +1366,12 @@ input[class="openRightSidebarMenu"] {
     border-color: rgba(255, 255, 255, 0.6);
 }
 
+.rightSidebarIconToggle.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+    cursor:default;
+}
+
 .rightSidebarIconToggle {
     transition: all 0.3s;
     box-sizing: border-box;
