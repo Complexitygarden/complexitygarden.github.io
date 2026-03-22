@@ -21,8 +21,8 @@ async function initializeVisualization() {
         
         // Load data files
         const [classesData, theoremsData] = await Promise.all([
-            fetch('../classes.json').then(response => response.json()),
-            fetch('../theorems.json').then(response => response.json())
+            fetch('./classes.json').then(response => response.json()),
+            fetch('./theorems.json').then(response => response.json())
         ]);
 
         // Initialize network processor with data

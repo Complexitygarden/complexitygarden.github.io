@@ -185,6 +185,30 @@ body {
     margin-top: -8px;
 }
 
+/* Venn Diagram Container */
+#vennDiagram {
+    display: none;
+    height: calc(100vh - 3.5rem);
+    width: 100%;
+    position: fixed;
+    top: 3.5rem;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    background: #F8FBF8;
+    transition: transform 250ms ease-in-out;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#vennDiagram h2 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#vennDiagram p {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 .mainInner div{
     display:table-cell;
     vertical-align: middle;
@@ -1295,6 +1319,56 @@ input[class="openRightSidebarMenu"] {
     transition: all 0.3s;
     box-sizing: border-box;
     cursor: pointer;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dark-mode-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Venn Toggle Button */
+.venn-toggle-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+
+.venn-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+.venn-toggle-btn i {
+    font-size: 1rem;
 }
 
 .header-right .shareIcon {
@@ -2462,4 +2536,171 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 .modal-window p {
     text-align: left;
     margin: 8px 0;
+}
+
+/* ===== DARK MODE STYLES ===== */
+body.dark-mode {
+    background: #1a1a1a;
+    color: #ffffff;
+}
+
+body.dark-mode * {
+    color: #ffffff !important;
+}
+
+body.dark-mode .app-header {
+    background: rgba(20, 40, 15, 0.95);
+    border-bottom-color: rgba(80, 140, 60, 0.3);
+}
+
+body.dark-mode .main {
+    background: #1a1a1a;
+}
+
+body.dark-mode #vennDiagram {
+    background: #1a1a1a;
+}
+
+body.dark-mode #vennDiagram svg {
+    background: #1a1a1a !important;
+}
+
+body.dark-mode #vennDiagram h2 {
+    color: #ffffff !important;
+}
+
+body.dark-mode #vennDiagram p {
+    color: #ffffff !important;
+}
+
+body.dark-mode .venn-diagram-title {
+    fill: #ffffff !important;
+}
+
+body.dark-mode .venn-diagram-description {
+    fill: #ffffff !important;
+}
+
+body.dark-mode #vennDiagram > div > div > div {
+    background: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-mode #vennDiagram svg {
+    background: #2a2a2a !important;
+    border-color: #3a3a3a !important;
+}
+
+body.dark-mode .venn-circle path {
+    stroke: #8FBC8F !important;
+}
+
+body.dark-mode .venn-circle text {
+    fill: #ffffff !important;
+}
+
+body.dark-mode #rightSidebarMenu {
+    background: #2a2a2a;
+    border-left-color: #3a3a3a;
+}
+
+body.dark-mode .class-header {
+    background: #1f1f1f;
+    border-bottom-color: #3a3a3a;
+}
+
+body.dark-mode .class-title,
+body.dark-mode .class-full-name {
+    color: #ffffff !important;
+}
+
+body.dark-mode .class-content {
+    background: #2a2a2a;
+}
+
+body.dark-mode .info-card {
+    background: #333333;
+    border-color: #3a3a3a;
+}
+
+body.dark-mode .card-header {
+    border-bottom-color: #3a3a3a;
+}
+
+body.dark-mode .card-header h3 {
+    color: #ffffff !important;
+}
+
+body.dark-mode .card-header svg {
+    color: #8FBC8F;
+}
+
+body.dark-mode .card-content {
+    color: #ffffff !important;
+}
+
+body.dark-mode .card-content p,
+body.dark-mode .card-content li,
+body.dark-mode .card-content span,
+body.dark-mode .card-content a {
+    color: #ffffff !important;
+}
+
+body.dark-mode .badge {
+    background: #ffffff;
+    color: #1a1a1a !important;
+    border-color: #ffffff;
+}
+
+body.dark-mode .search-container input {
+    background: rgba(40, 40, 40, 0.9);
+    border-color: #3a3a3a;
+    color: #ffffff !important;
+}
+
+body.dark-mode .search-container input::placeholder {
+    color: #aaa !important;
+}
+
+body.dark-mode .search-dropdown {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+body.dark-mode .search-dropdown li {
+    color: #ffffff !important;
+    border-bottom-color: #3a3a3a;
+}
+
+body.dark-mode .search-dropdown li:hover {
+    background: #333333;
+}
+
+body.dark-mode .leftSidebarMenu {
+    background: #2a2a2a;
+    border-right-color: #3a3a3a;
+}
+
+body.dark-mode .leftSidebarMenuInner li a {
+    color: #ffffff !important;
+}
+
+body.dark-mode .leftSidebarMenuInner li a:hover {
+    background: #333333;
+}
+
+body.dark-mode text,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6,
+body.dark-mode p,
+body.dark-mode span,
+body.dark-mode div,
+body.dark-mode li,
+body.dark-mode a {
+    color: #ffffff !important;
 }

@@ -791,10 +791,16 @@ function draw_graph(){
                 }
             });
             
-        // === New single-click behaviour: show context menu ===
+        // === New single-click behaviour: show context menu (or edit in edit mode) ===
         node.on("click", function(d) {
             d3.event.preventDefault();
             d3.event.stopPropagation();
+            // When embedded in edit-dashboard, send the class id to the parent for editing
+            var editMode = new URLSearchParams(window.location.search).get('editMode') === 'true';
+            if (editMode && window.parent !== window) {
+                window.parent.postMessage({ type: 'editClass', classId: d.name }, '*');
+                return;
+            }
             showNodeMenu(d, d3.event.pageX, d3.event.pageY);
         });
 
@@ -1224,12 +1230,25 @@ function showNodeMenu(d, pageX, pageY) {
 
     // Build menu options dynamically
     var hasEquals = d.equal_classes && d.equal_classes.length > 0;
-    var options = [
+
+    // Check session FIRST — Edit only appears when logged in
+    var cgSession = null;
+    try { cgSession = JSON.parse(localStorage.getItem('cg_session') || 'null'); } catch(e) {}
+    var isLoggedIn = !!(cgSession && cgSession.loggedIn);
+
+    var options = [];
+
+    // ✏️ Edit at top — logged-in users only
+    if (isLoggedIn) {
+        options.push({ type:"text", label: "✏️ Edit", action: function() { hideNodeMenu(); if (window.openInlineEditModal) { window.openInlineEditModal(d.name); } }, style: { color: "#166534", fontWeight: "700", background: "#f0fdf4", borderBottom: "1px solid #d1fae5" } });
+    }
+
+    options.push(
         { type:"text", label: "Expand", action: function() { hideNodeMenu(); if (window.expandNodeRef) { window.expandNodeRef(d.name); } } },
         { type:"text", label: "Remove", action: function() { hideNodeMenu(); if (window.deleteNodeRef) { window.deleteNodeRef(d); } } }
-    ];
+    );
 
-    // Main description entry
+    // Description entry
     if (hasEquals) {
         options.push({ type:"latex", latex: d.latex_name, suffix: ": Description", action: function() { hideNodeMenu(); open_side_window(d); } });
         d.equal_classes.forEach(function(eq) {
@@ -1240,12 +1259,18 @@ function showNodeMenu(d, pageX, pageY) {
     }
 
     options.forEach(function(opt) {
+        var defaultBg = (opt.style && opt.style.background) || "transparent";
         var row = nodeMenuDiv.append("div")
-            .style("padding", "6px 16px")
+            .style("padding", "8px 16px")
             .style("cursor", "pointer")
             .style("font-family", "Arial, sans-serif")
-            .on("mouseover", function() { d3.select(this).style("background", "#f0f0f0"); })
-            .on("mouseout", function() { d3.select(this).style("background", "transparent"); })
+            .style("font-size", "14px")
+            .style("color", (opt.style && opt.style.color) || "#222")
+            .style("font-weight", (opt.style && opt.style.fontWeight) || "normal")
+            .style("background", defaultBg)
+            .style("border-bottom", (opt.style && opt.style.borderBottom) || "none")
+            .on("mouseover", function() { d3.select(this).style("background", (opt.style && opt.style.background) ? "#dcfce7" : "#f0f0f0"); })
+            .on("mouseout", function() { d3.select(this).style("background", defaultBg); })
             .on("click", opt.action);
 
         if (opt.type === "latex") {

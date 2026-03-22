@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     else
     {
 
-        fetch("../static/references.json")
+        fetch("./static/references.json")
         .then(response => response.json())
         .then(data => {
             const references_array = data.references;

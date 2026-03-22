@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sign Up - Complexity Garden</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="./Images/garden_logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            overflow-y: auto;
+        }
+        .bg-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .bg-particles span { position: absolute; display: block; background: rgba(255,255,255,0.05); border-radius: 50%; animation: float 15s infinite; }
+        .bg-particles span:nth-child(1) { left: 15%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bg-particles span:nth-child(2) { left: 35%; width: 40px; height: 40px; animation-delay: 3s; animation-duration: 14s; }
+        .bg-particles span:nth-child(3) { left: 60%; width: 50px; height: 50px; animation-delay: 1s; animation-duration: 20s; }
+        .bg-particles span:nth-child(4) { left: 80%; width: 30px; height: 30px; animation-delay: 5s; animation-duration: 16s; }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; } 90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .signup-wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; padding: 20px; margin: 40px 0; }
+        .signup-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 44px 40px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .logo-section { text-align: center; margin-bottom: 32px; }
+        .logo-icon {
+            width: 56px; height: 56px; margin: 0 auto 14px;
+            background: linear-gradient(135deg, #2D5016, #4CAF50);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 28px; box-shadow: 0 8px 24px rgba(45,80,22,0.3);
+        }
+        .logo-section h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .logo-section p { font-size: 14px; color: #6b7280; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #9ca3af; pointer-events: none; }
+        .form-group input {
+            width: 100%; padding: 12px 14px 12px 44px;
+            border: 2px solid #e5e7eb; border-radius: 12px;
+            font-size: 14px; font-family: 'Inter', sans-serif;
+            color: #1f2937; background: #f9fafb;
+            outline: none; transition: all 0.2s;
+        }
+        .form-group input:focus { border-color: #4CAF50; background: #fff; box-shadow: 0 0 0 4px rgba(76,175,80,0.1); }
+        .form-group input::placeholder { color: #b0b7c3; }
+        .field-hint { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+        .btn-signup {
+            width: 100%; padding: 13px;
+            background: linear-gradient(135deg, #2D5016, #4CAF50);
+            color: #fff; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 600; font-family: 'Inter', sans-serif;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn-signup:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(45,80,22,0.4); }
+        .btn-signup:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-signup .spinner { display: none; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; margin: 0 auto; }
+        .btn-signup.loading .btn-text { display: none; }
+        .btn-signup.loading .spinner { display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .divider { display: flex; align-items: center; margin: 22px 0; color: #9ca3af; font-size: 13px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+        .divider span { padding: 0 16px; }
+
+        .login-link { text-align: center; font-size: 14px; color: #6b7280; }
+        .login-link a { color: #4CAF50; text-decoration: none; font-weight: 600; }
+        .login-link a:hover { text-decoration: underline; }
+        .back-home { text-align: center; margin-top: 14px; }
+        .back-home a { font-size: 13px; color: #9ca3af; text-decoration: none; }
+        .back-home a:hover { color: #6b7280; }
+
+        .toast {
+            position: fixed; top: 24px; right: 24px; padding: 14px 24px;
+            border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 100;
+            transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.68,-0.55,0.265,1.55);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15); font-family: 'Inter', sans-serif; max-width: 380px;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .toast.success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+
+        @media (max-width: 480px) { .signup-card { padding: 32px 22px; } }
+    </style>
+</head>
+<body>
+    <div class="bg-particles"><span></span><span></span><span></span><span></span></div>
+
+    <div class="signup-wrapper">
+        <div class="signup-card">
+            <div class="logo-section">
+                <div class="logo-icon">🌳</div>
+                <h1>Create Account</h1>
+                <p>Join Complexity Garden to edit classes</p>
+            </div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <div class="input-wrapper">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        <input type="text" id="name" placeholder="John Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <input type="password" id="password" placeholder="Min 6 characters" required minlength="6">
+                    </div>
+                    <div class="field-hint">At least 6 characters</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-signup" id="signupBtn">
+                    <span class="btn-text">Create Account</span>
+                    <span class="spinner"></span>
+                </button>
+            </form>
+
+            <div class="divider"><span>or</span></div>
+            <div class="login-link">Already have an account? <a href="login.html">Sign in</a></div>
+            <div class="back-home"><a href="index.html">&larr; Back to Complexity Garden</a></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function showToast(msg, type = 'error') {
+            const t = document.getElementById('toast');
+            t.className = 'toast ' + type;
+            t.textContent = (type === 'error' ? '⚠️ ' : '✅ ') + msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3500);
+        }
+
+        // Check if already logged in
+        const session = JSON.parse(localStorage.getItem('cg_session') || 'null');
+        if (session && session.loggedIn) {
+            window.location.href = 'edit-dashboard.html';
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('confirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+
+            if (password !== confirm) {
+                showToast('Passwords do not match');
+                return;
+            }
+
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const users = JSON.parse(localStorage.getItem('cg_users') || '[]');
+
+                if (users.some(u => u.email === email)) {
+                    showToast('An account with this email already exists');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                    return;
+                }
+
+                users.push({
+                    email: email,
+                    password: password,
+                    name: name,
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('cg_users', JSON.stringify(users));
+
+                // Auto-login
+                localStorage.setItem('cg_session', JSON.stringify({
+                    loggedIn: true,
+                    email: email,
+                    name: name,
+                    loginTime: new Date().toISOString()
+                }));
+
+                showToast('Account created! Redirecting...', 'success');
+                setTimeout(() => { window.location.href = 'edit-dashboard.html'; }, 1000);
+            }, 600);
+        });
+    </script>
+</body>
+</html>

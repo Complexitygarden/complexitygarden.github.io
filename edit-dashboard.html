@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Dashboard - Complexity Garden</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="./Images/garden_logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- KaTeX for rendering LaTeX -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* ===== TOP NAVBAR ===== */
+        .navbar {
+            background: linear-gradient(135deg, #1a3a1a 0%, #2D5016 100%);
+            padding: 0 24px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-logo {
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            font-weight: 400;
+            margin-left: 12px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 14px 6px 8px;
+            border-radius: 50px;
+        }
+
+        .user-avatar {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, #4CAF50, #81C784);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .user-email {
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .btn-home {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-home:hover { background: rgba(255,255,255,0.25); }
+
+        .btn-logout {
+            padding: 8px 16px;
+            background: rgba(244, 67, 54, 0.8);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-logout:hover { background: #f44336; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 28px 24px;
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px 24px;
+            flex: 1;
+            min-width: 150px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border: 1px solid #e8e8e8;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        /* Search section */
+        .search-section {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 18px 14px 48px;
+            border: 2px solid #e5e7eb;
+            border-radius: 14px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            outline: none;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .search-box:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        /* Visualization iframe */
+        .viz-container {
+            width: 100%;
+            height: calc(100vh - 280px);
+            min-height: 500px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e8e8e8;
+            margin-bottom: 32px;
+            background: #fff;
+        }
+
+        #vizFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        .viz-hint {
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border: 1px solid #c8e6c9;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-size: 13px;
+            color: #2D5016;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
+        /* ===== EDIT MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.25);
+            animation: modalIn 0.3s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            border-radius: 16px 16px 0 0;
+            z-index: 1;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .modal-close {
+            width: 36px; height: 36px;
+            background: #f3f4f6;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover { background: #e5e7eb; color: #1a1a2e; }
+
+        .modal-body { padding: 28px; }
+
+        .field-group {
+            margin-bottom: 24px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .field-group .current-value {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .field-group input,
+        .field-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            color: #1f2937;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .field-group input:focus,
+        .field-group textarea:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+        }
+
+        .field-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .field-hint {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-cancel {
+            padding: 11px 24px;
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .btn-cancel:hover { background: #e5e7eb; }
+
+        .btn-save {
+            padding: 11px 28px;
+            background: linear-gradient(135deg, #2D5016, #4CAF50);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-save:hover {
+            box-shadow: 0 4px 12px rgba(45, 80, 22, 0.3);
+        }
+
+        .btn-delete {
+            padding: 11px 20px;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .btn-delete:hover { background: #fca5a5; }
+
+        /* View modal */
+        .view-info {
+            line-height: 1.7;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .view-info ul {
+            margin: 8px 0 8px 20px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 200;
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            font-family: 'Inter', sans-serif;
+            max-width: 400px;
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .toast.error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .toast.info { background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state svg {
+            width: 64px; height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* My Edits Section */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+            padding-top: 20px;
+            border-top: 2px solid #e8e8e8;
+        }
+
+        .edit-log {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .edit-log-item {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px 20px;
+            border: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-log-info {
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .edit-log-info strong {
+            font-weight: 600;
+        }
+
+        .edit-log-time {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .edit-log-badge {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-saved { background: #d1fae5; color: #065f46; }
+        .badge-pending { background: #fef3c7; color: #92400e; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar { padding: 0 16px; }
+            .nav-subtitle { display: none; }
+            .user-email { display: none; }
+            .main-content { padding: 20px 16px; }
+            .class-grid { grid-template-columns: 1fr; }
+            .stats-bar { flex-direction: column; }
+            .modal { max-width: 100%; margin: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .btn-home { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Visualization (edit mode) -->
+    <div style="width:100%;height:100vh;overflow:hidden;">
+        <iframe id="vizFrame" src="index.html?editMode=true" title="Complexity Garden Visualization" style="width:100%;height:100%;border:none;display:block;"></iframe>
+    </div>
+
+    <!-- Hidden elements kept for JS compatibility -->
+    <span id="navUserEmail" style="display:none"></span>
+    <span id="userAvatar" style="display:none"></span>
+    <span id="statTotal" style="display:none"></span>
+    <span id="statEdits" style="display:none"></span>
+    <span id="statSession" style="display:none"></span>
+    <input id="searchBox" style="display:none">
+    <div id="editLog" style="display:none"></div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Class</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editClassId">
+
+                <div class="field-group">
+                    <label>Class Name (LaTeX)</label>
+                    <input type="text" id="editLatexName" placeholder="e.g., \mathsf{BQP}">
+                    <div class="field-hint">LaTeX formatted name</div>
+                </div>
+
+                <div class="field-group">
+                    <label>Current Description</label>
+                    <div class="current-value" id="currentDesc">—</div>
+                </div>
+
+                <div class="field-group">
+                    <label>New Description</label>
+                    <input type="text" id="editDescription" placeholder="Brief description of the class" required>
+                    <div class="field-hint">A short one-line summary</div>
+                </div>
+
+                <div class="field-group">
+                    <label>Current Information</label>
+                    <div class="current-value" id="currentInfo">—</div>
+                </div>
+
+                <div class="field-group">
+                    <label>New Information</label>
+                    <textarea id="editInformation" placeholder="Detailed information (HTML is supported)" required></textarea>
+                    <div class="field-hint">Detailed definition, theorems, and references. HTML tags allowed.</div>
+                </div>
+
+                <div class="field-group">
+                    <label>Edit Reason</label>
+                    <input type="text" id="editReason" placeholder="Why are you making this edit?">
+                    <div class="field-hint">Brief reason (e.g., "Fixed typo", "Added new theorem")</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="btnCancel">Cancel</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-save" id="btnSave">💾 Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="viewTitle">Class Details</h2>
+                <button class="modal-close" id="viewClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="field-group">
+                    <label>Description</label>
+                    <div class="current-value" id="viewDescription">—</div>
+                </div>
+                <div class="field-group">
+                    <label>Detailed Information</label>
+                    <div class="view-info" id="viewInfo">—</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="document.getElementById('viewModal').classList.remove('active')">Close</button>
+                <button class="btn-edit" id="viewEditBtn">✏️ Edit This Class</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ==================================================================
+        // EDIT DASHBOARD
+        // ==================================================================
+
+        let classesData = {};
+        let currentEditId = null;
+        let userSession = null;
+
+        // ---------- Auth Guard ----------
+        (function checkAuth() {
+            const session = JSON.parse(localStorage.getItem('cg_session') || 'null');
+            if (!session || !session.loggedIn) {
+                window.location.href = 'login.html';
+                return;
+            }
+            userSession = session;
+        })();
+
+        // ---------- Toast ----------
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            t.className = 'toast ' + type;
+            t.textContent = (type === 'success' ? '✅ ' : type === 'error' ? '⚠️ ' : 'ℹ️ ') + msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // ---------- Load Classes ----------
+        async function loadClasses() {
+            try {
+                const resp = await fetch('classes.json');
+                const data = await resp.json();
+                classesData = data.class_list || data;
+
+                // Merge any saved local edits
+                const localEdits = JSON.parse(localStorage.getItem('cg_class_edits') || '{}');
+                Object.keys(localEdits).forEach(key => {
+                    if (classesData[key]) {
+                        Object.assign(classesData[key], localEdits[key]);
+                    }
+                });
+
+                document.getElementById('statTotal').textContent = Object.keys(classesData).length;
+            } catch (err) {
+                console.error('Failed to load classes:', err);
+                showToast('Failed to load complexity classes', 'error');
+            }
+        }
+
+        // ---------- Listen for edit requests from the embedded visualization ----------
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'editClass') {
+                openEditModal(event.data.classId);
+            }
+        });
+
+        // ---------- Edit Modal ----------
+        function openEditModal(classId) {
+            currentEditId = classId;
+            const c = classesData[classId];
+            if (!c) return;
+
+            document.getElementById('editClassId').value = classId;
+            document.getElementById('modalTitle').textContent = 'Edit: ' + (c.name || classId);
+            document.getElementById('editLatexName').value = c.latex_name || '';
+            document.getElementById('currentDesc').textContent = c.description || '—';
+            document.getElementById('editDescription').value = c.description || '';
+            document.getElementById('currentInfo').innerHTML = c.information || '—';
+            document.getElementById('editInformation').value = c.information || '';
+            document.getElementById('editReason').value = '';
+
+            document.getElementById('editModal').classList.add('active');
+        }
+
+        // Close edit modal
+        document.getElementById('modalClose').addEventListener('click', () => {
+            document.getElementById('editModal').classList.remove('active');
+        });
+        document.getElementById('btnCancel').addEventListener('click', () => {
+            document.getElementById('editModal').classList.remove('active');
+        });
+        document.getElementById('editModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('editModal'))
+                document.getElementById('editModal').classList.remove('active');
+        });
+
+        // Save edit
+        document.getElementById('btnSave').addEventListener('click', () => {
+            const classId = document.getElementById('editClassId').value;
+            const newLatex = document.getElementById('editLatexName').value.trim();
+            const newDesc = document.getElementById('editDescription').value.trim();
+            const newInfo = document.getElementById('editInformation').value.trim();
+            const reason = document.getElementById('editReason').value.trim();
+
+            if (!newDesc) {
+                showToast('Description cannot be empty', 'error');
+                return;
+            }
+
+            // Update in-memory data
+            if (classesData[classId]) {
+                if (newLatex) classesData[classId].latex_name = newLatex;
+                classesData[classId].description = newDesc;
+                classesData[classId].information = newInfo;
+            }
+
+            // Save to localStorage (persistent across refreshes)
+            const localEdits = JSON.parse(localStorage.getItem('cg_class_edits') || '{}');
+            localEdits[classId] = {
+                latex_name: newLatex || classesData[classId].latex_name,
+                description: newDesc,
+                information: newInfo
+            };
+            localStorage.setItem('cg_class_edits', JSON.stringify(localEdits));
+
+            // Log the edit
+            const editHistory = JSON.parse(localStorage.getItem('cg_edit_history') || '[]');
+            editHistory.unshift({
+                classId,
+                className: classesData[classId].name || classId,
+                reason: reason || 'No reason given',
+                email: userSession.email,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('cg_edit_history', JSON.stringify(editHistory.slice(0, 50)));
+
+            // Re-render
+            renderClasses(classesData);
+            renderEditHistory();
+            document.getElementById('editModal').classList.remove('active');
+            showToast(`"${classesData[classId].name || classId}" updated successfully!`);
+        });
+
+        // ---------- View Modal ----------
+        function openViewModal(classId) {
+            const c = classesData[classId];
+            if (!c) return;
+
+            document.getElementById('viewTitle').textContent = c.name || classId;
+            document.getElementById('viewDescription').textContent = c.description || '—';
+            document.getElementById('viewInfo').innerHTML = c.information || '<em>No information available</em>';
+            document.getElementById('viewEditBtn').onclick = () => {
+                document.getElementById('viewModal').classList.remove('active');
+                openEditModal(classId);
+            };
+
+            document.getElementById('viewModal').classList.add('active');
+        }
+
+        document.getElementById('viewClose').addEventListener('click', () => {
+            document.getElementById('viewModal').classList.remove('active');
+        });
+        document.getElementById('viewModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('viewModal'))
+                document.getElementById('viewModal').classList.remove('active');
+        });
+
+        // ---------- Edit History ----------
+        function renderEditHistory() {
+            const history = JSON.parse(localStorage.getItem('cg_edit_history') || '[]');
+            const myEdits = history.filter(h => h.email === userSession.email);
+            const container = document.getElementById('editLog');
+
+            document.getElementById('statEdits').textContent = myEdits.length;
+
+            if (myEdits.length === 0) {
+                container.innerHTML = '<div style="color:#9ca3af; font-size:14px; padding:20px 0;">No edits yet. Click "Edit" on any class to start editing.</div>';
+                return;
+            }
+
+            container.innerHTML = myEdits.slice(0, 15).map(edit => `
+                <div class="edit-log-item">
+                    <div class="edit-log-info">
+                        <strong>${escapeHTML(edit.className)}</strong> &mdash; ${escapeHTML(edit.reason)}
+                        <div class="edit-log-time">${new Date(edit.timestamp).toLocaleString()}</div>
+                    </div>
+                    <span class="edit-log-badge badge-saved">Saved</span>
+                </div>
+            `).join('');
+        }
+
+        // ---------- Helpers ----------
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        // ---------- Keyboard shortcuts ----------
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('editModal').classList.remove('active');
+                document.getElementById('viewModal').classList.remove('active');
+            }
+        });
+
+        // ---------- Init ----------
+        loadClasses();
+        renderEditHistory();
+    </script>
+</body>
+</html>
