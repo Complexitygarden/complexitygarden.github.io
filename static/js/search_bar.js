@@ -253,6 +253,9 @@ $(document).ready(function(){
                 const itemsCount = $('#complexity_class_search_results li').length;
                 if (itemsCount === 0) return;
 
+                // Enable keyboard navigation mode (disables hover highlighting)
+                $('.search-dropdown').addClass('keyboard-nav-active');
+
                 if (event.key === 'ArrowDown') {
                     currentSearchIndex = (currentSearchIndex + 1) % itemsCount;
                 } else {
@@ -465,6 +468,9 @@ function search_vals(query) {
         currentSearchIndex = filteredClasses.length > 0 ? 0 : -1;
         highlightSearchResult(currentSearchIndex);
 
+        // Attach mouse hover handlers to sync with keyboard navigation
+        attachHoverHandlers();
+
         // Render LaTeX using the utility function
         searchResults.querySelectorAll('.latex-name').forEach(element => {
             renderKaTeX(element.textContent, element);
@@ -631,6 +637,28 @@ function highlightSearchResult(index) {
             item[0].scrollIntoView({ block: 'nearest' });
         }
     }
+}
+
+/* ======================================================
+   Attach mouse hover handlers to sync with keyboard nav.
+   Called after search results are populated.
+   ======================================================*/
+function attachHoverHandlers() {
+    const $results = $('#complexity_class_search_results');
+    const $dropdown = $('.search-dropdown');
+
+    // Use event delegation on the container to avoid flickering
+    $results.off('mouseenter.searchnav').on('mouseenter.searchnav', 'li', function() {
+        // Disable keyboard navigation mode when mouse takes over
+        $dropdown.removeClass('keyboard-nav-active');
+
+        const index = $(this).index();
+        // Only update if the index changed to avoid unnecessary repaints
+        if (currentSearchIndex !== index) {
+            currentSearchIndex = index;
+            highlightSearchResult(index);
+        }
+    });
 }
 
 /* ======================================================

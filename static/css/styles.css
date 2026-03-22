@@ -24,7 +24,7 @@ body {
 
 /* Modern App Header */
 .app-header {
-    height: 3.5rem;
+    height: 4.5rem;
     border-bottom: 1px solid rgba(45, 80, 22, 0.2);
     background: rgba(45, 80, 22, 0.95);
     backdrop-filter: blur(12px);
@@ -67,8 +67,8 @@ body {
     transition: background-color 0.2s;
     align-items: center;
     justify-content: center;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
 }
 
 .mobile-menu-btn:hover {
@@ -76,12 +76,12 @@ body {
 }
 
 .mobile-menu-btn svg {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .app-title {
-    font-size: 1.125rem;
+    font-size: 1.375rem;
     font-weight: 600;
     color: #fff;
     margin: 0;
@@ -118,7 +118,7 @@ body {
     align-items: stretch;
     max-width: 500px;
     width: 100%;
-    height: 2.5rem;
+    height: 3rem;
 }
 
 /* Mobile responsive header */
@@ -169,8 +169,8 @@ body {
 .main {
     margin: 0 auto;
     display: block;
-    height: calc(100vh - 3.5rem);
-    margin-top: 3.5rem;
+    height: calc(100vh - 4.5rem);
+    margin-top: 4.5rem;
     z-index: 5;
     position: relative;
     overflow: hidden;
@@ -259,10 +259,12 @@ body {
 #leftSidebarMenu {
     height: 100%;
     position: fixed;
+    top: 4.5rem;
     left: 0;
+    /* Sidebar height fills remaining viewport under header */
+    height: calc(100vh - 4.5rem);
     /* Responsive width: use 400px unless the viewport is narrower */
     width: min(400px, 100vw);
-    margin-top: 100px;
     /* Move exactly its own width off-screen in the closed state */
     transform: translateX(-100%);
     transition: transform 250ms ease-in-out;
@@ -379,13 +381,11 @@ The code below is similar to that one above, but I am keeping both copies as we 
 */
 
 #rightSidebarMenu {
-    height: calc(100vh - 3.5rem);
+    height: calc(100vh - 4.5rem);
     position: fixed;
     right: 0;
-    top: 3.5rem;
-    /* Responsive width: use 350px for comfortable reading */
-    width: min(350px, 100vw);
-    /* Move exactly its own width off-screen in the closed state */
+    top: 4.5rem;
+    width: min(400px, 100vw);
     transform: translateX(100%);
     transition: transform 250ms ease-in-out;
     background: #FFFFFF;
@@ -455,7 +455,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .class-header {
-    padding: 0.5rem 0.5rem;
+    padding: 0.625rem;
+    padding-right: 0rem;
     border-bottom: 1px solid #D4E4D4;
     background: #F0F6F0;
     flex-shrink: 0;
@@ -463,28 +464,33 @@ The code below is similar to that one above, but I am keeping both copies as we 
 
 .header-nav {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.header-nav-left {
+    display: flex;
     gap: 0.375rem;
-    margin-bottom: 0.375rem;
 }
 
 .class-info {
-    flex: 1;
-    min-width: 0;
+    text-align: center;
+    padding: 0.25rem 0;
 }
 
 .class-title {
-    font-size: 0.875rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #1A1A1A;
     margin: 0;
-    line-height: 1.2;
+    line-height: 1.3;
 }
 
 .class-full-name {
-    font-size: 0.8125rem;
-    color: #1A1A1A;
-    font-weight: bold;
+    font-size: 0.875rem;
+    color: #4A4A4A;
+    font-weight: 500;
     text-align: center;
     margin: 0.25rem 0 0 0;
 }
@@ -515,10 +521,6 @@ The code below is similar to that one above, but I am keeping both copies as we 
     background: #fff !important;
     color: #2D5016 !important;
     border: 1px solid #b6e2b6 !important;
-}
-    background: #fff !important;
-    color: #2D5016;
-    border: 1px solid #b6e2b6;
 }
 
 .badge-outline {
@@ -814,6 +816,33 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #FFFFFF;
 }
 
+/* See Also Container and Links - styled similar to reference items */
+.see-also-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.see-also-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: #FFFFFF;
+    border: 1px solid #D4E4D4;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    color: #1A1A1A;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.see-also-link:hover {
+    background: #F0F6F0;
+    border-color: #8FBC8F;
+    color: #2D5016;
+}
+
 /* Links List in See Also */
 .links-list {
     list-style: none;
@@ -901,6 +930,17 @@ The code below is similar to that one above, but I am keeping both copies as we 
     color: #5A6B5A;
 }
 
+/* Citation links in definition/information text */
+.citation-link {
+    color: #000000;
+    text-decoration: none;
+}
+
+.citation-link:hover {
+    color: #000000;
+    text-decoration: none;
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
     #rightSidebarMenu {
@@ -908,17 +948,17 @@ The code below is similar to that one above, but I am keeping both copies as we 
     }
     
     .class-header {
-        padding: 0.75rem;
+        padding: 1rem;
     }
-    
+
     .class-content {
         padding: 1rem;
     }
     
     .class-title {
-        font-size: 1.125rem;
+        font-size: 1.75rem;
     }
-    
+
     .nav-button {
         width: 1.75rem;
         height: 1.75rem;
@@ -997,13 +1037,45 @@ The code below is similar to that one above, but I am keeping both copies as we 
     height: 18px;
 }
 
+/* Back, Add and Close buttons in the right panel should be green for visibility */
+#back-button,
+#add-class-button,
+#close-panel-button {
+    /* light green background with green icon */
+    background: rgba(240, 246, 240, 0.95);
+    border: 1px solid #8FBC8F;
+    color: #2D5016;
+}
+
+/* Back and Add buttons always maintain their size for consistent layout */
+#back-button,
+#add-class-button {
+    transition: opacity 0.2s ease, visibility 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+/* Position add button close to back button */
+#add-class-button {
+    margin-left: -10px;
+    margin-right: 5px;
+}
+
+#back-button:hover,
+#add-class-button:hover,
+#close-panel-button:hover {
+    background: #8FBC8F;
+    border-color: #4F7942;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+/* When back/add buttons are hidden, disable pointer events */
+#back-button[style*="visibility: hidden"],
+#add-class-button[style*="visibility: hidden"] {
+    pointer-events: none;
+}
+
+/* Additional class-title styling for word breaks */
 .class-title {
-    font-size: 28px;
-    font-weight: 300;
-    margin: 0;
-    color: #111;
-    flex: 1;
-    text-align: center;
     word-break: break-word;
 }
 
@@ -1057,14 +1129,14 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .section-content a {
-    color: #64b5f6;
+    color: #000000;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .section-content a:hover {
-    color: #90caf9;
-    text-decoration: underline;
+    color: #000000;
+    text-decoration: none;
 }
 
 /* Related Classes Styling */
@@ -1102,14 +1174,14 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .rightSidebarMenuInner li a{
-    color: #64b5f6;
+    color: #000000;
     cursor: pointer;
     text-decoration: none;
 }
 
 .rightSidebarMenuInner li a:hover{
-    color: #90caf9;
-    text-decoration: underline;
+    color: #000000;
+    text-decoration: none;
 }
 
 /* References Section Styling */
@@ -1237,10 +1309,6 @@ The code below is similar to that one above, but I am keeping both copies as we 
         padding: 20px 25px 15px 25px;
     }
     
-    .class-title {
-        font-size: 24px;
-    }
-    
     .info-section {
         padding: 20px 25px;
     }
@@ -1300,8 +1368,8 @@ input[class="openRightSidebarMenu"] {
     cursor: pointer;
     position: relative;
     z-index: 1;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1377,8 +1445,8 @@ input[class="openRightSidebarMenu"] {
     cursor: pointer;
     position: relative;
     z-index: 1;
-    height: 2rem;
-    width: 2rem;
+    height: 2.5rem;
+    width: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1393,8 +1461,8 @@ input[class="openRightSidebarMenu"] {
 }
 
 .header-right .shareIcon svg {
-    width: 1rem;
-    height: 1rem;
+    width: 1.25rem;
+    height: 1.25rem;
     fill: #ffffff;
     opacity: 1;
 }
@@ -1402,11 +1470,11 @@ input[class="openRightSidebarMenu"] {
 .header-right .rightSidebarIconToggle .i-circle {
     display: inline-block;
     position: relative;
-    width: 2.5px;
-    height: 9px;
+    width: 3px;
+    height: 11px;
     background-color: #fff;
     border-radius: 2px;
-    margin: 4px 0 0 0;
+    margin: 5px 0 0 0;
     transition: all 0.3s;
     opacity: 1;
     transform: translateY(-1px);
@@ -1415,11 +1483,11 @@ input[class="openRightSidebarMenu"] {
 .header-right .rightSidebarIconToggle .i-circle::before {
     content: '';
     position: absolute;
-    width: 2.5px;
-    height: 2.5px;
+    width: 3px;
+    height: 3px;
     background-color: #fff;
     border-radius: 50%;
-    top: -4px;
+    top: -5px;
     left: 0;
     transition: all 0.3s;
     opacity: 1;
@@ -1538,23 +1606,23 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     align-items: stretch;
     max-width: 500px;
     width: 100%;
-    height: 2.5rem;
+    height: 3rem;
 }
 
 .header-center .search-icon {
     position: absolute;
-    left: 12px;
+    left: 14px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 18px;
+    font-size: 22px;
     color: #718096;
     z-index: 2;
     pointer-events: none;
 }
 
 .header-center .filter-button {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 3rem;
+    width: 3rem;
     background: #B45309;
     border: 1px solid #B45309;
     border-left: none;
@@ -1575,15 +1643,15 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .header-center .filter-button svg {
     fill: white;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
 }
 
 .header-center input[type=text] {
     flex: 1;
-    height: 2.5rem;
-    font-size: 14px;
-    padding: 0 12px 0 40px;
+    height: 3rem;
+    font-size: 16px;
+    padding: 0 12px 0 46px;
     border-radius: 0.375rem 0 0 0.375rem;
     background: #FFFBF7;
     border: 1px solid #B45309;
@@ -1634,13 +1702,15 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
   }
   
   /* On mouse-over, add a grey background color */
-  .container:hover input ~ .checkmark {
+  .container:hover input ~ .checkmark,
+  .search-selected .container input ~ .checkmark {
     background-color: #ccc;
   }
-  
-  /* When the checkbox is checked, add a blue background */
-  .container input:checked ~ .checkmark {
-    background-color: #2196F3;
+
+  /* When the checkbox is checked, add a green background */
+  .container input:checked ~ .checkmark,
+  .search-selected .container input:checked ~ .checkmark {
+    background-color: #2D5016;
   }
   
   /* Create the checkmark/indicator (hidden when not checked) */
@@ -1688,7 +1758,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #2c5282;
+    border: 1px solid #2D5016;
     border-top: none;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 1001;
@@ -1716,19 +1786,19 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .search-dropdown::-webkit-scrollbar-thumb {
-    background: #2c5282;
+    background: #2D5016;
     border-radius: 0px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #1a365d;
+    background: #1a3a0d;
 }
 
 /* Adjust list items to center content vertically */
 .search-dropdown li {
     padding: 10px 25px 10px 15px;
     border-bottom: 1px solid #edf2f7;
-    color: #2c5282;
+    color: #2D5016;
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
@@ -1736,13 +1806,18 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     align-items: center;  /* Center items vertically */
 }
 
-.search-dropdown li:hover {
-    background-color: #edf2f7;
+/* Unified highlight for both mouse hover and keyboard navigation */
+.search-dropdown li:hover,
+.search-dropdown li.search-selected {
+    background-color: rgba(45, 80, 22, 0.15);
 }
 
-/* Highlight for keyboard navigation */
-.search-dropdown li.search-selected {
-    background-color: rgba(45, 80, 22, 0.1); /* Light forest green highlight */
+/* Disable hover effect when using keyboard navigation */
+.search-dropdown.keyboard-nav-active li:hover:not(.search-selected) {
+    background-color: transparent;
+}
+.search-dropdown.keyboard-nav-active li:hover:not(.search-selected) .container input ~ .checkmark {
+    background-color: #eee;
 }
 
 /* Adjust container to maintain alignment */
@@ -1782,9 +1857,9 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     transform: rotate(45deg);
 }
 
-/* Show dropdown and overlay when search is active */
-.search-active .overlay,
-.header-center .search-active .search-dropdown {
+/* Show dropdown and overlay when search is active (body gets the class) */
+body.search-active .overlay,
+body.search-active .header-center .search-dropdown {
     display: block;
 }
 
@@ -1797,7 +1872,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 .info-icon {
     width: 28px;
     height: 28px;
-    border: 2px solid #2c5282;
+    border: 2px solid #2D5016;
     border-radius: 50%;
     text-align: center;
     line-height: 26px;  /* Slightly less than height to vertically center the 'i' */
@@ -1805,7 +1880,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     font-style: normal;
     font-family: system-ui, -apple-system, sans-serif;
     font-weight: 500;
-    color: #2c5282;
+    color: #2D5016;
     cursor: pointer;
     font-size: 16px;    /* Increased font size */
     background-color: transparent;
@@ -1820,15 +1895,15 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .info-icon:hover {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: white;
-    box-shadow: 0 3px 6px rgba(44, 82, 130, 0.3);
+    box-shadow: 0 3px 6px rgba(45, 80, 22, 0.3);
     transform: translateY(-1px);
 }
 
 .info-icon:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(44, 82, 130, 0.2);
+    box-shadow: 0 1px 2px rgba(45, 80, 22, 0.2);
 }
 
 .header-center .filter-container {
@@ -1842,7 +1917,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     top: 100%;
     right: 0;
     background: white;
-    border: 1px solid #2c5282;
+    border: 1px solid #2D5016;
     border-top: none;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 1000;
@@ -1859,7 +1934,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     padding: 12px 15px;
     border: none;
     background: white;
-    color: #2c5282;
+    color: #2D5016;
     text-align: left;
     cursor: pointer;
     font-size: 16px;
@@ -1926,9 +2001,9 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .settings-select {
     background-color: #fff;
-    border: 1px solid #2c5282;
+    border: 1px solid #2D5016;
     border-radius: 4px;
-    color: #2c5282;
+    color: #2D5016;
     padding: 4px 8px;
     font-size: 14px;
     cursor: pointer;
@@ -1936,17 +2011,17 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .settings-select:hover {
-    border-color: #1a365d;
+    border-color: #1a3a0d;
 }
 
 .settings-select:focus {
     outline: none;
-    border-color: #1a365d;
-    box-shadow: 0 0 0 2px rgba(26, 54, 93, 0.2);
+    border-color: #1a3a0d;
+    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.2);
 }
 
 .settings-button {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: white;
     border: none;
     border-radius: 4px;
@@ -1959,7 +2034,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .settings-button:hover {
-    background-color: #1a365d;
+    background-color: #1a3a0d;
 }
 
 /* Creator list styling in about modal */
@@ -2049,7 +2124,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .history-return-button {
-    background-color: #2c5282;
+    background-color: #2D5016;
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -2063,7 +2138,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .history-return-button:hover {
-    background-color: #1a365d;
+    background-color: #1a3a0d;
 }
 
 .history-details {
@@ -2096,7 +2171,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 
 .history-current {
     background-color: rgba(255, 255, 255, 0.1);
-    border-left: 3px solid #3182CE;
+    border-left: 3px solid #2D5016;
 }
 
 /* History list scrollbar styling */
@@ -2408,16 +2483,16 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
         padding: 15px 0;
         border-bottom: 1px solid #e2e8f0;
         font-size: 18px;
-        color: #2c5282;
+        color: #2D5016;
     }
     body.mobile-search-open .search-dropdown .container {
         font-size: 18px;
-        color: #2c5282;
+        color: #2D5016;
         width: 100%;
         padding-right: 0;
     }
     body.mobile-search-open .search-dropdown .latex-name {
-        color: #2c5282;
+        color: #2D5016;
         font-size: 18px;
     }
     /* Hide dark overlay when using full-screen white background */
@@ -2436,7 +2511,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     /* ensure visibility of all text inside search results */
     body.mobile-search-open .search-dropdown, 
     body.mobile-search-open .search-dropdown * {
-        color: #2c5282 !important;
+        color: #2D5016 !important;
     }
 
     /* search icon visual size */

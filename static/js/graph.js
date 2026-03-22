@@ -399,7 +399,7 @@ function draw_graph(){
         // Adding the circle
         nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", d => d.isNew ? "#a11f1f" : colorScale(d.level))
+            .attr("fill", d => d.isNew ? "#B45309" : colorScale(d.level))
             .attr("stroke", "none")
             .attr("stroke-width", 3)
             .each(function(d){
@@ -541,7 +541,8 @@ function draw_graph(){
                             renderKaTeX(latexStr, targetEl, window.katexOptions);
 
                             if (textWidth > radius * 1.5) {
-                                targetEl.style.fontSize = `${fontSize * 0.7}px`;
+                                val = (textWidth > radius*2.75)? 0.5 : 0.7;
+                                targetEl.style.fontSize = `${fontSize * val}px`;
                                 renderKaTeX(latexStr, targetEl, window.katexOptions);
                             }
                         } catch (e) {
