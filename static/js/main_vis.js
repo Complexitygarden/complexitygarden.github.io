@@ -538,11 +538,14 @@ function setupClickableElements() {
             e.preventDefault();
             const className = el.dataset.class;
             if (className) {
-                // Track see-also clicks (but not back navigation)
-                if (el.classList.contains('see-also-link')) {
-                    track_class_click(className, { action: "See Also" });
+                if (vis_type === 'descriptions') {
+                    addDescriptionClassById(className);
+                } else {
+                    if (el.classList.contains('see-also-link')) {
+                        track_class_click(className, { action: "See Also" });
+                    }
+                    handleClassSelect(className);
                 }
-                handleClassSelect(className);
             }
         };
     });

@@ -95,9 +95,13 @@ function renderDescriptionCards(classes) {
         });
     });
 
-    // Process MathJax for LaTeX rendering
+    // Process MathJax for LaTeX rendering, then attach click handlers
     if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-        MathJax.typesetPromise([grid]).catch(err => console.log('MathJax error:', err));
+        MathJax.typesetPromise([grid]).then(() => {
+            setupClickableElements();
+        }).catch(err => console.log('MathJax error:', err));
+    } else {
+        setupClickableElements();
     }
 }
 
@@ -205,13 +209,16 @@ function addDescriptionClassById(classId) {
 
 function formatDescriptionContent(text) {
     if (!text) return '';
-    
-    // Use the existing link_classes_information function if available
+
     if (typeof link_classes_information === 'function') {
-        return link_classes_information(text);
+        text = link_classes_information(text);
+    }
+    if (typeof format_reference_information === 'function') {
+        text = format_reference_information(text);
     }
     return text;
 }
 
 // Make function globally available
 window.renderDescriptionsView = renderDescriptionsView;
+window.addDescriptionClassById = addDescriptionClassById;
