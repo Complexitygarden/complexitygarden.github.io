@@ -9,6 +9,121 @@ var rotationIntervals = []; // Holds d3.interval handlers for rotating equal-cla
 var prevNodeNames = new Set(); // Track nodes that were already visualised to animate colour of newly added ones
 var pendingColorTransitions = []; // stores {sel, level} for nodes awaiting search close
 
+// User-configurable graph colors
+var graphPrimaryColor = "#2D5016";
+var graphSecondaryColor = "#8FBC8F";
+var graphHoverColor = "#4F7942";
+var graphAccentColor = graphAccentColor;
+var graphTopbarColor = "#2D5016";
+
+function _hexToRgb(hex) {
+    return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
+}
+function _rgbToHex(r,g,b) {
+    return '#' + [r,g,b].map(v => Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+}
+function _blendColors(hex1, hex2, t) {
+    var c1 = _hexToRgb(hex1), c2 = _hexToRgb(hex2);
+    return _rgbToHex(c1[0]+(c2[0]-c1[0])*t, c1[1]+(c2[1]-c1[1])*t, c1[2]+(c2[2]-c1[2])*t);
+}
+
+function applyColors(primary, secondary) {
+    graphPrimaryColor = primary;
+    graphSecondaryColor = secondary;
+    graphHoverColor = _blendColors(primary, secondary, 0.35);
+    var primaryDark = _blendColors(primary, '#000000', 0.4);
+
+    var root = document.documentElement;
+    root.style.setProperty('--primary-color', primary);
+    root.style.setProperty('--secondary-color', secondary);
+    root.style.setProperty('--hover-color', graphHoverColor);
+    root.style.setProperty('--primary-dark', primaryDark);
+
+    colorScale.range([secondary, primary]);
+
+    localStorage.setItem('graphPrimaryColor', primary);
+    localStorage.setItem('graphSecondaryColor', secondary);
+}
+
+function applyAccentColor(accent) {
+    graphAccentColor = accent;
+    document.documentElement.style.setProperty('--accent-color', accent);
+    localStorage.setItem('graphAccentColor', accent);
+}
+
+function applyTopbarColor(topbar) {
+    graphTopbarColor = topbar;
+    var root = document.documentElement;
+    root.style.setProperty('--topbar-color', topbar);
+    root.style.setProperty('--topbar-dark',         _blendColors(topbar, '#000000', 0.4));
+    root.style.setProperty('--class-header-bg',     _blendColors(topbar, '#ffffff', 0.93));
+    root.style.setProperty('--class-header-border', _blendColors(topbar, '#ffffff', 0.82));
+    localStorage.setItem('graphTopbarColor', topbar);
+}
+
+function setPrimaryColor(color) {
+    applyColors(color, graphSecondaryColor);
+    create_visualisation();
+}
+
+function setSecondaryColor(color) {
+    applyColors(graphPrimaryColor, color);
+    create_visualisation();
+}
+
+function setAccentColor(color) {
+    applyAccentColor(color);
+    create_visualisation();
+}
+
+function setTopbarColor(color) {
+    applyTopbarColor(color);
+}
+
+var DEFAULT_COLORS = {
+    primary:   '#2D5016',
+    secondary: '#8FBC8F',
+    accent:    '#B45309',
+    topbar:    '#2D5016',
+};
+
+function resetColors() {
+    applyColors(DEFAULT_COLORS.primary, DEFAULT_COLORS.secondary);
+    applyAccentColor(DEFAULT_COLORS.accent);
+    applyTopbarColor(DEFAULT_COLORS.topbar);
+    var pickers = {
+        'primary-color-picker':   DEFAULT_COLORS.primary,
+        'secondary-color-picker': DEFAULT_COLORS.secondary,
+        'accent-color-picker':    DEFAULT_COLORS.accent,
+        'topbar-color-picker':    DEFAULT_COLORS.topbar,
+    };
+    Object.entries(pickers).forEach(function([id, val]) {
+        var el = document.getElementById(id);
+        if (el) el.value = val;
+    });
+    create_visualisation();
+}
+
+function initGraphColors() {
+    var primary   = localStorage.getItem('graphPrimaryColor')   || '#2D5016';
+    var secondary = localStorage.getItem('graphSecondaryColor') || '#8FBC8F';
+    var accent    = localStorage.getItem('graphAccentColor')    || '#B45309';
+    var topbar    = localStorage.getItem('graphTopbarColor')    || '#2D5016';
+    applyColors(primary, secondary);
+    applyAccentColor(accent);
+    applyTopbarColor(topbar);
+    var pickers = {
+        'primary-color-picker':   primary,
+        'secondary-color-picker': secondary,
+        'accent-color-picker':    accent,
+        'topbar-color-picker':    topbar,
+    };
+    Object.entries(pickers).forEach(function([id, val]) {
+        var el = document.getElementById(id);
+        if (el) el.value = val;
+    });
+}
+
 // Sizes
 // Note: In the future this should change to adjust for a device
 var arrow_scale = 3.5;
@@ -129,7 +244,7 @@ function delete_old_graph(){
 }
 
 var colorScale = d3.scaleLinear()
-    .range(["#8FBC8F", "#2D5016"]);
+    .range([graphSecondaryColor, graphPrimaryColor]);
 
 // Main function which draws the graph
 function draw_graph(){
@@ -281,29 +396,29 @@ function draw_graph(){
                 .append("polyline")
                 .attr("class", "link-visible")
                 .attr("stroke-width", 2)
-                .style("stroke", "#2D5016")
+                .style("stroke", graphPrimaryColor)
                 .style("fill", "none")
                 .attr("points", get_points);
         })
         .on("mouseover", function(d) {
             d3.select(this).select(".link-visible")
-                .style("stroke", "#4F7942")
+                .style("stroke", graphHoverColor)
                 .attr("stroke-width", 12);
             // Arrow highlight
             arrowLayer.selectAll(".arrow")
                 .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", "#4F7942")
-                .style("fill", "#4F7942");
+                .style("stroke", graphHoverColor)
+                .style("fill", graphHoverColor);
         })
         .on("mouseout", function(d) {
             d3.select(this).select(".link-visible")
-                .style("stroke", "#2D5016")
+                .style("stroke", graphPrimaryColor)
                 .attr("stroke-width", 2);
             // Arrow reset
             arrowLayer.selectAll(".arrow")
                 .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", "#2D5016")
-                .style("fill", "#2D5016");
+                .style("stroke", graphPrimaryColor)
+                .style("fill", graphPrimaryColor);
         })
         .on("click", function(d) {
             d3.event.preventDefault();
@@ -326,8 +441,8 @@ function draw_graph(){
         .append("path")
         .attr("class", "arrow")
         .attr("stroke-width", 2)
-        .style("stroke", "#2D5016")
-        .style("fill", "#2D5016")
+        .style("stroke", graphPrimaryColor)
+        .style("fill", graphPrimaryColor)
         .attr("d", function(d) {
             var midX = (d.source.x + d.target.x) / 2;
             var midY = (d.source.y + d.target.y) / 2;
@@ -337,23 +452,23 @@ function draw_graph(){
         .on("mouseover", function(d) {
             // Arrow highlight
             d3.select(this)
-                .style("stroke", "#4F7942")
-                .style("fill", "#4F7942");
+                .style("stroke", graphHoverColor)
+                .style("fill", graphHoverColor);
             // Arrow highlight
             link.filter(l => l.source === d.source && l.target === d.target)
                 .select(".link-visible")
-                .style("stroke", "#4F7942")
+                .style("stroke", graphHoverColor)
                 .attr("stroke-width", 12);
         })
         .on("mouseout", function(d) {
             // Arrow reset
             d3.select(this)
-                .style("stroke", "#2D5016")
-                .style("fill", "#2D5016");
+                .style("stroke", graphPrimaryColor)
+                .style("fill", graphPrimaryColor);
             // Arrow reset
             link.filter(l => l.source === d.source && l.target === d.target)
                 .select(".link-visible")
-                .style("stroke", "#2D5016")
+                .style("stroke", graphPrimaryColor)
                 .attr("stroke-width", 2);
         })
         .on("click", function(d) {
@@ -382,7 +497,7 @@ function draw_graph(){
             .on("mouseover", function(d) {
                 d3.select(this).select("circle")
                     .attr("fill", d => d3.rgb(colorScale(d.level)).brighter(0.3))
-                    .attr("stroke", "#2D5016");
+                    .attr("stroke", graphPrimaryColor);
                 // Show delete button on hover
                 d3.select(this).select(".delete-button")
                     .style("display", "block");
@@ -399,7 +514,7 @@ function draw_graph(){
         // Adding the circle
         nodeGroups.append("circle")
             .attr("r", radius)
-            .attr("fill", d => d.isNew ? "#B45309" : colorScale(d.level))
+            .attr("fill", d => d.isNew ? graphAccentColor : colorScale(d.level))
             .attr("stroke", "none")
             .attr("stroke-width", 3)
             .each(function(d){
@@ -430,7 +545,7 @@ function draw_graph(){
                 // Background circle
                 g.append("circle")
                     .attr("r", radius/6)
-                    .attr("fill", "#2D5016")
+                    .attr("fill", graphPrimaryColor)
                     .attr("stroke", "#fff")
                     .attr("stroke-width", 1);
                 // Plus sign

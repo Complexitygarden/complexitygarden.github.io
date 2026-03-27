@@ -1,8 +1,20 @@
+:root {
+    --primary-color: #2D5016;
+    --secondary-color: #8FBC8F;
+    --hover-color: #4F7942;
+    --primary-dark: #1a3a0d;
+    --accent-color: #B45309;
+    --topbar-color: #2D5016;
+    --topbar-dark: #1a3a0d;
+    --class-header-bg: #F0F6F0;
+    --class-header-border: #D4E4D4;
+}
+
 /* Ensure Deterministic badge is always white */
 .badge[data-badge="Deterministic"],
 .badge-deterministic {
     background: #fff !important;
-    color: #2D5016 !important;
+    color: var(--topbar-color) !important;
     border: 1px solid #b6e2b6 !important;
 }
 html, body {
@@ -25,8 +37,8 @@ body {
 /* Modern App Header */
 .app-header {
     height: 4.5rem;
-    border-bottom: 1px solid rgba(45, 80, 22, 0.2);
-    background: rgba(45, 80, 22, 0.95);
+    border-bottom: 1px solid color-mix(in srgb, var(--topbar-color) 20%, transparent);
+    background: var(--topbar-color);
     backdrop-filter: blur(12px);
     position: fixed;
     top: 0;
@@ -209,7 +221,7 @@ body.reference-page {
     width: 100%;
     max-width: 100%;
     box-shadow: none;
-    background-color: #2D5016;
+    background-color: var(--topbar-color);
     position: static;
     height: 100px!important;
     overflow: visible;
@@ -252,7 +264,7 @@ body.reference-page {
     transform: translateX(-100%);
     transition: transform 250ms ease-in-out;
     /* background: linear-gradient(180deg, #FC466B 0%, #3F5EFB 100%); */
-    background: #2D5016;
+    background: var(--topbar-color);
     z-index: 15;
 }
 .leftSidebarMenuInner{
@@ -414,7 +426,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
 .welcome-icon svg {
     width: 2rem;
     height: 2rem;
-    color: #4F7942;
+    color: var(--hover-color);
 }
 
 .welcome-title {
@@ -440,8 +452,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 .class-header {
     padding: 0.625rem;
     padding-right: 0rem;
-    border-bottom: 1px solid #D4E4D4;
-    background: #F0F6F0;
+    border-bottom: 1px solid var(--class-header-border);
+    background: var(--class-header-bg);
     flex-shrink: 0;
 }
 
@@ -502,7 +514,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
 
 .badge-primary, .badge-secondary {
     background: #fff !important;
-    color: #2D5016 !important;
+    color: var(--topbar-color) !important;
     border: 1px solid #b6e2b6 !important;
 }
 
@@ -517,7 +529,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
     overflow-y: auto;
     padding: 0.625rem;
     scrollbar-width: thin;
-    scrollbar-color: #8FBC8F transparent;
+    scrollbar-color: var(--secondary-color) transparent;
 }
 
 .class-content::-webkit-scrollbar {
@@ -529,12 +541,12 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .class-content::-webkit-scrollbar-thumb {
-    background-color: #8FBC8F;
+    background-color: var(--secondary-color);
     border-radius: 3px;
 }
 
 .class-content::-webkit-scrollbar-thumb:hover {
-    background-color: #4F7942;
+    background-color: var(--hover-color);
 }
 
 /* Info Cards */
@@ -579,7 +591,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
 .card-header svg {
     width: 0.875rem;
     height: 0.875rem;
-    color: #4F7942;
+    color: var(--hover-color);
     flex-shrink: 0;
 }
 
@@ -638,7 +650,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
     content: "";
     width: 0.25rem;
     height: 0.25rem;
-    background: #4F7942;
+    background: var(--hover-color);
     border-radius: 50%;
     margin-top: 0.5rem;
     flex-shrink: 0;
@@ -701,8 +713,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 /* Navigation Buttons */
 .nav-button {
     background: #F0F6F0;
-    border: 1px solid #8FBC8F;
-    color: #2D5016;
+    border: 1px solid var(--secondary-color);
+    color: var(--topbar-color);
     width: 2rem;
     height: 2rem;
     border-radius: 0.5rem;
@@ -715,8 +727,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .nav-button:hover {
-    background: #8FBC8F;
-    border-color: #4F7942;
+    background: var(--secondary-color);
+    border-color: var(--hover-color);
     color: #FFFFFF;
     transform: translateY(-1px);
 }
@@ -748,7 +760,7 @@ The code below is similar to that one above, but I am keeping both copies as we 
 
 .related-class-item:hover {
     background: #F0F6F0;
-    border-color: #8FBC8F;
+    border-color: var(--secondary-color);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(79, 121, 66, 0.15);
 }
@@ -785,17 +797,17 @@ The code below is similar to that one above, but I am keeping both copies as we 
     align-items: center;
     padding: 0.25rem 0.75rem;
     background: #F0F6F0;
-    border: 1px solid #8FBC8F;
+    border: 1px solid var(--secondary-color);
     border-radius: 1rem;
     font-size: 0.75rem;
     font-weight: 500;
-    color: #2D5016;
+    color: var(--topbar-color);
     transition: all 0.2s ease;
 }
 
 .tag:hover {
-    background: #8FBC8F;
-    border-color: #4F7942;
+    background: var(--secondary-color);
+    border-color: var(--hover-color);
     color: #FFFFFF;
 }
 
@@ -822,8 +834,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 
 .see-also-link:hover {
     background: #F0F6F0;
-    border-color: #8FBC8F;
-    color: #2D5016;
+    border-color: var(--secondary-color);
+    color: var(--topbar-color);
 }
 
 /* Links List in See Also */
@@ -847,9 +859,9 @@ The code below is similar to that one above, but I am keeping both copies as we 
     gap: 0.5rem;
     padding: 0.75rem 1rem;
     background: #F0F6F0;
-    border: 1px solid #8FBC8F;
+    border: 1px solid var(--secondary-color);
     border-radius: 0.5rem;
-    color: #2D5016;
+    color: var(--topbar-color);
     text-decoration: none;
     font-size: 0.875rem;
     font-weight: 500;
@@ -857,8 +869,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .links-list a:hover {
-    background: #8FBC8F;
-    border-color: #4F7942;
+    background: var(--secondary-color);
+    border-color: var(--hover-color);
     color: #FFFFFF;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(79, 121, 66, 0.1);
@@ -894,13 +906,13 @@ The code below is similar to that one above, but I am keeping both copies as we 
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #4F7942;
+    color: var(--hover-color);
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .reference-link:hover {
-    color: #2D5016;
+    color: var(--topbar-color);
     text-decoration: underline;
 }
 
@@ -1026,8 +1038,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 #close-panel-button {
     /* light green background with green icon */
     background: rgba(240, 246, 240, 0.95);
-    border: 1px solid #8FBC8F;
-    color: #2D5016;
+    border: 1px solid var(--secondary-color);
+    color: var(--topbar-color);
 }
 
 /* Back and Add buttons always maintain their size for consistent layout */
@@ -1045,8 +1057,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 #back-button:hover,
 #add-class-button:hover,
 #close-panel-button:hover {
-    background: #8FBC8F;
-    border-color: #4F7942;
+    background: var(--secondary-color);
+    border-color: var(--hover-color);
     color: #FFFFFF;
     transform: translateY(-1px);
 }
@@ -1189,9 +1201,9 @@ The code below is similar to that one above, but I am keeping both copies as we 
     align-items: center;
     padding: 8px 16px;
     background: #F0F6F0;
-    border: 1px solid #8FBC8F;
+    border: 1px solid var(--secondary-color);
     border-radius: 6px;
-    color: #2D5016 !important;
+    color: var(--topbar-color) !important;
     text-decoration: none !important;
     font-size: 14px;
     font-weight: 500;
@@ -1199,8 +1211,8 @@ The code below is similar to that one above, but I am keeping both copies as we 
 }
 
 .external-link:hover {
-    background: #8FBC8F;
-    border-color: #4F7942;
+    background: var(--secondary-color);
+    border-color: var(--hover-color);
     color: #FFFFFF !important;
     transform: translateY(-1px);
 }
@@ -1613,8 +1625,8 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 .header-center .filter-button {
     height: 3rem;
     width: 3rem;
-    background: #B45309;
-    border: 1px solid #B45309;
+    background: var(--accent-color);
+    border: 1px solid var(--accent-color);
     border-left: none;
     color: white;
     cursor: pointer;
@@ -1644,7 +1656,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     padding: 0 12px 0 46px;
     border-radius: 0.375rem 0 0 0.375rem;
     background: #FFFBF7;
-    border: 1px solid #B45309;
+    border: 1px solid var(--accent-color);
     border-right: none;
     color: #451A03;
     outline: none;
@@ -1700,7 +1712,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
   /* When the checkbox is checked, add a green background */
   .container input:checked ~ .checkmark,
   .search-selected .container input:checked ~ .checkmark {
-    background-color: #2D5016;
+    background-color: var(--topbar-color);
   }
   
   /* Create the checkmark/indicator (hidden when not checked) */
@@ -1748,7 +1760,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
     left: 0;
     right: 0;
     background: white;
-    border: 1px solid #2D5016;
+    border: 1px solid var(--topbar-color);
     border-top: none;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 1001;
@@ -1776,19 +1788,19 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 }
 
 .search-dropdown::-webkit-scrollbar-thumb {
-    background: #2D5016;
+    background: var(--topbar-color);
     border-radius: 0px;
 }
 
 .search-dropdown::-webkit-scrollbar-thumb:hover {
-    background: #1a3a0d;
+    background: var(--topbar-dark);
 }
 
 /* Adjust list items to center content vertically */
 .search-dropdown li {
     padding: 10px 25px 10px 15px;
     border-bottom: 1px solid #edf2f7;
-    color: #2D5016;
+    color: var(--topbar-color);
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
@@ -1799,7 +1811,7 @@ input[class="openRightSidebarMenu"]:checked ~ .rightSidebarIconToggle > .diagona
 /* Unified highlight for both mouse hover and keyboard navigation */
 .search-dropdown li:hover,
 .search-dropdown li.search-selected {
-    background-color: rgba(45, 80, 22, 0.15);
+    background-color: color-mix(in srgb, var(--topbar-color) 15%, transparent);
 }
 
 /* Disable hover effect when using keyboard navigation */
@@ -1862,7 +1874,7 @@ body.search-active .header-center .search-dropdown {
 .info-icon {
     width: 28px;
     height: 28px;
-    border: 2px solid #2D5016;
+    border: 2px solid var(--topbar-color);
     border-radius: 50%;
     text-align: center;
     line-height: 26px;  /* Slightly less than height to vertically center the 'i' */
@@ -1870,7 +1882,7 @@ body.search-active .header-center .search-dropdown {
     font-style: normal;
     font-family: system-ui, -apple-system, sans-serif;
     font-weight: 500;
-    color: #2D5016;
+    color: var(--topbar-color);
     cursor: pointer;
     font-size: 16px;    /* Increased font size */
     background-color: transparent;
@@ -1885,15 +1897,15 @@ body.search-active .header-center .search-dropdown {
 }
 
 .info-icon:hover {
-    background-color: #2D5016;
+    background-color: var(--topbar-color);
     color: white;
-    box-shadow: 0 3px 6px rgba(45, 80, 22, 0.3);
+    box-shadow: 0 3px 6px color-mix(in srgb, var(--topbar-color) 30%, transparent);
     transform: translateY(-1px);
 }
 
 .info-icon:active {
     transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(45, 80, 22, 0.2);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--topbar-color) 20%, transparent);
 }
 
 .header-center .filter-container {
@@ -1907,7 +1919,7 @@ body.search-active .header-center .search-dropdown {
     top: 100%;
     right: 0;
     background: white;
-    border: 1px solid #2D5016;
+    border: 1px solid var(--topbar-color);
     border-top: none;
     border-radius: 0 0 0.375rem 0.375rem;
     z-index: 1000;
@@ -1924,7 +1936,7 @@ body.search-active .header-center .search-dropdown {
     padding: 12px 15px;
     border: none;
     background: white;
-    color: #2D5016;
+    color: var(--topbar-color);
     text-align: left;
     cursor: pointer;
     font-size: 16px;
@@ -1991,9 +2003,9 @@ body.search-active .header-center .search-dropdown {
 
 .settings-select {
     background-color: #fff;
-    border: 1px solid #2D5016;
+    border: 1px solid var(--topbar-color);
     border-radius: 4px;
-    color: #2D5016;
+    color: var(--topbar-color);
     padding: 4px 8px;
     font-size: 14px;
     cursor: pointer;
@@ -2001,19 +2013,40 @@ body.search-active .header-center .search-dropdown {
 }
 
 .settings-select:hover {
-    border-color: #1a3a0d;
+    border-color: var(--topbar-dark);
 }
 
 .settings-select:focus {
     outline: none;
-    border-color: #1a3a0d;
-    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.2);
+    border-color: var(--topbar-dark);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--topbar-color) 20%, transparent);
+}
+
+.settings-color {
+    width: 36px;
+    height: 24px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    background: none;
+    margin-left: 10px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.4);
+}
+
+.settings-color::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.settings-color::-webkit-color-swatch {
+    border: none;
+    border-radius: 2px;
 }
 
 .settings-button {
-    background-color: #2D5016;
+    background-color: var(--topbar-color);
     color: white;
-    border: none;
+    border: 2px solid #fff;
     border-radius: 4px;
     padding: 6px 12px;
     font-size: 12px;
@@ -2024,7 +2057,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .settings-button:hover {
-    background-color: #1a3a0d;
+    background-color: var(--topbar-dark);
 }
 
 /* Creator list styling in about modal */
@@ -2114,7 +2147,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .history-return-button {
-    background-color: #2D5016;
+    background-color: var(--topbar-color);
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -2128,7 +2161,7 @@ body.search-active .header-center .search-dropdown {
 }
 
 .history-return-button:hover {
-    background-color: #1a3a0d;
+    background-color: var(--topbar-dark);
 }
 
 .history-details {
@@ -2161,7 +2194,7 @@ body.search-active .header-center .search-dropdown {
 
 .history-current {
     background-color: rgba(255, 255, 255, 0.1);
-    border-left: 3px solid #2D5016;
+    border-left: 3px solid var(--topbar-color);
 }
 
 /* History list scrollbar styling */
@@ -2445,7 +2478,7 @@ body.search-active .header-center .search-dropdown {
         height: 100% !important;
         max-width: 100vw !important;
         z-index: 1000;
-        background: rgba(45, 80, 22, 0.95);
+        background: var(--topbar-color);
         display: flex !important;
         flex-direction: column !important;
         padding: 0 !important;
@@ -2466,7 +2499,7 @@ body.search-active .header-center .search-dropdown {
         margin: 14px 16px 14px 16px;
         border: none;
         border-radius: 8px;
-        color: #2D5016;
+        color: var(--topbar-color);
         background: #ffffff;
         box-sizing: border-box;
         order: 1;
@@ -2530,16 +2563,16 @@ body.search-active .header-center .search-dropdown {
         padding: 15px 16px;
         border-bottom: 1px solid #e2e8f0;
         font-size: 18px;
-        color: #2D5016;
+        color: var(--topbar-color);
     }
     body.mobile-search-open .search-dropdown .container {
         font-size: 18px;
-        color: #2D5016;
+        color: var(--topbar-color);
         width: 100%;
         padding-right: 0;
     }
     body.mobile-search-open .search-dropdown .latex-name {
-        color: #2D5016;
+        color: var(--topbar-color);
         font-size: 18px;
     }
     /* Hide dark overlay when using full-screen white background */
@@ -2558,7 +2591,7 @@ body.search-active .header-center .search-dropdown {
     /* ensure visibility of all text inside search results */
     body.mobile-search-open .search-dropdown, 
     body.mobile-search-open .search-dropdown * {
-        color: #2D5016 !important;
+        color: var(--topbar-color) !important;
     }
 
     /* search icon visual size - match the 40px container icons */
@@ -2637,7 +2670,7 @@ body.search-active .header-center .search-dropdown {
     justify-content: center;
     padding: 0;
     font-size: 2.2rem;
-    color: #2D5016; /* Deep Forest Green */
+    color: var(--topbar-color); /* Deep Forest Green */
     transition: background 0.2s, color 0.2s;
     line-height: 1;
     user-select: none;
@@ -2671,7 +2704,7 @@ body.search-active .header-center .search-dropdown {
     text-align: center;
     font-size: 1rem;
     font-weight: 600;
-    color: #2D5016;
+    color: var(--topbar-color);
     margin: 0 0 12px 0;
     letter-spacing: 0.03em;
     text-transform: uppercase;
@@ -2696,7 +2729,7 @@ body.search-active .header-center .search-dropdown {
 .about-stat-value {
     font-size: 1.6rem;
     font-weight: 700;
-    color: #2D5016;
+    color: var(--topbar-color);
     line-height: 1.1;
 }
 

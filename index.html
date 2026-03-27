@@ -146,6 +146,31 @@
                         </li>
                         <li class="leftSidebarMenuInner_sub_li">
                             <div class="settings-item">
+                                <span>Primary Color</span>
+                                <input type="color" id="primary-color-picker" class="settings-color" value="#2D5016" oninput="setPrimaryColor(this.value)">
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <span>Secondary Color</span>
+                                <input type="color" id="secondary-color-picker" class="settings-color" value="#8FBC8F" oninput="setSecondaryColor(this.value)">
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <span>Accent Color</span>
+                                <input type="color" id="accent-color-picker" class="settings-color" value="#B45309" oninput="setAccentColor(this.value)">
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <span>Top Bar Color</span>
+                                <input type="color" id="topbar-color-picker" class="settings-color" value="#2D5016" oninput="setTopbarColor(this.value)">
+                            </div>
+                        </li>
+                        <li class="leftSidebarMenuInner_sub_li">
+                            <div class="settings-item">
+                                <button onclick="resetColors()" class="settings-button">Reset Colors</button>
                                 <button onclick="redrawVisualization()" class="settings-button">Redraw</button>
                             </div>
                         </li>
