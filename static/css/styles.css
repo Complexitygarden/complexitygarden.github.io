@@ -8,6 +8,10 @@
     --topbar-dark: #1a3a0d;
     --class-header-bg: #F0F6F0;
     --class-header-border: #D4E4D4;
+
+    --description-border-color: #E1E8ED;
+    --lighter-accent-color: color-mix(in oklch, var(--accent-color) 5%, white 95%); /* This mixes the color 5% and 95% white */
+
 }
 
 /* Ensure Deterministic badge is always white */
