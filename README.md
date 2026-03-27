@@ -34,7 +34,8 @@ This repository contains the code for the complexity garden - a tool whose goal 
 # To do before pushing to main
 - [x] Fix links to references
 - [x] Clicking on a class name should add it to the view, not open the right side menu
-- [] Adding a new class should not close the dropdowns that are open
+- [x] Adding a new class should not close the dropdowns that are open
+- [x] When trying to add some classes through See Also, they aren't added (coNP in NP for example)
 - [] Understand why the bullet-points are split into a half
 - [] Add references/links
 - [] Add a remove button to the view

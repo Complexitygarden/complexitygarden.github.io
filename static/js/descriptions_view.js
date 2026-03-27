@@ -17,9 +17,18 @@ function renderDescriptionsView() {
         visDiv.style.display = "none";
     }
 
+    // Capture open accordion state before removing the old container
+    const openSections = {};
+    container.querySelectorAll('.desc-card').forEach(card => {
+        const classId = card.dataset.classId;
+        if (!classId) return;
+        openSections[classId] = new Set();
+        card.querySelectorAll('.desc-accordion-trigger.active').forEach(trigger => {
+            openSections[classId].add(trigger.childNodes[0].textContent.trim());
+        });
+    });
+
     container.querySelectorAll(".descriptions-container, .descriptions-empty-state").forEach(el => el.remove());
-
-
 
     // Get selected classes from network processor
     const selectedClasses = window.networkProcessor ? 
@@ -55,7 +64,7 @@ function renderDescriptionsView() {
         return toDescriptionCardShape(classId, classData);
     }).filter(Boolean);
 
-    renderDescriptionCards(classes);
+    renderDescriptionCards(classes, openSections);
 }
 
 function toDescriptionCardShape(id, classData) {
@@ -71,7 +80,7 @@ function toDescriptionCardShape(id, classData) {
     };
 }
 
-function renderDescriptionCards(classes) {
+function renderDescriptionCards(classes, openSections = {}) {
     const grid = document.getElementById('descriptionsGrid');
     const resultsCount = document.getElementById('descResultsCount');
 
@@ -84,6 +93,25 @@ function renderDescriptionCards(classes) {
     // Add event listeners to accordion triggers
     document.querySelectorAll('.desc-accordion-trigger').forEach(trigger => {
         trigger.addEventListener('click', toggleDescriptionAccordion);
+    });
+
+    // Restore previously open sections — deferred so scrollHeight is computed after layout
+    requestAnimationFrame(() => {
+        grid.querySelectorAll('.desc-card').forEach(card => {
+            const classId = card.dataset.classId;
+            if (!classId || !openSections[classId]) return;
+            card.querySelectorAll('.desc-accordion-trigger').forEach(trigger => {
+                const title = trigger.childNodes[0].textContent.trim();
+                if (openSections[classId].has(title)) {
+                    trigger.classList.add('active');
+                    const content = trigger.nextElementSibling;
+                    content.style.transition = 'none';
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    // Re-enable transition after the browser has applied the height
+                    requestAnimationFrame(() => { content.style.transition = ''; });
+                }
+            });
+        });
     });
 
     // Add clicks to see also buttons
@@ -115,7 +143,7 @@ function createDescriptionCard(complexityClass) {
 
     const seeAlsoItems = (Array.isArray(complexityClass.see_also) ? complexityClass.see_also : [])
         .map(rel => {
-            const relId = rel.trim().toUpperCase();
+            const relId = window.networkProcessor ? resolveClassId(rel.trim()) : rel.trim();
             const relClass = window.networkProcessor ? window.networkProcessor.getClass(relId) : null;
             const label = relClass?.name || rel;
 
@@ -140,7 +168,7 @@ function createDescriptionCard(complexityClass) {
         .join(' ');
 
     return `
-        <div class="desc-card">
+        <div class="desc-card" data-class-id="${complexityClass.id}">
             <div class="desc-card-header">
                 <h2 class="desc-card-title">$${complexityClass.latex_name}$</h2>
                 <p class="desc-card-subtitle">${complexityClass.fullName}</p>
@@ -187,10 +215,20 @@ function toggleDescriptionAccordion(e) {
     }
 }
 
+function resolveClassId(classId) {
+    // Try as-is first, then case-insensitive search through all classes
+    if (window.networkProcessor.getClass(classId)) return classId;
+    const lower = classId.toLowerCase();
+    for (const c of window.networkProcessor.getAllClasses()) {
+        if (c.id.toLowerCase() === lower) return c.id;
+    }
+    return classId;
+}
+
 function addDescriptionClassById(classId) {
     if (!classId || !window.networkProcessor) return;
 
-    const id = String(classId).toUpperCase();
+    const id = resolveClassId(String(classId));
 
     // Already selected
     if (window.networkProcessor.isClassSelected(id)) return;
