@@ -187,5 +187,17 @@ body.view-descriptions .descriptions-container {
   background: #F0F6F0;
   border-color: var(--secondary-color);
   color: var(--primary-color);
-  
+}
+
+.desc-card .references-list {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.desc-card .reference-link {
+  color: #1a1a1a;
+}
+
+.desc-card .reference-link:hover {
+  color: #000000;
 }

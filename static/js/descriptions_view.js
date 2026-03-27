@@ -76,7 +76,8 @@ function toDescriptionCardShape(id, classData) {
         tags: classData.tags || ['Complexity'],
         definition: classData.definition || 'No definition available.',
         information: classData.information || '',
-        see_also: classData.see_also || []
+        see_also: classData.see_also || [],
+        references: classData.references || []
     };
 }
 
@@ -172,8 +173,31 @@ function createDescriptionCard(complexityClass) {
         })
         .join('');
 
-    const seeAlso = seeAlsoItems.length > 0 ? 
+    const seeAlso = seeAlsoItems.length > 0 ?
         createDescriptionAccordionItem('See Also', `<ul>${seeAlsoItems}</ul>`) : '';
+
+    const linksItems = (Array.isArray(complexityClass.references) ? complexityClass.references : [])
+        .filter(ref => Array.isArray(ref) && ref.length === 2)
+        .map(ref => {
+            const title = ref[0];
+            const url = (title === 'Complexity Zoo')
+                ? `https://complexityzoo.net/Complexity_Zoo:${ref[1]}`
+                : ref[1];
+            return `
+                <div class="reference-item">
+                    <a href="${url}" target="_blank" class="reference-link">
+                        ${title}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                </div>
+            `;
+        })
+        .join('');
+
+    const links = linksItems.length > 0 ?
+        createDescriptionAccordionItem('Links', `<div class="references-list">${linksItems}</div>`) : '';
 
     const tagsHtml = (Array.isArray(complexityClass.tags) ? complexityClass.tags : [complexityClass.tags])
         .filter(Boolean)
@@ -199,6 +223,7 @@ function createDescriptionCard(complexityClass) {
                 ${definition}
                 ${information}
                 ${seeAlso}
+                ${links}
             </div>
         </div>
     `;
