@@ -151,22 +151,22 @@ body.view-descriptions .descriptions-container {
   color: #4b5563;
 }
 .desc-accordion-content ul {
-  list-style: none;
-
-
-  display: flex;  /* ----------- Vertical vs horizontal see also elements ---------- */
-  gap: 0.5rem;
-
-
-
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-
+  padding-left: 1.25rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }
 .desc-accordion-content li {
   margin-bottom: 0.25rem;
+}
+
+/* See Also list: horizontal flex wrap */
+.desc-accordion-content ul.desc-see-also-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
 
 .desc-see-also-btn {

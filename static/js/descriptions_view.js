@@ -174,7 +174,7 @@ function createDescriptionCard(complexityClass) {
         .join('');
 
     const seeAlso = seeAlsoItems.length > 0 ?
-        createDescriptionAccordionItem('See Also', `<ul>${seeAlsoItems}</ul>`) : '';
+        createDescriptionAccordionItem('See Also', `<ul class="desc-see-also-list">${seeAlsoItems}</ul>`) : '';
 
     const linksItems = (Array.isArray(complexityClass.references) ? complexityClass.references : [])
         .filter(ref => Array.isArray(ref) && ref.length === 2)
