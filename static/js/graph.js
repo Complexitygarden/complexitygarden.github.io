@@ -63,21 +63,42 @@ function applyTopbarColor(topbar) {
 
 function setPrimaryColor(color) {
     applyColors(color, graphSecondaryColor);
-    create_visualisation();
+    updateGraphColors();
 }
 
 function setSecondaryColor(color) {
     applyColors(graphPrimaryColor, color);
-    create_visualisation();
+    updateGraphColors();
 }
 
 function setAccentColor(color) {
     applyAccentColor(color);
-    create_visualisation();
+    updateGraphColors();
 }
 
 function setTopbarColor(color) {
     applyTopbarColor(color);
+}
+
+function updateGraphColors() {
+    if (!graph_drawn || !vis_svg) {
+        return;
+    }
+
+    vis_svg.selectAll(".link-visible")
+    .style("stroke", graphPrimaryColor);
+
+    vis_svg.selectAll(".arrow")
+    .style("stroke", graphPrimaryColor)
+    .style("fill", graphPrimaryColor);
+
+    nodeGroups.select("circle")
+    .attr("fill", function(d) {
+        return colorScale(d.level);
+    });
+
+    nodeGroups.select(".equal-classes-button > circle")
+    .attr("fill", graphPrimaryColor);
 }
 
 var DEFAULT_COLORS = {
@@ -528,7 +549,7 @@ function draw_graph(){
                     } else {
                         // wait for calculated red hold before starting the fade
                         setTimeout(function() {
-                            circleSel.transition().duration(fadeMs).attr('fill', colorScale(d.level));
+                            circleSel.transition().duration(fadeMs).attr('fill', colorScale(d.level)).on("end", function() {d.isNew = false; });
                         }, redHoldMs);
                     }
                 }
@@ -1436,7 +1457,7 @@ if (typeof MutationObserver !== 'undefined') {
                     // Launch pending transitions
                     pendingColorTransitions.forEach(function(item) {
                         const dur = item.fade || 1500;
-                        item.sel.transition().duration(dur).attr('fill', colorScale(item.level));
+                        item.sel.transition().duration(dur).attr('fill', colorScale(item.level)).on("end", function() {d.isNew = false; });
                         prevNodeNames.add(item.sel.datum().name); // mark as visualised
                     });
                     pendingColorTransitions = [];
