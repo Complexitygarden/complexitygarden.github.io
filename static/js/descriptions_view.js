@@ -114,6 +114,19 @@ function renderDescriptionCards(classes, openSections = {}) {
         });
     });
 
+    // Add clicks to remove buttons
+    document.querySelectorAll('.desc-card-remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = btn.dataset.classId;
+            if (id && window.networkProcessor) {
+                window.networkProcessor.deselectClass(resolveClassId(id));
+                renderDescriptionsView();
+            }
+        });
+    });
+
     // Add clicks to see also buttons
     document.querySelectorAll('.desc-see-also-add').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -170,7 +183,15 @@ function createDescriptionCard(complexityClass) {
     return `
         <div class="desc-card" data-class-id="${complexityClass.id}">
             <div class="desc-card-header">
-                <h2 class="desc-card-title">$${complexityClass.latex_name}$</h2>
+                <div class="desc-card-header-top">
+                    <h2 class="desc-card-title">$${complexityClass.latex_name}$</h2>
+                    <button class="desc-card-remove-btn" data-class-id="${complexityClass.id}" title="Remove class">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6 6 18"/>
+                            <path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
                 <p class="desc-card-subtitle">${complexityClass.fullName}</p>
                 ${tagsHtml}
             </div>

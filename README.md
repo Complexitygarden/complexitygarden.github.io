@@ -38,4 +38,4 @@ This repository contains the code for the complexity garden - a tool whose goal 
 - [x] When trying to add some classes through See Also, they aren't added (coNP in NP for example)
 - [] Understand why the bullet-points are split into a half
 - [] Add references/links
-- [] Add a remove button to the view
+- [x] Add a remove button to the view
