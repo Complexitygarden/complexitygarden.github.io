@@ -36,82 +36,46 @@ function logout() {
     window.location.href = 'login.html';
 }
 
-// Inject dropdown styles once
-function injectDropdownStyles() {
-    if (document.getElementById('cg-auth-dropdown-style')) return;
-    const style = document.createElement('style');
-    style.id = 'cg-auth-dropdown-style';
-    style.textContent = `
-        .cg-user-dropdown { position: relative; display: inline-block; }
-        .cg-user-btn {
-            color: #fff; padding: 7px 18px;
-            background: rgba(76,175,80,0.25);
-            border: 1.5px solid rgba(76,175,80,0.8);
-            border-radius: 20px; font-size: 13px;
-            font-weight: 500; letter-spacing: 0.3px;
-            white-space: nowrap; cursor: pointer;
-            font-family: inherit;
-        }
-        .cg-user-btn:hover { background: rgba(76,175,80,0.4); }
-        .cg-dropdown-menu {
-            display: none; position: absolute;
-            right: 0; top: calc(100% + 6px);
-            background: #fff; border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-            min-width: 170px; z-index: 9999;
-            overflow: hidden;
-            border: 1px solid #e5e7eb;
-        }
-        .cg-dropdown-menu.open { display: block; }
-        .cg-dropdown-item {
-            display: block; width: 100%;
-            padding: 11px 18px; font-size: 13px;
-            color: #1f2937; text-decoration: none;
-            background: none; border: none;
-            text-align: left; cursor: pointer;
-            font-family: inherit; white-space: nowrap;
-        }
-        .cg-dropdown-item:hover { background: #f3f4f6; }
-        .cg-dropdown-item.danger { color: #b91c1c; }
-        .cg-dropdown-item.danger:hover { background: #fee2e2; }
-        .cg-dropdown-divider { height: 1px; background: #e5e7eb; margin: 4px 0; }
-    `;
-    document.head.appendChild(style);
-}
-
 // Update UI based on auth state (for pages like index.html)
 function updateAuthUI() {
-    const authButton = document.getElementById('authButton');
-    if (!authButton) return;
+    const sidebarAuthButton = document.getElementById('sidebarAuthButton');
+    if (!sidebarAuthButton) return;
 
     if (isLoggedIn()) {
-        injectDropdownStyles();
         const session = getSession();
         const name = session && session.name ? session.name.split(' ')[0] : 'Account';
         const email = session ? session.email : '';
 
-        authButton.innerHTML = `
-            <div class="cg-user-dropdown" id="cgUserDropdown">
-                <button class="cg-user-btn" id="cgUserBtn">👤 ${name} ▾</button>
-                <div class="cg-dropdown-menu" id="cgDropdownMenu">
-                    <div style="padding:10px 18px 6px;font-size:12px;color:#6b7280;">${email}</div>
-                    <div class="cg-dropdown-divider"></div>
-                    <button class="cg-dropdown-item danger" onclick="logout()">🚪 Logout</button>
-                </div>
-            </div>`;
+        sidebarAuthButton.innerHTML = `
+            <div class="settings-header" id="cgSidebarUserBtn">
+                <span>&#128100; ${name}</span>
+                <span class="toggle-indicator"></span>
+            </div>
+            <ul style="display: none;" id="cgSidebarDropdown">
+                <li class="leftSidebarMenuInner_sub_li">
+                    <div class="settings-item">
+                        <span style="text-transform:none; font-size:12px; opacity:0.7;">${email}</span>
+                    </div>
+                </li>
+                <li class="leftSidebarMenuInner_sub_li">
+                    <div class="settings-item">
+                        <button onclick="logout()" class="settings-button">Log Out</button>
+                    </div>
+                </li>
+            </ul>`;
 
-        // Toggle on button click
-        document.getElementById('cgUserBtn').addEventListener('click', function(e) {
-            e.stopPropagation();
-            document.getElementById('cgDropdownMenu').classList.toggle('open');
+        document.getElementById('cgSidebarUserBtn').addEventListener('click', function() {
+            const $submenu = $(this).next('ul');
+            if ($submenu.is(':animated')) return;
+            sidebarAuthButton.classList.toggle('open');
+            $submenu.slideToggle('fast');
         });
-        // Close when clicking outside
-        document.addEventListener('click', function closeDropdown() {
-            const menu = document.getElementById('cgDropdownMenu');
-            if (menu) menu.classList.remove('open');
+
+        sidebarAuthButton.addEventListener('click', function(e) {
+            if (e.target.closest('#cgSidebarDropdown')) e.stopPropagation();
         });
     } else {
-        authButton.innerHTML = '<a href="login.html" style="color:#fff;text-decoration:none;padding:7px 18px;background:transparent;border:1.5px solid rgba(255,255,255,0.7);border-radius:20px;font-size:13px;font-weight:500;letter-spacing:0.3px;white-space:nowrap;">Sign in</a>';
+        sidebarAuthButton.innerHTML = '<a href="login.html">Sign In</a>';
     }
 }
 
