@@ -31,5 +31,11 @@ This repository contains the code for the complexity garden - a tool whose goal 
 - "Tags"
 - Useful information
 
-# To do
-- [] Improve the references section
+# To do before pushing to main
+- [x] Fix links to references
+- [x] Clicking on a class name should add it to the view, not open the right side menu
+- [x] Adding a new class should not close the dropdowns that are open
+- [x] When trying to add some classes through See Also, they aren't added (coNP in NP for example)
+- [x] Understand why the bullet-points are split into a half
+- [x] Add references/links
+- [x] Add a remove button to the view

@@ -17,9 +17,18 @@ function renderDescriptionsView() {
         visDiv.style.display = "none";
     }
 
+    // Capture open accordion state before removing the old container
+    const openSections = {};
+    container.querySelectorAll('.desc-card').forEach(card => {
+        const classId = card.dataset.classId;
+        if (!classId) return;
+        openSections[classId] = new Set();
+        card.querySelectorAll('.desc-accordion-trigger.active').forEach(trigger => {
+            openSections[classId].add(trigger.childNodes[0].textContent.trim());
+        });
+    });
+
     container.querySelectorAll(".descriptions-container, .descriptions-empty-state").forEach(el => el.remove());
-
-
 
     // Get selected classes from network processor
     const selectedClasses = window.networkProcessor ? 
@@ -55,7 +64,7 @@ function renderDescriptionsView() {
         return toDescriptionCardShape(classId, classData);
     }).filter(Boolean);
 
-    renderDescriptionCards(classes);
+    renderDescriptionCards(classes, openSections);
 }
 
 function toDescriptionCardShape(id, classData) {
@@ -67,11 +76,12 @@ function toDescriptionCardShape(id, classData) {
         tags: classData.tags || ['Complexity'],
         definition: classData.definition || 'No definition available.',
         information: classData.information || '',
-        see_also: classData.see_also || []
+        see_also: classData.see_also || [],
+        references: classData.references || []
     };
 }
 
-function renderDescriptionCards(classes) {
+function renderDescriptionCards(classes, openSections = {}) {
     const grid = document.getElementById('descriptionsGrid');
     const resultsCount = document.getElementById('descResultsCount');
 
@@ -86,6 +96,38 @@ function renderDescriptionCards(classes) {
         trigger.addEventListener('click', toggleDescriptionAccordion);
     });
 
+    // Restore previously open sections — deferred so scrollHeight is computed after layout
+    requestAnimationFrame(() => {
+        grid.querySelectorAll('.desc-card').forEach(card => {
+            const classId = card.dataset.classId;
+            if (!classId || !openSections[classId]) return;
+            card.querySelectorAll('.desc-accordion-trigger').forEach(trigger => {
+                const title = trigger.childNodes[0].textContent.trim();
+                if (openSections[classId].has(title)) {
+                    trigger.classList.add('active');
+                    const content = trigger.nextElementSibling;
+                    content.style.transition = 'none';
+                    content.style.maxHeight = content.scrollHeight + 'px';
+                    // Re-enable transition after the browser has applied the height
+                    requestAnimationFrame(() => { content.style.transition = ''; });
+                }
+            });
+        });
+    });
+
+    // Add clicks to remove buttons
+    document.querySelectorAll('.desc-card-remove-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = btn.dataset.classId;
+            if (id && window.networkProcessor) {
+                window.networkProcessor.deselectClass(resolveClassId(id));
+                renderDescriptionsView();
+            }
+        });
+    });
+
     // Add clicks to see also buttons
     document.querySelectorAll('.desc-see-also-add').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -95,9 +137,13 @@ function renderDescriptionCards(classes) {
         });
     });
 
-    // Process MathJax for LaTeX rendering
+    // Process MathJax for LaTeX rendering, then attach click handlers
     if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
-        MathJax.typesetPromise([grid]).catch(err => console.log('MathJax error:', err));
+        MathJax.typesetPromise([grid]).then(() => {
+            setupClickableElements();
+        }).catch(err => console.log('MathJax error:', err));
+    } else {
+        setupClickableElements();
     }
 }
 
@@ -111,7 +157,7 @@ function createDescriptionCard(complexityClass) {
 
     const seeAlsoItems = (Array.isArray(complexityClass.see_also) ? complexityClass.see_also : [])
         .map(rel => {
-            const relId = rel.trim().toUpperCase();
+            const relId = window.networkProcessor ? resolveClassId(rel.trim()) : rel.trim();
             const relClass = window.networkProcessor ? window.networkProcessor.getClass(relId) : null;
             const label = relClass?.name || rel;
 
@@ -127,8 +173,31 @@ function createDescriptionCard(complexityClass) {
         })
         .join('');
 
-    const seeAlso = seeAlsoItems.length > 0 ? 
-        createDescriptionAccordionItem('See Also', `<ul>${seeAlsoItems}</ul>`) : '';
+    const seeAlso = seeAlsoItems.length > 0 ?
+        createDescriptionAccordionItem('See Also', `<ul class="desc-see-also-list">${seeAlsoItems}</ul>`) : '';
+
+    const linksItems = (Array.isArray(complexityClass.references) ? complexityClass.references : [])
+        .filter(ref => Array.isArray(ref) && ref.length === 2)
+        .map(ref => {
+            const title = ref[0];
+            const url = (title === 'Complexity Zoo')
+                ? `https://complexityzoo.net/Complexity_Zoo:${ref[1]}`
+                : ref[1];
+            return `
+                <div class="reference-item">
+                    <a href="${url}" target="_blank" class="reference-link">
+                        ${title}
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                </div>
+            `;
+        })
+        .join('');
+
+    const links = linksItems.length > 0 ?
+        createDescriptionAccordionItem('Links', `<div class="references-list">${linksItems}</div>`) : '';
 
     const tagsHtml = (Array.isArray(complexityClass.tags) ? complexityClass.tags : [complexityClass.tags])
         .filter(Boolean)
@@ -136,9 +205,17 @@ function createDescriptionCard(complexityClass) {
         .join(' ');
 
     return `
-        <div class="desc-card">
+        <div class="desc-card" data-class-id="${complexityClass.id}">
             <div class="desc-card-header">
-                <h2 class="desc-card-title">$${complexityClass.latex_name}$</h2>
+                <div class="desc-card-header-top">
+                    <h2 class="desc-card-title">$${complexityClass.latex_name}$</h2>
+                    <button class="desc-card-remove-btn" data-class-id="${complexityClass.id}" title="Remove class">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6 6 18"/>
+                            <path d="m6 6 12 12"/>
+                        </svg>
+                    </button>
+                </div>
                 <p class="desc-card-subtitle">${complexityClass.fullName}</p>
                 ${tagsHtml}
             </div>
@@ -146,6 +223,7 @@ function createDescriptionCard(complexityClass) {
                 ${definition}
                 ${information}
                 ${seeAlso}
+                ${links}
             </div>
         </div>
     `;
@@ -183,10 +261,20 @@ function toggleDescriptionAccordion(e) {
     }
 }
 
+function resolveClassId(classId) {
+    // Try as-is first, then case-insensitive search through all classes
+    if (window.networkProcessor.getClass(classId)) return classId;
+    const lower = classId.toLowerCase();
+    for (const c of window.networkProcessor.getAllClasses()) {
+        if (c.id.toLowerCase() === lower) return c.id;
+    }
+    return classId;
+}
+
 function addDescriptionClassById(classId) {
     if (!classId || !window.networkProcessor) return;
 
-    const id = String(classId).toUpperCase();
+    const id = resolveClassId(String(classId));
 
     // Already selected
     if (window.networkProcessor.isClassSelected(id)) return;
@@ -205,13 +293,16 @@ function addDescriptionClassById(classId) {
 
 function formatDescriptionContent(text) {
     if (!text) return '';
-    
-    // Use the existing link_classes_information function if available
+
     if (typeof link_classes_information === 'function') {
-        return link_classes_information(text);
+        text = link_classes_information(text);
+    }
+    if (typeof format_reference_information === 'function') {
+        text = format_reference_information(text);
     }
     return text;
 }
 
 // Make function globally available
 window.renderDescriptionsView = renderDescriptionsView;
+window.addDescriptionClassById = addDescriptionClassById;
