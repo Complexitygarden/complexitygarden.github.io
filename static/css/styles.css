@@ -2744,3 +2744,291 @@ body.search-active .header-center .search-dropdown {
     margin-top: 4px;
     line-height: 1.3;
 }
+
+/* ============================================ */
+/* Edit Modal Styling                          */
+/* ============================================ */
+
+.edit-modal-window {
+    max-width: 900px;
+    width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    background: #FFFFFF;
+    border: 1px solid var(--class-header-border);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.edit-modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin: 0 0 12px 0;
+    text-align: center;
+}
+
+.edit-modal-summary {
+    background: var(--class-header-bg);
+    border: 1px solid var(--class-header-border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    color: #1A1A1A;
+}
+
+.edit-modal-summary p {
+    margin: 0;
+}
+
+.edit-modal-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    padding-right: 8px;
+}
+
+/* scrollbar for content area */
+.edit-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.edit-modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.edit-modal-content::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color);
+    border-radius: 3px;
+}
+
+.edit-modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: var(--hover-color);
+}
+
+/* input column */
+.edit-modal-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.edit-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.edit-modal-field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1A1A1A;
+    text-transform: none;
+}
+
+.edit-modal-input,
+.edit-modal-textarea {
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+    padding: 10px 12px;
+    border: 1px solid #D4E4D4;
+    border-radius: 6px;
+    background: #FEFBF8;
+    color: #1A1A1A;
+    resize: vertical;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.edit-modal-input:focus,
+.edit-modal-textarea:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(143, 188, 143, 0.1);
+}
+
+.edit-modal-textarea {
+    min-height: 80px;
+    max-height: 120px;
+}
+
+/* action buttons */
+.edit-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid #D4E4D4;
+}
+
+.edit-modal-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.edit-modal-button-primary {
+    background: var(--topbar-color);
+    color: #FFFFFF;
+}
+
+.edit-modal-button-primary:hover {
+    background: var(--topbar-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(45, 80, 22, 0.2);
+}
+
+.edit-modal-button-primary:active {
+    transform: translateY(0);
+}
+
+.edit-modal-button-secondary {
+    background: #F0F6F0;
+    color: var(--topbar-color);
+    border: 1px solid var(--secondary-color);
+}
+
+.edit-modal-button-secondary:hover {
+    background: var(--secondary-color);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
+.edit-modal-button-secondary:active {
+    transform: translateY(0);
+}
+
+/* stack on smaller screens */
+@media (max-width: 1024px) {
+    .edit-modal-window {
+        max-width: 95vw;
+        padding: 20px;
+    }
+    
+    .edit-modal-content {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .edit-modal-window {
+        max-height: 90vh;
+        padding: 16px;
+    }
+    
+    .edit-modal-title {
+        font-size: 1.25rem;
+    }
+    
+    .edit-modal-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .edit-modal-button {
+        width: 100%;
+    }
+}
+
+/* ===== Edit Modal — Theorems Section ===== */
+
+.edit-modal-theorems-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-modal-theorems-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.edit-modal-theorems-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin: 0;
+}
+
+.edit-modal-theorems-hint {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.edit-theorems-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: 1px solid #D4E4D4;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.edit-theorem-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    background: #F8FAF8;
+    border: 1px solid #D4E4D4;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+}
+
+.edit-theorem-row--deleted {
+    background: #FFF0F0;
+    border-color: #FFAAAA;
+    color: #aaa;
+    text-decoration: line-through;
+}
+
+.edit-theorem-label {
+    flex: 1;
+}
+
+.edit-theorem-delete {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    color: #E53E3E;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.edit-theorem-delete:hover {
+    background: #FFF0F0;
+    border-color: #E53E3E;
+}
+
+.edit-theorems-empty {
+    font-size: 0.875rem;
+    color: #aaa;
+    font-style: italic;
+    padding: 4px 2px;
+}

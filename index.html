@@ -433,6 +433,74 @@
                 </div>
             </div>
         </div>
+       <!-- Edit Class Modal -->
+        <div id="edit-class-modal-overlay" class="modal-overlay" style="display:none;">
+            <div id="edit-class-modal-window" class="modal-window edit-modal-window">
+                <button id="edit-class-modal-close" class="modal-close" aria-label="Close">&times;</button>
+
+                <h2 class="edit-modal-title">Edit Class Information</h2>
+
+                <!-- summary -->
+                <div class="edit-modal-summary">
+                    <p>Editing: <span id="edit-modal-class-name" style="font-weight: 600;"></span></p>
+                </div>
+
+                <!-- modal container -->
+                <div class="edit-modal-content">
+                    <!-- inputs -->
+                    <div class="edit-modal-inputs">
+                        <!-- name -->
+                        <div class="edit-modal-field">
+                            <label for="edit-latex-name">LaTeX Name:</label>
+                            <input type="text" id="edit-latex-name" class="edit-modal-input" placeholder="Enter LaTeX text">
+                        </div>
+
+                        <!-- definition -->
+                        <div class="edit-modal-field">
+                            <label for="edit-definition">Definition :</label>
+                            <textarea id="edit-definition" class="edit-modal-textarea" rows="5" placeholder="Enter LaTeX text"></textarea>
+                        </div>
+
+                        <!-- information -->
+                        <div class="edit-modal-field">
+                            <label for="edit-information">Useful Information :</label>
+                            <textarea id="edit-information" class="edit-modal-textarea" rows="4" placeholder="Enter LaTeX text"></textarea>
+                        </div>
+
+                        <!-- see also -->
+                        <div class="edit-modal-field">
+                            <label for="edit-see-also">See Also :</label>
+                            <textarea id="edit-see-also" class="edit-modal-textarea" rows="3" placeholder="Class1 Class2 Class3"></textarea>
+                        </div>
+
+                        <!-- references -->
+                        <div class="edit-modal-field">
+                            <label for="edit-references">Links :</label>
+                            <textarea id="edit-references" class="edit-modal-textarea" rows="3" placeholder="[REF1] [REF2]"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Theorems section -->
+                    <div class="edit-modal-theorems-section">
+                        <div class="edit-modal-theorems-header">
+                            <h3 class="edit-modal-theorems-title">Related Theorems</h3>
+                            <span class="edit-modal-theorems-hint">Click × to mark for deletion on save</span>
+                        </div>
+                        <div id="edit-theorems-list" class="edit-theorems-list">
+                            <!-- populated dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+                <!-- Action buttons -->
+                <div class="edit-modal-actions">
+                    <button id="edit-modal-save-btn" class="edit-modal-button edit-modal-button-primary" type="button">Save</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Load scripts in correct order -->
         <script src="../static/js/utils.js?v=1.001"></script>

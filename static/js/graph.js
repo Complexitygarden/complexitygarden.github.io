@@ -1320,7 +1320,7 @@ function draw_graph(){
         prevNodeNames = new Set(data.nodes.map(n => n.name));
     }
 
-    // Make delete/expand utilities accessible to the context menu
+    // Make delete/expand/edit utilities accessible to the context menu
     window.expandNodeRef = function(className) {
         expand(className, null, false);
     };
@@ -1328,6 +1328,12 @@ function draw_graph(){
     window.expandEdgeRef = function(sourceClass, targetClass) {
          expand(sourceClass, targetClass, true);
     };
+    window.editnodeRef = function(className)
+    {
+        var classData = networkProcessor.getClass(className);
+        if (!classData) return;
+        if (typeof openEditModal === 'function') openEditModal(classData);
+    }
 
     // Helper to check if node is root or top
     function isRootOrTop(name){
@@ -1376,6 +1382,17 @@ function showNodeMenu(d, pageX, pageY) {
         });
     } else {
         options.push({ type:"text", label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } });
+    }
+
+    if (hasEquals) {
+        options.push( {type:"latex", latex: d.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}}  );
+        d.equal_classes.forEach(function(eq){
+            options.push( {type:"latex", latex: eq.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(eq.name);}}}  );
+        });
+    }
+    else
+    {
+        options.push({type:"text", label: "Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}});
     }
 
     options.forEach(function(opt) {
