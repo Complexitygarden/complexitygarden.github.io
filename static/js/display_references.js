@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     else
     {
-
         url_references = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/references/references.json"
         fetch(url_references)
         .then(response => response.json())
@@ -117,20 +116,31 @@ function scroll_and_highlight_target(duration)
 {
     const hash = window.location.hash;
 
-    if (hash) //exists
-    {
-        const target_element = document.querySelector(hash); //there should be only one 
-        if (target_element)
-        {
-            target_element.scrollIntoView({behavior: "smooth", block:"center"});
+    if (!hash) return;
 
-            target_element.classList.add("highlight");
+    const target_element = document.querySelector(hash);
+    if (!target_element) return;
 
-            setTimeout(() => {
-                target_element.classList.remove("highlight");
-            }, duration);
-        }
+    // Position the target at the very top of the viewport. We use window.scrollTo
+    // with a computed offset rather than scrollIntoView({block:"start"}) because the
+    // latter is less predictable when the page is still settling (smooth-scroll
+    // interruption, late layout shifts from font/MathJax loading, etc.).
+    function scrollToTarget() {
+        const top = target_element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: top, behavior: "auto" });
     }
+
+    scrollToTarget();
+
+    // Re-pin the target to the top after late layout shifts (fonts, MathJax, etc.).
+    setTimeout(scrollToTarget, 100);
+    setTimeout(scrollToTarget, 500);
+    setTimeout(scrollToTarget, 1500);
+
+    target_element.classList.add("highlight");
+    setTimeout(() => {
+        target_element.classList.remove("highlight");
+    }, duration);
 }
 
 

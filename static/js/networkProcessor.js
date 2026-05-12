@@ -16,6 +16,17 @@ class NetworkProcessor {
         this.initialized = false;
         this.prevSelectedClasses = new Set(); // Track previously visualised classes for incremental layout
         this.prevMaxLevel = -1; // Track previous maximum level number
+        this.oracleSeparations = new Map(); // key: "classA|classB" (sorted alphabetically), value: {a, b, referenceId}
+        this.references = new Map();        // identifier -> reference entry from references.json
+    }
+
+    loadReferences(referencesData) {
+        if (!referencesData || !Array.isArray(referencesData.references)) return;
+        for (const ref of referencesData.references) {
+            if (ref.identifier) {
+                this.references.set(ref.identifier, ref);
+            }
+        }
     }
 
     async initialize(classesData, theoremsData) {
@@ -135,6 +146,19 @@ class NetworkProcessor {
                 //     theorem,
                 //     availableClasses: Array.from(this.classes.keys())
                 // });
+            }
+        } else if (theorem.type === 'oracle_separation') {
+            // Record a known oracle separation between two classes.
+            // This does not add a containment edge; it annotates existing edges in the graph.
+            // 'referenceId' should match the identifier field in references.json.
+            if (theorem.a && theorem.b) {
+                const key = [theorem.a, theorem.b].sort().join('|');
+                this.oracleSeparations.set(key, {
+                    a: theorem.a,
+                    b: theorem.b,
+                    referenceId: theorem.referenceId || '',
+                    oracleType: theorem.oracleType || 'classical'
+                });
             }
         } else if (theorem.type === 'equality') {
             const classA = this.classes.get(theorem.a);
@@ -776,13 +800,42 @@ class NetworkProcessor {
             for (const biggerClass of classData.trim_within) {
                 // Only create the link if the bigger class will also appear as a node
                 if (!processedSet.has(biggerClass)) continue;
+                const oracleKey = [className, biggerClass].sort().join('|');
+                const oracleSep = this.oracleSeparations.get(oracleKey);
+                const oracleSepLink = oracleSep ? {
+                    referenceId: oracleSep.referenceId || null,
+                    oracleType: oracleSep.oracleType || 'classical'
+                } : null;
                 links.push({
                     source: className,  // Smaller class
                     target: biggerClass,  // Bigger class
-                    type: 'containment'
+                    type: 'containment',
+                    oracleSeparation: oracleSepLink
                 });
             }
         }
+
+        // Separation-only links: oracle separations between classes with no Hasse-edge
+        // containment. These edges appear only when the oracle-separation toggle is on
+        // and are rendered as fully red lines to indicate they aren't in the base graph.
+        const containmentPairs = new Set(
+            links.map(l => [l.source, l.target].sort().join('|'))
+        );
+        this.oracleSeparations.forEach((sep, key) => {
+            if (containmentPairs.has(key)) return; // already covered by a containment edge
+            if (!processedSet.has(sep.a) || !processedSet.has(sep.b)) return;
+            const [first, second] = [sep.a, sep.b].sort();
+            links.push({
+                source: first,
+                target: second,
+                type: 'separation_only',
+                oracleSeparation: {
+                    referenceId: sep.referenceId || null,
+                    separationOnly: true,
+                    oracleType: sep.oracleType || 'classical'
+                }
+            });
+        });
 
         // console.log('\n=== Final Network ===');
         // console.log('Nodes:', nodes);

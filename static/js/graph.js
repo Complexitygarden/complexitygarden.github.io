@@ -8,6 +8,7 @@ var nodeMenuDiv = null; // Currently open node context-menu element
 var rotationIntervals = []; // Holds d3.interval handlers for rotating equal-class labels
 var prevNodeNames = new Set(); // Track nodes that were already visualised to animate colour of newly added ones
 var pendingColorTransitions = []; // stores {sel, level} for nodes awaiting search close
+var showOracleSeparations = false; // Toggle for oracle separation visualization
 
 // User-configurable graph colors
 var graphPrimaryColor = "#2D5016";
@@ -283,6 +284,12 @@ function draw_graph(){
     const data = networkProcessor.getTrimmedNetworkJson();
     console.log("Graph data:", data);
 
+    // When the oracle-separation toggle is off, drop separation-only links so they
+    // do not influence the force simulation or the rendered graph at all.
+    if (!showOracleSeparations) {
+        data.links = data.links.filter(function(l) { return l.type !== 'separation_only'; });
+    }
+
     // Mark new nodes (not present in previous render)
     data.nodes.forEach(n => { n.isNew = !prevNodeNames.has(n.name); });
 
@@ -397,49 +404,95 @@ function draw_graph(){
     }
 
     function draw_links(link_data){
+        // When oracle separation display is disabled, strip the cut-mark annotation
+        // from containment edges so they render as ordinary green arrows. (Separation-only
+        // edges are already filtered out of data.links at the draw_graph level.)
+        if (!showOracleSeparations) {
+            link_data = link_data.map(function(d) {
+                if (!d.oracleSeparation) return d;
+                return Object.assign({}, d, { oracleSeparation: null });
+            });
+        }
+
         link = layer1.attr("class", "links")
         .selectAll(".links")
         .data(link_data)
         .enter()
         .append("g")  // Create a group for each link
         .each(function(d) {
-            // Invisible line for better hover detection
+            // Invisible wide polyline for hover detection (covers the full link)
             d3.select(this)
                 .append("polyline")
                 .attr("class", "link-hover-area")
-                .attr("stroke-width", 50)  // Much wider than visible line
-                .style("stroke", "transparent")  // Invisible
+                .attr("stroke-width", 50)
+                .style("stroke", "transparent")
                 .style("fill", "none")
                 .attr("points", get_points);
-            
-            // Visible line
-            d3.select(this)
-                .append("polyline")
-                .attr("class", "link-visible")
-                .attr("stroke-width", 2)
-                .style("stroke", graphPrimaryColor)
-                .style("fill", "none")
-                .attr("points", get_points);
+
+            if (d.oracleSeparation) {
+                // Oracle-separated links: two separate segments with a real gap at the midpoint.
+                // Endpoints are set precisely in tickActions using the computed gapHalf.
+                // Separation-only links (no underlying containment) render fully red so
+                // it is visually clear they were not part of the base Hasse diagram.
+                var segColor = d.oracleSeparation.separationOnly ? "#cc0000" : graphPrimaryColor;
+                d3.select(this).append("line")
+                    .attr("class", "link-visible oracle-seg-1")
+                    .attr("stroke-width", 2)
+                    .style("stroke", segColor);
+                d3.select(this).append("line")
+                    .attr("class", "link-visible oracle-seg-2")
+                    .attr("stroke-width", 2)
+                    .style("stroke", segColor);
+            } else {
+                // Regular link: single polyline
+                d3.select(this)
+                    .append("polyline")
+                    .attr("class", "link-visible")
+                    .attr("stroke-width", 2)
+                    .style("stroke", graphPrimaryColor)
+                    .style("fill", "none")
+                    .attr("points", get_points);
+            }
         })
         .on("mouseover", function(d) {
-            d3.select(this).select(".link-visible")
-                .style("stroke", graphHoverColor)
+            var hoverColor = (d.oracleSeparation && d.oracleSeparation.separationOnly) ? "#ff3333" : graphHoverColor;
+            d3.select(this).selectAll(".link-visible")
+                .style("stroke", hoverColor)
                 .attr("stroke-width", 12);
-            // Arrow highlight
-            arrowLayer.selectAll(".arrow")
-                .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", graphHoverColor)
-                .style("fill", graphHoverColor);
+            if (d.oracleSeparation) {
+                // Highlight oracle cut marks
+                arrowLayer.selectAll(".oracle-cut-group")
+                    .filter(g => g.source === d.source && g.target === d.target)
+                    .selectAll(".oracle-cut-1, .oracle-cut-2")
+                    .attr("stroke", "#ff3333")
+                    .attr("stroke-width", 6);
+            } else {
+                // Arrow highlight
+                arrowLayer.selectAll(".arrow")
+                    .filter(a => a.source === d.source && a.target === d.target)
+                    .style("stroke", graphHoverColor)
+                    .style("fill", graphHoverColor);
+            }
         })
         .on("mouseout", function(d) {
-            d3.select(this).select(".link-visible")
-                .style("stroke", graphPrimaryColor)
+            var restColor = (d.oracleSeparation && d.oracleSeparation.separationOnly) ? "#cc0000" : graphPrimaryColor;
+            d3.select(this).selectAll(".link-visible")
+                .style("stroke", restColor)
                 .attr("stroke-width", 2);
-            // Arrow reset
-            arrowLayer.selectAll(".arrow")
-                .filter(a => a.source === d.source && a.target === d.target)
-                .style("stroke", graphPrimaryColor)
-                .style("fill", graphPrimaryColor);
+            if (d.oracleSeparation) {
+                // Reset oracle cut marks
+                arrowLayer.selectAll(".oracle-cut-group")
+                    .filter(g => g.source === d.source && g.target === d.target)
+                    .selectAll(".oracle-cut-1, .oracle-cut-2")
+                    .attr("stroke", "#cc0000")
+                    .attr("stroke-width", 4);
+            } else {
+                // Arrow reset
+                arrowLayer.selectAll(".arrow")
+                    .filter(a => a.source === d.source && a.target === d.target)
+                    .style("stroke", graphPrimaryColor)
+                    .style("fill", graphPrimaryColor);
+            }
         })
         .on("click", function(d) {
             d3.event.preventDefault();
@@ -455,9 +508,9 @@ function draw_graph(){
             expand(sourceClass, targetClass, true);
         });
 
-        // Arrows
+        // Arrows — only for links without a known oracle separation
         arrowLayer.selectAll(".arrow")
-        .data(link_data)
+        .data(link_data.filter(d => !d.oracleSeparation))
         .enter()
         .append("path")
         .attr("class", "arrow")
@@ -475,9 +528,8 @@ function draw_graph(){
             d3.select(this)
                 .style("stroke", graphHoverColor)
                 .style("fill", graphHoverColor);
-            // Arrow highlight
             link.filter(l => l.source === d.source && l.target === d.target)
-                .select(".link-visible")
+                .selectAll(".link-visible")
                 .style("stroke", graphHoverColor)
                 .attr("stroke-width", 12);
         })
@@ -486,9 +538,8 @@ function draw_graph(){
             d3.select(this)
                 .style("stroke", graphPrimaryColor)
                 .style("fill", graphPrimaryColor);
-            // Arrow reset
             link.filter(l => l.source === d.source && l.target === d.target)
-                .select(".link-visible")
+                .selectAll(".link-visible")
                 .style("stroke", graphPrimaryColor)
                 .attr("stroke-width", 2);
         })
@@ -498,13 +549,125 @@ function draw_graph(){
             showEdgeMenu(d, d3.event.pageX, d3.event.pageY);
         })
         .on("dblclick", function(d) {
-            // Get the source and target class names
             hideNodeMenu();
             var sourceClass = d.source.name;
             var targetClass = d.target.name;
-            
             expand(sourceClass, targetClass, true);
         });
+
+        // Oracle separation cut marks — replace the arrow for oracle-separated links.
+        // Two red diagonal lines (\ direction) straddle the midpoint with a white gap
+        // between them, leaving space for a citation label.
+        var oracleCutSize = Math.max(14, Math.min(22, radius * 0.22)); // citation font size (px)
+
+        var oracleCutGroups = arrowLayer.selectAll(".oracle-cut-group")
+        .data(link_data.filter(d => !!d.oracleSeparation))
+        .enter()
+        .append("g")
+        .attr("class", "oracle-cut-group")
+        .on("mouseover", function(d) {
+            d3.select(this).selectAll(".oracle-cut-1, .oracle-cut-2")
+                .attr("stroke", "#ff3333").attr("stroke-width", 6);
+            link.filter(l => l.source === d.source && l.target === d.target)
+                .selectAll(".link-visible")
+                .style("stroke", graphHoverColor)
+                .attr("stroke-width", 12);
+        })
+        .on("mouseout", function(d) {
+            d3.select(this).selectAll(".oracle-cut-1, .oracle-cut-2")
+                .attr("stroke", "#cc0000").attr("stroke-width", 4);
+            link.filter(l => l.source === d.source && l.target === d.target)
+                .selectAll(".link-visible")
+                .style("stroke", graphPrimaryColor)
+                .attr("stroke-width", 2);
+        })
+        .on("click", function(d) {
+            d3.event.preventDefault();
+            d3.event.stopPropagation();
+            showEdgeMenu(d, d3.event.pageX, d3.event.pageY);
+        })
+        .on("dblclick", function(d) {
+            hideNodeMenu();
+            expand(d.source.name, d.target.name, true);
+        });
+
+        // Cut line 1 (\  direction, left/top side of gap)
+        oracleCutGroups.append("line")
+            .attr("class", "oracle-cut-1")
+            .attr("stroke", "#cc0000")
+            .attr("stroke-width", 4)
+            .attr("stroke-linecap", "round");
+
+        // Cut line 2 (\ direction, right/bottom side of gap)
+        oracleCutGroups.append("line")
+            .attr("class", "oracle-cut-2")
+            .attr("stroke", "#cc0000")
+            .attr("stroke-width", 4)
+            .attr("stroke-linecap", "round");
+
+        // White backing pill for the citation text (drawn before text so text sits on top)
+        oracleCutGroups.append("rect")
+            .attr("class", "oracle-citation-bg")
+            .attr("fill", "white")
+            .attr("rx", 3).attr("ry", 3);
+
+        // Citation label — shows [referenceId], clickable, opens references.html#referenceId.
+        // Both the white background pill and the text glyphs trigger the same navigation,
+        // so clicking anywhere on the label opens the referenced paper's entry.
+        oracleCutGroups.each(function(d) {
+            if (d.oracleSeparation && d.oracleSeparation.referenceId) {
+                var refId = d.oracleSeparation.referenceId;
+                var navigateToReference = function() {
+                    if (d3.event) {
+                        d3.event.stopPropagation();
+                        d3.event.preventDefault();
+                    }
+                    var a = document.createElement('a');
+                    a.href = 'references.html#' + refId;
+                    a.target = '_blank';
+                    a.rel = 'noopener';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                };
+
+                // The white background pill captures all clicks (including those that
+                // would land in the gaps between text glyphs). The text itself has
+                // pointer-events disabled so clicks anywhere over the label — including
+                // dead space between/inside letters — reach the rect underneath.
+                d3.select(this).select(".oracle-citation-bg")
+                    .style("pointer-events", "all")
+                    .style("cursor", "pointer")
+                    .on("click", navigateToReference);
+
+                var oracleType = d.oracleSeparation.oracleType;
+                var typeLetter = oracleType === 'quantum' ? 'Q'
+                              : oracleType === 'random'  ? 'R'
+                              : oracleType === 'classical' ? 'C'
+                              : '';
+                var typeSuffix = typeLetter ? ' (' + typeLetter + ')' : '';
+                d3.select(this).append("text")
+                    .attr("class", "oracle-citation-text")
+                    .attr("text-anchor", "middle")
+                    .attr("dominant-baseline", "middle")
+                    .style("font-size", oracleCutSize + "px")
+                    .style("font-weight", "bold")
+                    .style("font-family", "Arial, sans-serif")
+                    .style("fill", "#cc0000")
+                    .style("pointer-events", "none")
+                    .style("cursor", "pointer")
+                    .text('[' + refId + ']' + typeSuffix);
+            }
+        });
+
+        // arrowLayer is created as a child of layer1 BEFORE link groups are appended,
+        // so by default the links' wide invisible hover polylines (stroke-width 50)
+        // sit on top of the citation labels and steal clicks aimed at the label's
+        // middle. Raise arrowLayer to be the last child of layer1 so its citations
+        // are on top of every link's hover region.
+        if (arrowLayer && typeof arrowLayer.raise === "function") {
+            arrowLayer.raise();
+        }
     }
 
     // Calculate dynamic colour timing based on number of new nodes (capped at 4)
@@ -1006,13 +1169,30 @@ function draw_graph(){
     function tickActions() {
     if (typeof updatePinnedTooltips !== "function") return; // no-op until ready
         node.attr('transform', d => `translate(${d.x},${d.y})`);
-        // Update both the hover area and visible line
+        // Update polylines (hover areas + visible lines for regular links)
         link.selectAll("polyline").attr("points", function(d) {
             return [
                 d.source.x, d.source.y,
                 (d.source.x + d.target.x) / 2, (d.source.y + d.target.y) / 2,
                 d.target.x, d.target.y
             ].join(',')
+        });
+
+        // Update the two visible segments for oracle-separated links
+        link.filter(d => !!d.oracleSeparation).each(function(d) {
+            var midX = (d.source.x + d.target.x) / 2;
+            var midY = (d.source.y + d.target.y) / 2;
+            var dx = d.target.x - d.source.x;
+            var dy = d.target.y - d.source.y;
+            var len = Math.sqrt(dx * dx + dy * dy) || 1;
+            var ux = dx / len, uy = dy / len;
+            var gapHalf = Math.min(radius * 0.45, len * 0.22);
+            d3.select(this).select(".oracle-seg-1")
+                .attr("x1", d.source.x).attr("y1", d.source.y)
+                .attr("x2", midX - gapHalf * ux).attr("y2", midY - gapHalf * uy);
+            d3.select(this).select(".oracle-seg-2")
+                .attr("x1", midX + gapHalf * ux).attr("y1", midY + gapHalf * uy)
+                .attr("x2", d.target.x).attr("y2", d.target.y);
         });
         
         // Update arrow positions
@@ -1043,6 +1223,65 @@ function draw_graph(){
                     L ${transformedPoints[2][0]} ${transformedPoints[2][1]} Z`;
         });
         
+        // Update oracle separation cut-mark positions
+        arrowLayer.selectAll(".oracle-cut-group").each(function(d) {
+            var midX = (d.source.x + d.target.x) / 2;
+            var midY = (d.source.y + d.target.y) / 2;
+
+            var dx = d.target.x - d.source.x;
+            var dy = d.target.y - d.source.y;
+            var len = Math.sqrt(dx * dx + dy * dy) || 1;
+            var ux = dx / len;  // unit vector along the link
+            var uy = dy / len;
+            var px = -uy;       // unit vector perpendicular to the link
+            var py =  ux;
+
+            // Keep perpendicular offset pointing "downward" in screen space
+            if (py < 0) { px = -px; py = -py; }
+
+            var gapHalf = Math.min(radius * 0.45, len * 0.22); // half-width of the gap (matches link segments)
+            var cutLen  = Math.min(radius * 0.40, gapHalf * 0.95); // half-length of each cut line
+
+            // Centres of the two cut marks (at the gap edges along the link)
+            var c1x = midX - gapHalf * ux;
+            var c1y = midY - gapHalf * uy;
+            var c2x = midX + gapHalf * ux;
+            var c2y = midY + gapHalf * uy;
+
+            // Cut direction: top-left → bottom-right in SVG coords (\ slope)
+            var cx = 0.7071, cy = 0.7071;
+
+            // Cut line 1
+            d3.select(this).select(".oracle-cut-1")
+                .attr("x1", c1x - cutLen * cx).attr("y1", c1y - cutLen * cy)
+                .attr("x2", c1x + cutLen * cx).attr("y2", c1y + cutLen * cy);
+
+            // Cut line 2
+            d3.select(this).select(".oracle-cut-2")
+                .attr("x1", c2x - cutLen * cx).attr("y1", c2y - cutLen * cy)
+                .attr("x2", c2x + cutLen * cx).attr("y2", c2y + cutLen * cy);
+
+            // Citation text — centered in the gap between the two cut marks
+            var textEl = d3.select(this).select(".oracle-citation-text");
+            if (!textEl.empty()) {
+                textEl
+                    .attr("x", midX)
+                    .attr("y", midY);
+
+                // Fit the white backing rectangle around the text, with extra padding
+                // to give a generous click target on all sides.
+                try {
+                    var bbox = textEl.node().getBBox();
+                    var padX = 8, padY = 6;
+                    d3.select(this).select(".oracle-citation-bg")
+                        .attr("x",      bbox.x - padX)
+                        .attr("y",      bbox.y - padY)
+                        .attr("width",  bbox.width  + padX * 2)
+                        .attr("height", bbox.height + padY * 2);
+                } catch(e) {}
+            }
+        });
+
         // Update positions of pinned equal classes tooltips
         updatePinnedTooltips();
     }
@@ -1248,13 +1487,14 @@ function draw_graph(){
     function delete_all_edges() {
         // Remove all visual link elements
         link.remove();
-        
-        // Remove all arrow elements
+
+        // Remove all arrow and oracle cut-mark elements
         arrowLayer.selectAll(".arrow").remove();
-        
+        arrowLayer.selectAll(".oracle-cut-group").remove();
+
         // Update simulation by clearing all links
         simulation.force("links").links([]);
-        
+
         // Restart the simulation gently
         simulation.alpha(1).restart();
     }

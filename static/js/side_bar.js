@@ -334,6 +334,11 @@ function toggleForces(cb){
     draw_graph();
 } 
 
+function toggleOracleSeparations(cb) {
+    showOracleSeparations = cb.checked;
+    draw_graph();
+}
+
 function redrawVisualization() {
     // Clear the existing visualization
     vis_svg.selectAll("*").remove();

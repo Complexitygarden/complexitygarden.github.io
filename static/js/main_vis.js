@@ -27,13 +27,56 @@ async function initializeVisualization() {
         url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
         // url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_classes.json"
         // url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_theorems.json"
-        const [classesData, theoremsData] = await Promise.all([
+        const url_references = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/references/references.json"
+        const [classesData, theoremsData, referencesData] = await Promise.all([
             fetch(url_classes).then(response => response.json()),
-            fetch(url_theorems).then(response => response.json())
+            fetch(url_theorems).then(response => response.json()),
+            fetch(url_references).then(response => response.json()).catch(() => ({ references: [] }))
         ]);
 
         // Initialize network processor with data
         await networkProcessor.initialize(classesData, theoremsData);
+        networkProcessor.loadReferences(referencesData);
+
+        // Hard-coded oracle separations.
+        // These annotate Hasse-diagram edges with known oracle separation results.
+        // 'referenceId' must match an identifier in references.json; identifiers follow
+        // the dataset's short-form convention (author initials + 2-digit year).
+        // Entries whose papers are not yet in references.json still show the cut-mark
+        // visual; the label and link will resolve once the paper is added to the dataset.
+        // Once the dataset gains an 'oracle_separation' theorem type these can be removed.
+        // 'oracleType' indicates the kind of oracle used in the separation proof:
+        //   'classical' — a specific Boolean (classical) oracle is constructed
+        //   'random'    — separation holds relative to a uniformly random oracle with probability 1
+        //   'quantum'   — a quantum (unitary) oracle is needed for the separation
+        [
+            // -------- Oracle separations along existing Hasse-diagram containment edges --------
+            { a: "P",      b: "NP",     referenceId: "BGS75",  oracleType: "classical" }, // Baker, Gill, Solovay 1975 (constructed oracle)
+            { a: "P",      b: "coNP",   referenceId: "BGS75",  oracleType: "classical" }, // Baker, Gill, Solovay 1975 (same construction)
+            { a: "NP",     b: "coNP",   referenceId: "BG81",   oracleType: "random"    }, // Bennett, Gill 1981 — NP^A != coNP^A with probability 1 over random A
+            { a: "P",      b: "BPP",    referenceId: "BG81",   oracleType: "classical" }, // Bennett, Gill 1981 — constructed oracle (random oracle gives P^A = BPP^A)
+            { a: "BPP",    b: "BQP",    referenceId: "BV97",   oracleType: "classical" }, // Bernstein, Vazirani 1997 — Recursive Fourier Sampling (constructed oracle)
+            { a: "NP",     b: "Sigma2", referenceId: "Yao85",  oracleType: "classical" }, // Yao 1985 (constructed oracle for each level of PH)
+            { a: "Sigma2", b: "PH",     referenceId: "Has89",  oracleType: "classical" }, // Hastad 1989 — circuit lower bounds give classical oracle separation
+            { a: "PH",     b: "PSPACE", referenceId: "Yao85",  oracleType: "classical" }, // Yao 1985 — constructed oracle (Cai 1986 extended to random oracle)
+            { a: "QMA",    b: "QCMA",   referenceId: "BHNZ25", oracleType: "classical" }, // Bostanci, Haferkamp, Nirkhe, Zhandry 2025 — classical-oracle separation (older work used a quantum oracle)
+
+            // -------- Separation-only pairs (no Hasse-diagram containment) --------
+            // Rendered as fully red edges only when the oracle-separation toggle is on.
+            { a: "NP",     b: "BQP",    referenceId: "BBBV97", oracleType: "random"    }, // Bennett, Bernstein, Brassard, Vazirani 1997 — Grover lower bound holds relative to random oracle
+            { a: "BQP",    b: "PH",     referenceId: "RT22",   oracleType: "classical" }, // Raz, Tal 2022 — Forrelation, constructed oracle
+            { a: "BQP",    b: "MA",     referenceId: "BV97",   oracleType: "classical" }, // Bernstein, Vazirani 1997 — RFS, constructed oracle
+            { a: "BQP",    b: "SZK",    referenceId: "Aar10",  oracleType: "classical" }, // Aaronson 2010 — Fourier Checking, constructed oracle
+        ].forEach(function(sep) {
+            if (networkProcessor.classes.has(sep.a) && networkProcessor.classes.has(sep.b)) {
+                networkProcessor.addTheorem({
+                    type: 'oracle_separation',
+                    a: sep.a, b: sep.b,
+                    referenceId: sep.referenceId,
+                    oracleType: sep.oracleType
+                });
+            }
+        });
 
         // Check for shared configuration first
         const urlParams = new URLSearchParams(window.location.search);
