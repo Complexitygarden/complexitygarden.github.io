@@ -7,6 +7,43 @@ var vis_type = 'graph';
 var gravity = true;
 var id_visualisation_div = "#visualisation_div";
 
+window.currentView = 'baseline';
+
+function getDataUrls(view) {
+    const branch = view === 'community' ? 'community' : 'main';
+    const base = `https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/${branch}/decision_complexity_classes`;
+    return {
+        classes: `${base}/classes.json`,
+        theorems: `${base}/theorems.json`
+    };
+}
+
+window.setDataView = async function(view) {
+    if (window.currentView === view) return;
+    window.currentView = view;
+    document.getElementById('view-btn-baseline').classList.toggle('view-toggle-btn--active', view === 'baseline');
+    document.getElementById('view-btn-community').classList.toggle('view-toggle-btn--active', view === 'community');
+
+    document.getElementById('openRightSidebarMenu').checked = false;
+    AppState.selectedClass = null;
+    AppState.navigationHistory = [];
+    showWelcomeState();
+
+    const urls = getDataUrls(view);
+    try {
+        const [classesData, theoremsData] = await Promise.all([
+            fetch(urls.classes).then(r => r.json()),
+            fetch(urls.theorems).then(r => r.json())
+        ]);
+        window.networkProcessor = new NetworkProcessor();
+        await networkProcessor.initialize(classesData, theoremsData);
+        selectDefaultClasses();
+        create_visualisation();
+    } catch (err) {
+        console.error('Failed to switch data source:', err);
+    }
+};
+
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 // SVG and zoom setup
@@ -23,13 +60,14 @@ async function initializeVisualization() {
         window.networkProcessor = new NetworkProcessor();
         
         // Load data files
-        url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
-        url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
+        //url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/classes.json"
+        //url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/decision_complexity_classes/theorems.json"
         // url_classes = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_classes.json"
         // url_theorems = "https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/main/total_function_complexity_measures/measures_theorems.json"
+        const urls = getDataUrls(window.currentView);
         const [classesData, theoremsData] = await Promise.all([
-            fetch(url_classes).then(response => response.json()),
-            fetch(url_theorems).then(response => response.json())
+            fetch(urls.classes).then(response => response.json()),
+            fetch(urls.theorems).then(response => response.json())
         ]);
 
         // Initialize network processor with data

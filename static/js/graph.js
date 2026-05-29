@@ -1384,15 +1384,15 @@ function showNodeMenu(d, pageX, pageY) {
         options.push({ type:"text", label: "Description", action: function() { hideNodeMenu(); open_side_window(d); } });
     }
 
-    if (hasEquals) {
-        options.push( {type:"latex", latex: d.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}}  );
-        d.equal_classes.forEach(function(eq){
-            options.push( {type:"latex", latex: eq.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(eq.name);}}}  );
-        });
-    }
-    else
-    {
-        options.push({type:"text", label: "Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}});
+    if (window.currentView === 'community') {
+        if (hasEquals) {
+            options.push( {type:"latex", latex: d.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}}  );
+            d.equal_classes.forEach(function(eq){
+                options.push( {type:"latex", latex: eq.latex_name, suffix: ": Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(eq.name);}}}  );
+            });
+        } else {
+            options.push({type:"text", label: "Edit", action: function() {hideNodeMenu(); if (window.editnodeRef) {window.editnodeRef(d.name);}}});
+        }
     }
 
     options.forEach(function(opt) {

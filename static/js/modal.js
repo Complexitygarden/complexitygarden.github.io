@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // For all modals with triggers
+    // for all modals with triggers
     const modals = [
         { linkId: 'about-link', modalId: 'about-modal-overlay', closeId: 'about-modal-close' },
         { linkId: 'howto-link', modalId: 'howto-modal-overlay', closeId: 'howto-modal-close' },
@@ -31,16 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Close on ESC key
+            // Close on esc key
             document.addEventListener('keydown', e => {
                 if (e.key === 'Escape' && modal.style.display === 'flex') {
-                    // Close only the modal and prevent other ESC handlers (e.g., search bar) from executing
+                    // Close only the modal and prevent other ESC handlers from executing
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
                     modal.style.display = 'none';
                 }
-            }, true); // capture=true ensures we intercept before other listeners
+            }, true); // true so we intercept before other listeners
         }
     });
 });
@@ -139,11 +139,11 @@ function buildTheoremsList(classData) {
 
 document.addEventListener('DOMContentLoaded', function () {
 
-
-
-    // Save button
-    document.getElementById('edit-modal-save-btn').addEventListener('click', function () {
+    // save button
+    document.getElementById('edit-modal-save-btn').addEventListener('click', async function () {
         if (!currentEditClass) return;
+
+        // Apply field updates
         currentEditClass.latex_name = document.getElementById('edit-latex-name').value.trim();
         currentEditClass.definition = document.getElementById('edit-definition').value;
         currentEditClass.information = document.getElementById('edit-information').value;
@@ -158,8 +158,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     : [line.trim(), ''];
             })
             : [];
+
+        // save deleted theorem objects before modifying the array
+        var deletedTheorems = [];
         if (pendingDeletedIndices.size > 0 && window.networkProcessor) {
             var theorems = window.networkProcessor.getAllTheorems();
+            pendingDeletedIndices.forEach(function (idx) {
+                if (theorems[idx]) deletedTheorems.push(theorems[idx]);
+            });
             pendingDeletedIndices.forEach(function (idx) {
                 var thm = theorems[idx];
                 if (!thm) return;
@@ -179,8 +185,64 @@ document.addEventListener('DOMContentLoaded', function () {
             var filtered = theorems.filter(Boolean);
             theorems.splice(0, theorems.length, ...filtered);
         }
+
         document.getElementById('edit-class-modal-overlay').style.display = 'none';
         if (typeof draw_graph === 'function') draw_graph();
+
+        if (window.currentView === 'community') {
+            await saveToCommunity(currentEditClass, deletedTheorems);
+        }
     });
 
 });
+
+const LAMBDA_URL = 'https://587qw0cyhc.execute-api.us-east-1.amazonaws.com/save-edit';
+const COMMUNITY_RAW = 'https://raw.githubusercontent.com/Complexitygarden/dataset/refs/heads/community/decision_complexity_classes';
+
+async function saveToCommunity(editedClass, deletedTheorems) {
+    try {
+        // get current classes.json from community branch and update the edited class
+        const classesFile = await fetch(`${COMMUNITY_RAW}/classes.json`).then(r => r.json());
+        const entry = classesFile.class_list[editedClass.id];
+        if (entry) {
+            entry.latex_name = editedClass.latex_name;
+            entry.definition = editedClass.definition;
+            entry.information = editedClass.information;
+            entry.see_also = editedClass.see_also;
+            entry.references = editedClass.references;
+        }
+        await fetch(LAMBDA_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                filepath: 'decision_complexity_classes/classes.json',
+                content: JSON.stringify(classesFile, null, 2),
+                message: `Community edit: updated ${editedClass.id}`
+            })
+        });
+
+        //update theorems.json too
+        if (deletedTheorems.length > 0) {
+            const theoremsFile = await fetch(`${COMMUNITY_RAW}/theorems.json`).then(r => r.json());
+            theoremsFile.theorems = theoremsFile.theorems.filter(t => !deletedTheorems.some(d => theoremsMatch(t, d)));
+            await fetch(LAMBDA_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    filepath: 'decision_complexity_classes/theorems.json',
+                    content: JSON.stringify(theoremsFile, null, 2),
+                    message: `Community edit: removed theorems for ${editedClass.id}`
+                })
+            });
+        }
+    } catch (err) {
+        console.error('Failed to save to community branch:', err);
+    }
+}
+
+function theoremsMatch(a, b) {
+    if (a.type !== b.type) return false;
+    if (a.type === 'containment') return a.subset === b.subset && a.superset === b.superset;
+    if (a.type === 'equality') return (a.a === b.a && a.b === b.b) || (a.a === b.b && a.b === b.a);
+    return false;
+}

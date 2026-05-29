@@ -299,7 +299,7 @@ body.reference-page {
 .leftSidebarMenuInner li span{
     display: block;
     font-size: 14px;
-    color: rgba(255, 255, 255, 0.50);
+    color: rgba(255, 255, 255, 1.0);
 }
 .leftSidebarMenuInner li a{
     color: #fff;
@@ -3031,4 +3031,33 @@ body.search-active .header-center .search-dropdown {
     color: #aaa;
     font-style: italic;
     padding: 4px 2px;
+}
+
+/* Data source view toggle */
+.view-toggle {
+    display: flex;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.view-toggle-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 3px 8px;
+    font-size: 11px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, color 0.2s;
+}
+
+.view-toggle-btn:first-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.view-toggle-btn--active {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
 }
