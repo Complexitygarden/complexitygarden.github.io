@@ -186,6 +186,10 @@
                         </div>
                     </div>
                 </li>
+                <!-- Community Changes Review -->
+                <li class="leftSidebarMenuInner_li">
+                    <a href="#" id="review-changes-link">Community Changes</a>
+                </li>
                 <!-- History -->
                 <li class="leftSidebarMenuInner_li" id="history_menu_item">
                     <div class="settings-header">
@@ -514,6 +518,21 @@
             </div>
         </div>
 
+        <!-- Community Changes Review Modal -->
+        <div id="review-modal-overlay" class="modal-overlay" style="display:none;">
+            <div id="review-modal-window" class="modal-window review-modal-window">
+                <button id="review-modal-close" class="modal-close" aria-label="Close">&times;</button>
+                <div class="review-modal-header">
+                    <div class="review-modal-title-row">
+                        <h2>Community Changes</h2>
+                        <span id="review-change-count" class="review-change-count"></span>
+                    </div>
+                    <p class="review-modal-subtitle">Differences between the community and baseline branches. Accept to promote a change to baseline, or reject to revert it.</p>
+                </div>
+                <div id="review-changes-list" class="review-changes-list"></div>
+            </div>
+        </div>
+
         <!-- Load scripts in correct order -->
         <script src="../static/js/utils.js?v=1.001"></script>
         <script src="../static/js/display_references.js"></script>
@@ -531,5 +550,6 @@
         <script src="../static/js/share.js?v=1.001"></script>
         <script src="../static/js/stats.js"></script>
         <script src="static/js/auth.js"></script>
+        <script src="../static/js/community_review.js"></script>
     </body>
 </html>
