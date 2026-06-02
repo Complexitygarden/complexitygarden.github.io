@@ -253,8 +253,8 @@ function link_classes_information(information_text)
     //Make sure to always use the dollar signs in the classes.json
     //const regex = new RegExp(`\\$\\\\mathsf\\{(${escaped_class_names.join('|')})\\}\\$`, 'g');
 
-    //this matches just classnames
-    const regex = new RegExp(`\\b(${escaped_class_names.join('|')})\\b`, 'g');
+    //this matches just classnames, but not those surrounded by {}
+    const regex = new RegExp(`(?<!\\{)\\b(${escaped_class_names.join('|')})\\b(?!\\})`, 'g');
     //joins the escaped class names into a single alternation group using "|"
 
     const segments = information_text.split(/(\$[^$]*\$)/);
